@@ -1,0 +1,154 @@
+{
+  "experience": [
+    {
+      "period": "Current / 2024 — Present",
+      "role": "Senior Systems Architect",
+      "desc": "Engineering resilient distributed systems and high-fidelity internal infrastructure for global-scale operations."
+    },
+    {
+      "period": "Neural Path / 2022 — 2024",
+      "role": "Full Stack Engineer",
+      "desc": "Pioneered real-time data visualization engines and low-latency backend services using Rust and WASM."
+    },
+    {
+      "period": "Creative Core / 2020 — 2022",
+      "role": "Lead Frontend Developer",
+      "desc": "Orchestrated sophisticated design systems and performance-critical interfaces for premium digital products."
+    }
+  ],
+  "projects": [
+    {
+      "id": "01",
+      "title": "Musicly",
+      "meta": "Music Streaming / Offline Music Platform",
+      "desc": "A music app that lets users sync songs through Telegram and listen to them offline across multiple devices.",
+      "detailedDesc": "Musicly is a music platform built to make saving and listening to music easier. Users can send any song they want to the Musicly Telegram bot, and the app automatically syncs and downloads the music to their phone for offline listening. The platform also keeps users’ music libraries synced across multiple devices, making it easy to access songs anywhere. The app focuses on a smooth music experience with organized libraries, playlists, and a modern music player interface.",
+      "technologies": [
+        "React Native",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS",
+        "Telegram Bot API"
+      ],
+      "repo": "https://github.com/capt-noah/musicly-app",
+      "link": "https://example.com"
+    },
+    {
+      "id": "02",
+      "title": "Lideta Subcity Website",
+      "meta": "Government / Public Service Website",
+      "desc": "A website designed to make public information and services easier to access for residents of Lideta Subcity.",
+      "detailedDesc": "The Lideta Subcity Website is a digital platform created to help residents easily access important information and services. The website includes announcements, office information, public updates, contact details, and downloadable resources in one organized place. The project focuses on making information easier to find through a clean design and simple navigation.",
+      "technologies": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "repo": "https://github.com",
+      "link": "https://lidetasubcity.gov.et"
+    },
+    {
+      "id": "03",
+      "title": "Typer",
+      "meta": "Productivity / Typing Practice Application",
+      "desc": "A typing practice app that helps users improve speed and accuracy through interactive exercises and books.",
+      "detailedDesc": "Typer is a typing application designed to help users improve their typing skills in a more engaging way. Users can practice with speed typing exercises or choose from available books and type directly over the text as they read. The app tracks typing speed, accuracy, and mistakes in real time, creating an interactive learning experience that combines reading and typing practice.",
+      "technologies": [
+        "React",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "repo": "https://github.com/capt-noah/Typer",
+      "link": "https://example.com"
+    },
+    {
+      "id": "04",
+      "title": "ParkAddis",
+      "meta": "Smart Parking / Transportation Platform",
+      "desc": "A smart parking platform that helps drivers quickly find, reserve, and pay for parking spaces in Addis Ababa.",
+      "detailedDesc": "ParkAddis is a platform created to make parking easier and less stressful for drivers in Addis Ababa. Instead of spending time driving around searching for available parking spaces, users can quickly find nearby parking areas through the app. They can reserve parking spaces in advance, pay using integrated payment options such as Chapa or the ParkAddis wallet, and keep track of how long they have been parked. The platform helps drivers save time, reduce stress, and enjoy a smoother parking experience through a simple and convenient system.",
+      "technologies": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Maps APIs",
+        "Tailwind CSS"
+      ],
+      "repo": "https://github.com/capt-noah/park-addis",
+      "link": "https://park-addis.vercel.app"
+    }
+  ],
+  "stack": [
+    {
+      "name": "React",
+      "color": "#61DAFB"
+    },
+    {
+      "name": "Next.js",
+      "color": "#FFFFFF"
+    },
+    {
+      "name": "TypeScript",
+      "color": "#3178C6"
+    },
+    {
+      "name": "Tailwind",
+      "color": "#06B6D4"
+    },
+    {
+      "name": "Rust",
+      "color": "#DEA584"
+    },
+    {
+      "name": "Python",
+      "color": "#3776AB"
+    },
+    {
+      "name": "Node.js",
+      "color": "#339933"
+    },
+    {
+      "name": "Vite",
+      "color": "#646CFF"
+    },
+    {
+      "name": "Docker",
+      "color": "#2496ED"
+    },
+    {
+      "name": "Redis",
+      "color": "#D82C20"
+    },
+    {
+      "name": "Firebase",
+      "color": "#FFCA28"
+    },
+    {
+      "name": "Supabase",
+      "color": "#3ECF8E"
+    },
+    {
+      "name": "PostgreSQL",
+      "color": "#4169E1"
+    }
+  ],
+  "socials": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/capt-noah"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://www.linkedin.com/in/noah-tesfaye-3b2b56364"
+    },
+    {
+      "name": "X",
+      "url": "#"
+    },
+    {
+      "name": "Email",
+      "url": "mailto:noahte2020@gmail.com"
+    }
+  ]
+}
