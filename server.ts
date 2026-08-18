@@ -49,6 +49,21 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+
+// ============================================================
+// ZERO-DEPENDENCY HEALTH CHECK ROUTE
+// ============================================================
+app.get('/hello', (req: Request, res: Response) => {
+  res.json({
+    status: 'ok',
+    message: 'Hello! The Node.js Express server is active and running perfectly on Plesk.',
+    timestamp: new Date().toISOString(),
+    nodeVersion: process.version,
+    env: process.env.NODE_ENV || 'not-set',
+  });
+});
+
+
 // ============================================================
 // 3. API & DIAGNOSTIC ENDPOINTS
 // ============================================================

@@ -59,6 +59,15 @@ app.use((req, res, next) => {
   });
   next();
 });
+app.get("/hello", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Hello! The Node.js Express server is active and running perfectly on Plesk.",
+    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+    nodeVersion: process.version,
+    env: process.env.NODE_ENV || "not-set"
+  });
+});
 app.get("/api/db-test", async (req, res) => {
   try {
     const [ping] = await pool.query("SELECT 1 + 1 AS connection_test, NOW() AS server_time");
