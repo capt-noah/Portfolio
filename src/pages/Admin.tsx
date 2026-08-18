@@ -191,11 +191,12 @@ export default function Admin() {
                   {data.projects.map((proj, i) => (
                     <ItemCard key={`${proj.id}-${i}`} onDelete={() => setData({ ...data, projects: data.projects.filter((_, idx) => idx !== i) })}>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <Input label="ID" value={proj.id} onChange={(val) => {
-                          const newProj = [...data.projects];
-                          newProj[i].id = val;
-                          setData({ ...data, projects: newProj });
-                        }} />
+                        <div className="flex flex-col gap-2">
+                          <label className="font-mono text-[10px] uppercase tracking-[0.3em] text-fg/60 ml-0.5">// DB ID</label>
+                          <div className="bg-fg/[0.02] border-2 border-fg/10 rounded-none px-4 py-3 text-sm text-fg/40 font-mono select-none">
+                            {proj.id ?? '—'}
+                          </div>
+                        </div>
                         <div className="md:col-span-2">
                           <Input label="Title" value={proj.title} onChange={(val) => {
                             const newProj = [...data.projects];

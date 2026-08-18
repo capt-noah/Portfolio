@@ -35,7 +35,7 @@ export default function Work({ data, onSelectProject }: WorkProps) {
               key={`${project.id}-${i}`}
               onClick={(e) => {
                 e.preventDefault();
-                onSelectProject(project.id);
+                if (project.id) onSelectProject(project.id);
               }}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
