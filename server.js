@@ -72,7 +72,14 @@ app.get('/api/db-test', async (req, res) => {
     const [ping]   = await pool.query('SELECT 1+1 AS result, NOW() AS server_time');
     const [tables] = await pool.query('SHOW TABLES');
     const [sample] = await pool.query('SELECT * FROM projects LIMIT 1');
-    res.json({ status: 'success', ping: ping[0], tables, sample: sample[0] ?? null });
+    const [expCols]   = await pool.query('DESCRIBE experiences');
+    const [socCols]   = await pool.query('DESCRIBE socials');
+    const [stackCols] = await pool.query('DESCRIBE tech_stack');
+    const [projCols]  = await pool.query('DESCRIBE projects');
+    res.json({
+      status: 'success', ping: ping[0], tables, sample: sample[0] ?? null,
+      columns: { experiences: expCols, socials: socCols, tech_stack: stackCols, projects: projCols }
+    });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
   }
@@ -95,10 +102,10 @@ app.post('/api/login', (req, res) => {
 app.get('/api/data', async (req, res) => {
   try {
     const [[exp], [proj], [stack], [soc]] = await Promise.all([
-      pool.query('SELECT id, period, role, description FROM experiences ORDER BY display_order ASC'),
-      pool.query('SELECT id, title, meta, short_desc, detailed_desc, technologies, repo_url, live_link FROM projects ORDER BY display_order ASC'),
-      pool.query('SELECT id, name, color FROM tech_stack ORDER BY display_order ASC'),
-      pool.query('SELECT id, name, url FROM socials ORDER BY display_order ASC'),
+      pool.query('SELECT id, period, role, description FROM experiences ORDER BY id ASC'),
+      pool.query('SELECT id, title, meta, short_desc, detailed_desc, technologies, repo_url, live_link FROM projects ORDER BY display_order ASC, id ASC'),
+      pool.query('SELECT id, name, color FROM tech_stack ORDER BY id ASC'),
+      pool.query('SELECT id, name, url FROM socials ORDER BY id ASC'),
     ]);
 
     res.json({
@@ -138,7 +145,7 @@ app.get('/api/data', async (req, res) => {
 // ============================================================
 app.get('/api/experiences', auth, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM experiences ORDER BY display_order ASC');
+    const [rows] = await pool.query('SELECT * FROM experiences ORDER BY id ASC');
     res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -187,7 +194,7 @@ app.delete('/api/experiences/:id', auth, async (req, res) => {
 // ============================================================
 app.get('/api/projects', auth, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM projects ORDER BY display_order ASC');
+    const [rows] = await pool.query('SELECT * FROM projects ORDER BY display_order ASC, id ASC');
     res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -240,7 +247,7 @@ app.delete('/api/projects/:id', auth, async (req, res) => {
 // ============================================================
 app.get('/api/stack', auth, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM tech_stack ORDER BY display_order ASC');
+    const [rows] = await pool.query('SELECT * FROM tech_stack ORDER BY id ASC');
     res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -287,7 +294,7 @@ app.delete('/api/stack/:id', auth, async (req, res) => {
 // ============================================================
 app.get('/api/socials', auth, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM socials ORDER BY display_order ASC');
+    const [rows] = await pool.query('SELECT * FROM socials ORDER BY id ASC');
     res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -337,7 +344,7 @@ if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
 }
 
-app.get('/{*splat}', (req, res) => {
+app.get('*', (req, res) => {
   const indexPath = path.join(distPath, 'index.html');
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
