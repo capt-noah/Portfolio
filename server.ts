@@ -1,119 +1,106 @@
-import express from "express";
-import path from "path";
-import fs from "fs/promises";
-import dotenv from "dotenv";
-
-dotenv.config();
+import express, { Request, Response } from 'express';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import mysql from 'mysql2/promise';
 
 const app = express();
-const PORT = 3000;
-
 app.use(express.json());
 
-const DEV_DATA_PATH = path.join(process.cwd(), "data.json");
-const TMP_DATA_PATH = "/tmp/data.json";
+// ============================================================
+// 1. MYSQL CONNECTION POOL CONFIGURATION
+// ============================================================
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'mysql-db02.remote',
+  port: Number(process.env.DB_PORT) || 32636,
+  user: process.env.DB_USER || 'capt_noah',
+  password: process.env.DB_PASSWORD || 'YOUR_DATABASE_PASSWORD',
+  database: process.env.DB_NAME || 'portfolio_db',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
-// Helper to check if file exists
-async function fileExists(filePath: string): Promise<boolean> {
+// ============================================================
+// 2. API ROUTES FIRST
+// ============================================================
+
+// Diagnostic Test Endpoint
+app.get('/api/db-test', async (req: Request, res: Response) => {
   try {
-    await fs.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
+    const [ping] = await pool.query('SELECT 1 + 1 AS connection_test, NOW() AS server_time');
+    const [tables] = await pool.query('SHOW TABLES');
 
-// Helper to read data with /tmp fallback for Vercel Serverless environment
-async function readData() {
-  try {
-    const useTmp = await fileExists(TMP_DATA_PATH);
-    if (useTmp) {
-      const data = await fs.readFile(TMP_DATA_PATH, "utf-8");
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.warn("Failed to read from /tmp/data.json, falling back to data.json:", error);
-  }
-
-  const data = await fs.readFile(DEV_DATA_PATH, "utf-8");
-  return JSON.parse(data);
-}
-
-app.get('/hello', (req, res) => {
-  res.send("Hello From Capt Noah!!")
-})
-
-// API routes first
-app.get("/api/data", async (req, res) => {
-  try {
-    const data = await readData();
-    res.json(data);
-  } catch (error) {
-    console.error("Error reading data:", error);
-    res.status(500).json({ error: "Failed to read data" });
+    res.json({
+      status: 'success',
+      message: 'Node.js connected to MySQL on Plesk successfully!',
+      ping: (ping as any)[0],
+      tables,
+    });
+  } catch (error: any) {
+    console.error('Database connection failed:', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message,
+      code: error.code,
+      errno: error.errno,
+    });
   }
 });
 
-app.post("/api/login", (req, res) => {
-  const { password } = req.body;
-  const adminPassword = process.env.ADMIN_PASSWORD || "capt-noah";
+// Full Portfolio Data Endpoint
+app.get('/api/portfolio-data', async (req: Request, res: Response) => {
+  try {
+    const [experiences] = await pool.query(
+      'SELECT period, role, description AS `desc` FROM experiences ORDER BY display_order ASC'
+    );
+    const [projectsRaw] = await pool.query(
+      'SELECT id, title, meta, short_desc AS `desc`, detailed_desc AS detailedDesc, technologies, repo_url AS repo, live_link AS link FROM projects ORDER BY display_order ASC'
+    );
+    const [stack] = await pool.query('SELECT name, color FROM tech_stack');
+    const [socials] = await pool.query('SELECT name, url FROM socials');
 
-  if (password === adminPassword) {
-    res.json({ success: true, token: "authorized_session_token" });
+    const projects = (projectsRaw as any[]).map((p) => ({
+      ...p,
+      technologies: typeof p.technologies === 'string' ? JSON.parse(p.technologies) : p.technologies,
+    }));
+
+    res.json({
+      experience: experiences,
+      projects,
+      stack,
+      socials,
+    });
+  } catch (error: any) {
+    console.error('Database query error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message,
+    });
+  }
+});
+
+// ============================================================
+// 3. STATIC ASSETS & SPA WILDCARD CATCH-ALL
+// ============================================================
+// When bundled inside dist/, __dirname points directly to dist
+const distPath = typeof __dirname !== 'undefined' ? __dirname : process.cwd();
+const indexPath = path.join(distPath, 'index.html');
+
+app.use(express.static(distPath));
+
+app.get('/{*splat}', (req: Request, res: Response) => {
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
   } else {
-    res.status(401).json({ success: false, error: "Unauthorized" });
+    res.status(500).send('React bundle dist/index.html not found. Run npm run build.');
   }
 });
 
-app.post("/api/data", async (req, res) => {
-  try {
-    const dataString = JSON.stringify(req.body, null, 2);
-
-    // 1. Write to /tmp/data.json (always writable on Vercel serverless environment)
-    try {
-      await fs.writeFile(TMP_DATA_PATH, dataString, "utf-8");
-    } catch (e) {
-      console.warn("Failed to write to /tmp/data.json:", e);
-    }
-
-    // 2. Also write to local data.json (succeeds in local dev, fails in read-only Vercel build-env)
-    try {
-      await fs.writeFile(DEV_DATA_PATH, dataString, "utf-8");
-    } catch (e) {
-      console.warn("Failed to write to local data.json (expected in read-only platforms):", e);
-    }
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Error writing data:", error);
-    res.status(500).json({ error: "Failed to save data" });
-  }
+// ============================================================
+// 4. PASSENGER DYNAMIC BINDING
+// ============================================================
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Portfolio server listening on port ${PORT}`);
 });
-
-// Vite integration as middleware in dev, static files in prod
-async function setupVite() {
-  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else if (!process.env.VERCEL) {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
-}
-
-setupVite();
-
-if (!process.env.VERCEL) {
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
-  });
-}
-
-export default app;

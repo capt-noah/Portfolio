@@ -4,10 +4,6 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -24,106 +20,84 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // server.ts
-var server_exports = {};
-__export(server_exports, {
-  default: () => server_default
-});
-module.exports = __toCommonJS(server_exports);
 var import_express = __toESM(require("express"), 1);
 var import_path = __toESM(require("path"), 1);
-var import_promises = __toESM(require("fs/promises"), 1);
-var import_dotenv = __toESM(require("dotenv"), 1);
-import_dotenv.default.config();
+var import_fs = __toESM(require("fs"), 1);
+var import_promise = __toESM(require("mysql2/promise"), 1);
 var app = (0, import_express.default)();
-var PORT = 3e3;
 app.use(import_express.default.json());
-var DEV_DATA_PATH = import_path.default.join(process.cwd(), "data.json");
-var TMP_DATA_PATH = "/tmp/data.json";
-async function fileExists(filePath) {
-  try {
-    await import_promises.default.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
-async function readData() {
-  try {
-    const useTmp = await fileExists(TMP_DATA_PATH);
-    if (useTmp) {
-      const data2 = await import_promises.default.readFile(TMP_DATA_PATH, "utf-8");
-      return JSON.parse(data2);
-    }
-  } catch (error) {
-    console.warn("Failed to read from /tmp/data.json, falling back to data.json:", error);
-  }
-  const data = await import_promises.default.readFile(DEV_DATA_PATH, "utf-8");
-  return JSON.parse(data);
-}
-app.get("/hello", (req, res) => {
-  res.send("Hello From Capt Noah!!");
+var pool = import_promise.default.createPool({
+  host: process.env.DB_HOST || "mysql-db02.remote",
+  port: Number(process.env.DB_PORT) || 32636,
+  user: process.env.DB_USER || "capt_noah",
+  password: process.env.DB_PASSWORD || "YOUR_DATABASE_PASSWORD",
+  database: process.env.DB_NAME || "portfolio_db",
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
-app.get("/api/data", async (req, res) => {
+app.get("/api/db-test", async (req, res) => {
   try {
-    const data = await readData();
-    res.json(data);
+    const [ping] = await pool.query("SELECT 1 + 1 AS connection_test, NOW() AS server_time");
+    const [tables] = await pool.query("SHOW TABLES");
+    res.json({
+      status: "success",
+      message: "Node.js connected to MySQL on Plesk successfully!",
+      ping: ping[0],
+      tables
+    });
   } catch (error) {
-    console.error("Error reading data:", error);
-    res.status(500).json({ error: "Failed to read data" });
+    console.error("Database connection failed:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+      code: error.code,
+      errno: error.errno
+    });
   }
 });
-app.post("/api/login", (req, res) => {
-  const { password } = req.body;
-  const adminPassword = process.env.ADMIN_PASSWORD || "capt-noah";
-  if (password === adminPassword) {
-    res.json({ success: true, token: "authorized_session_token" });
+app.get("/api/portfolio-data", async (req, res) => {
+  try {
+    const [experiences] = await pool.query(
+      "SELECT period, role, description AS `desc` FROM experiences ORDER BY display_order ASC"
+    );
+    const [projectsRaw] = await pool.query(
+      "SELECT id, title, meta, short_desc AS `desc`, detailed_desc AS detailedDesc, technologies, repo_url AS repo, live_link AS link FROM projects ORDER BY display_order ASC"
+    );
+    const [stack] = await pool.query("SELECT name, color FROM tech_stack");
+    const [socials] = await pool.query("SELECT name, url FROM socials");
+    const projects = projectsRaw.map((p) => ({
+      ...p,
+      technologies: typeof p.technologies === "string" ? JSON.parse(p.technologies) : p.technologies
+    }));
+    res.json({
+      experience: experiences,
+      projects,
+      stack,
+      socials
+    });
+  } catch (error) {
+    console.error("Database query error:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message
+    });
+  }
+});
+var distPath = typeof __dirname !== "undefined" ? __dirname : process.cwd();
+var indexPath = import_path.default.join(distPath, "index.html");
+app.use(import_express.default.static(distPath));
+app.get("/{*splat}", (req, res) => {
+  if (import_fs.default.existsSync(indexPath)) {
+    res.sendFile(indexPath);
   } else {
-    res.status(401).json({ success: false, error: "Unauthorized" });
+    res.status(500).send("React bundle dist/index.html not found. Run npm run build.");
   }
 });
-app.post("/api/data", async (req, res) => {
-  try {
-    const dataString = JSON.stringify(req.body, null, 2);
-    try {
-      await import_promises.default.writeFile(TMP_DATA_PATH, dataString, "utf-8");
-    } catch (e) {
-      console.warn("Failed to write to /tmp/data.json:", e);
-    }
-    try {
-      await import_promises.default.writeFile(DEV_DATA_PATH, dataString, "utf-8");
-    } catch (e) {
-      console.warn("Failed to write to local data.json (expected in read-only platforms):", e);
-    }
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Error writing data:", error);
-    res.status(500).json({ error: "Failed to save data" });
-  }
+var PORT = process.env.PORT || 3e3;
+app.listen(PORT, () => {
+  console.log(`Portfolio server listening on port ${PORT}`);
 });
-async function setupVite() {
-  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa"
-    });
-    app.use(vite.middlewares);
-  } else if (!process.env.VERCEL) {
-    const distPath = import_path.default.join(process.cwd(), "dist");
-    app.use(import_express.default.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(import_path.default.join(distPath, "index.html"));
-    });
-  }
-}
-setupVite();
-if (!process.env.VERCEL) {
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
-  });
-}
-var server_default = app;
 //# sourceMappingURL=server.cjs.map
