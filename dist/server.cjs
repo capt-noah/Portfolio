@@ -26,6 +26,17 @@ var import_express = __toESM(require("express"), 1);
 var import_path = __toESM(require("path"), 1);
 var import_fs = __toESM(require("fs"), 1);
 var import_promise = __toESM(require("mysql2/promise"), 1);
+var import_dotenv = __toESM(require("dotenv"), 1);
+import_dotenv.default.config();
+console.log("--- \u{1F680} SERVER ENVIRONMENT CONFIGURATION ---");
+console.log("NODE_ENV:    ", process.env.NODE_ENV || "(not set)");
+console.log("PORT:        ", process.env.PORT || "3000 (fallback)");
+console.log("DB_HOST:     ", process.env.DB_HOST || "mysql-db02.remote (fallback)");
+console.log("DB_PORT:     ", process.env.DB_PORT || "32636 (fallback)");
+console.log("DB_USER:     ", process.env.DB_USER || "capt_noah (fallback)");
+console.log("DB_NAME:     ", process.env.DB_NAME || "portfolio_db (fallback)");
+console.log("DB_PASSWORD: ", process.env.DB_PASSWORD ? `[LOADED - length: ${process.env.DB_PASSWORD.length}]` : "[NOT SET / MISSING(5RDPrt#xe67gx@bv)]");
+console.log("------------------------------------------");
 var app = (0, import_express.default)();
 app.use(import_express.default.json());
 var pool = import_promise.default.createPool({
@@ -45,6 +56,13 @@ app.get("/api/db-test", async (req, res) => {
     res.json({
       status: "success",
       message: "Node.js connected to MySQL on Plesk successfully!",
+      envCheck: {
+        host: process.env.DB_HOST || "mysql-db02.remote",
+        port: process.env.DB_PORT || 32636,
+        user: process.env.DB_USER || "capt_noah",
+        database: process.env.DB_NAME || "portfolio_db",
+        passwordConfigured: Boolean(process.env.DB_PASSWORD)
+      },
       ping: ping[0],
       tables
     });
@@ -54,7 +72,14 @@ app.get("/api/db-test", async (req, res) => {
       status: "error",
       message: error.message,
       code: error.code,
-      errno: error.errno
+      errno: error.errno,
+      envCheck: {
+        host: process.env.DB_HOST || "mysql-db02.remote",
+        port: process.env.DB_PORT || 32636,
+        user: process.env.DB_USER || "capt_noah",
+        database: process.env.DB_NAME || "portfolio_db",
+        passwordConfigured: Boolean(process.env.DB_PASSWORD)
+      }
     });
   }
 });
