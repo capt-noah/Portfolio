@@ -113,9 +113,10 @@ app.get('/hello', (req, res) => {
 
 app.get('/api/db-test', async (req, res) => {
   try {
-    const [ping]   = await pool.query('SELECT 1+1 AS result, NOW() AS server_time');
-    const [tables] = await pool.query('SHOW TABLES');
-    res.json({ status: 'success', ping: ping[0], tables });
+    const [ping]      = await pool.query('SELECT 1+1 AS result, NOW() AS server_time');
+    const [tables]    = await pool.query('SHOW TABLES');
+    const [projSample]= await pool.query('SELECT * FROM projects LIMIT 1');
+    res.json({ status: 'success', ping: ping[0], tables, projSample });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
   }
@@ -151,22 +152,29 @@ app.get('/api/data', async (req, res) => {
         role:   e.role,
         desc:   e.description,
       })),
-      projects: proj.map(p => ({
-        id:           String(p.id),
-        title:        p.title,
-        meta:         p.meta         ?? '',
-        desc:         p.shortDesc,
-        detailedDesc: p.detailedDesc ?? '',
-        technologies: p.technologies ?? [],
-        repo:         p.repoUrl      ?? '',
-        link:         p.liveLink     ?? '',
-      })),
-      stack:   stack.map(s => ({ id: s.id, name: s.name, color: s.color })),
+      projects: proj.map(p => {
+        // MySQL may return the JSON column as a raw string depending on driver version
+        let techs = p.technologies ?? [];
+        if (typeof techs === 'string') {
+          try { techs = JSON.parse(techs); } catch { techs = []; }
+        }
+        return {
+          id:           String(p.id),
+          title:        p.title,
+          meta:         p.meta         ?? '',
+          desc:         p.shortDesc    ?? '',
+          detailedDesc: p.detailedDesc ?? '',
+          technologies: techs,
+          repo:         p.repoUrl      ?? '',
+          link:         p.liveLink     ?? '',
+        };
+      }),
+      stack:   stack.map(s => ({ id: s.id, name: s.name, color: s.color ?? '#ffffff' })),
       socials: soc.map(s => ({ id: s.id, name: s.name, url: s.url })),
     });
   } catch (err) {
     console.error('GET /api/data:', err);
-    res.status(500).json({ error: 'Failed to fetch portfolio data' });
+    res.status(500).json({ error: 'Failed to fetch portfolio data', detail: err.message });
   }
 });
 
