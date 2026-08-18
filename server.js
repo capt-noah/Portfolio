@@ -3,9 +3,6 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-import { drizzle } from 'drizzle-orm/mysql2';
-import { mysqlTable, int, varchar, text, longtext, json, timestamp } from 'drizzle-orm/mysql-core';
-import { asc, eq } from 'drizzle-orm';
 import mysql from 'mysql2/promise';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,46 +12,7 @@ const app = express();
 app.use(express.json());
 
 // ============================================================
-// 1. SCHEMA
-// ============================================================
-const experiences = mysqlTable('experiences', {
-  id:           int('id').autoincrement().primaryKey(),
-  period:       varchar('period', { length: 100 }).notNull(),
-  role:         varchar('role', { length: 255 }).notNull(),
-  description:  text('description').notNull(),
-  displayOrder: int('display_order').default(0),
-  createdAt:    timestamp('created_at').defaultNow(),
-});
-
-const projects = mysqlTable('projects', {
-  id:           int('id').autoincrement().primaryKey(),
-  title:        varchar('title', { length: 255 }).notNull(),
-  meta:         varchar('meta', { length: 255 }),
-  shortDesc:    text('short_desc').notNull(),
-  detailedDesc: longtext('detailed_desc'),
-  technologies: json('technologies').notNull(),
-  repoUrl:      varchar('repo_url', { length: 500 }),
-  liveLink:     varchar('live_link', { length: 500 }),
-  displayOrder: int('display_order').default(0),
-  createdAt:    timestamp('created_at').defaultNow(),
-});
-
-const techStack = mysqlTable('tech_stack', {
-  id:           int('id').autoincrement().primaryKey(),
-  name:         varchar('name', { length: 100 }).notNull(),
-  color:        varchar('color', { length: 50 }).default('#ffffff'),
-  displayOrder: int('display_order').default(0),
-});
-
-const socials = mysqlTable('socials', {
-  id:           int('id').autoincrement().primaryKey(),
-  name:         varchar('name', { length: 100 }).notNull(),
-  url:          varchar('url', { length: 500 }).notNull(),
-  displayOrder: int('display_order').default(0),
-});
-
-// ============================================================
-// 2. DB POOL + DRIZZLE
+// 1. DB POOL  (plain mysql2 — no Drizzle at runtime)
 // ============================================================
 const pool = mysql.createPool({
   host:     process.env.DB_HOST     || 'mysql-db02.remote',
@@ -67,10 +25,8 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-const db = drizzle(pool, { mode: 'default' });
-
 // ============================================================
-// 3. AUTH
+// 2. AUTH
 // ============================================================
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'capt-noah';
 const TOKEN_SECRET   = process.env.TOKEN_SECRET   || 'portfolio-secret-key-change-in-prod';
@@ -99,7 +55,7 @@ function auth(req, res, next) {
 }
 
 // ============================================================
-// 4. HEALTH / DIAGNOSTICS
+// 3. HEALTH / DIAGNOSTICS
 // ============================================================
 app.get('/hello', (req, res) => {
   res.json({
@@ -113,17 +69,17 @@ app.get('/hello', (req, res) => {
 
 app.get('/api/db-test', async (req, res) => {
   try {
-    const [ping]      = await pool.query('SELECT 1+1 AS result, NOW() AS server_time');
-    const [tables]    = await pool.query('SHOW TABLES');
-    const [projSample]= await pool.query('SELECT * FROM projects LIMIT 1');
-    res.json({ status: 'success', ping: ping[0], tables, projSample });
+    const [ping]   = await pool.query('SELECT 1+1 AS result, NOW() AS server_time');
+    const [tables] = await pool.query('SHOW TABLES');
+    const [sample] = await pool.query('SELECT * FROM projects LIMIT 1');
+    res.json({ status: 'success', ping: ping[0], tables, sample: sample[0] ?? null });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
   }
 });
 
 // ============================================================
-// 5. AUTH ENDPOINT
+// 4. AUTH ENDPOINT
 // ============================================================
 app.post('/api/login', (req, res) => {
   const { password } = req.body;
@@ -134,15 +90,15 @@ app.post('/api/login', (req, res) => {
 });
 
 // ============================================================
-// 6. AGGREGATE READ  (public — landing page + admin load)
+// 5. AGGREGATE READ  (public — landing page + admin load)
 // ============================================================
 app.get('/api/data', async (req, res) => {
   try {
-    const [exp, proj, stack, soc] = await Promise.all([
-      db.select().from(experiences).orderBy(asc(experiences.displayOrder)),
-      db.select().from(projects).orderBy(asc(projects.displayOrder)),
-      db.select().from(techStack).orderBy(asc(techStack.displayOrder)),
-      db.select().from(socials).orderBy(asc(socials.displayOrder)),
+    const [[exp], [proj], [stack], [soc]] = await Promise.all([
+      pool.query('SELECT id, period, role, description FROM experiences ORDER BY display_order ASC'),
+      pool.query('SELECT id, title, meta, short_desc, detailed_desc, technologies, repo_url, live_link FROM projects ORDER BY display_order ASC'),
+      pool.query('SELECT id, name, color FROM tech_stack ORDER BY display_order ASC'),
+      pool.query('SELECT id, name, url FROM socials ORDER BY display_order ASC'),
     ]);
 
     res.json({
@@ -153,7 +109,6 @@ app.get('/api/data', async (req, res) => {
         desc:   e.description,
       })),
       projects: proj.map(p => {
-        // MySQL may return the JSON column as a raw string depending on driver version
         let techs = p.technologies ?? [];
         if (typeof techs === 'string') {
           try { techs = JSON.parse(techs); } catch { techs = []; }
@@ -161,12 +116,12 @@ app.get('/api/data', async (req, res) => {
         return {
           id:           String(p.id),
           title:        p.title,
-          meta:         p.meta         ?? '',
-          desc:         p.shortDesc    ?? '',
-          detailedDesc: p.detailedDesc ?? '',
+          meta:         p.meta          ?? '',
+          desc:         p.short_desc    ?? '',
+          detailedDesc: p.detailed_desc ?? '',
           technologies: techs,
-          repo:         p.repoUrl      ?? '',
-          link:         p.liveLink     ?? '',
+          repo:         p.repo_url      ?? '',
+          link:         p.live_link     ?? '',
         };
       }),
       stack:   stack.map(s => ({ id: s.id, name: s.name, color: s.color ?? '#ffffff' })),
@@ -179,11 +134,12 @@ app.get('/api/data', async (req, res) => {
 });
 
 // ============================================================
-// 7. EXPERIENCES CRUD
+// 6. EXPERIENCES CRUD
 // ============================================================
 app.get('/api/experiences', auth, async (req, res) => {
   try {
-    res.json(await db.select().from(experiences).orderBy(asc(experiences.displayOrder)));
+    const [rows] = await pool.query('SELECT * FROM experiences ORDER BY display_order ASC');
+    res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -196,40 +152,43 @@ app.post('/api/experiences', auth, async (req, res) => {
       'INSERT INTO experiences (period, role, description, display_order) VALUES (?, ?, ?, ?)',
       [period, role, description, displayOrder]
     );
-    const [row] = await db.select().from(experiences).where(eq(experiences.id, result.insertId));
-    res.status(201).json(row);
+    const [rows] = await pool.query('SELECT * FROM experiences WHERE id = ?', [result.insertId]);
+    res.status(201).json(rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.put('/api/experiences/:id', auth, async (req, res) => {
   const id = Number(req.params.id);
   const { period, role, description, displayOrder } = req.body;
+  const fields = [];
+  const values = [];
+  if (period       !== undefined) { fields.push('period = ?');        values.push(period); }
+  if (role         !== undefined) { fields.push('role = ?');          values.push(role); }
+  if (description  !== undefined) { fields.push('description = ?');   values.push(description); }
+  if (displayOrder !== undefined) { fields.push('display_order = ?'); values.push(displayOrder); }
+  if (!fields.length) return res.status(400).json({ error: 'Nothing to update' });
   try {
-    await db.update(experiences).set({
-      ...(period       !== undefined && { period }),
-      ...(role         !== undefined && { role }),
-      ...(description  !== undefined && { description }),
-      ...(displayOrder !== undefined && { displayOrder }),
-    }).where(eq(experiences.id, id));
-    const [row] = await db.select().from(experiences).where(eq(experiences.id, id));
-    if (!row) return res.status(404).json({ error: 'Not found' });
-    res.json(row);
+    await pool.query(`UPDATE experiences SET ${fields.join(', ')} WHERE id = ?`, [...values, id]);
+    const [rows] = await pool.query('SELECT * FROM experiences WHERE id = ?', [id]);
+    if (!rows.length) return res.status(404).json({ error: 'Not found' });
+    res.json(rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/experiences/:id', auth, async (req, res) => {
   try {
-    await db.delete(experiences).where(eq(experiences.id, Number(req.params.id)));
+    await pool.query('DELETE FROM experiences WHERE id = ?', [Number(req.params.id)]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 8. PROJECTS CRUD
+// 7. PROJECTS CRUD
 // ============================================================
 app.get('/api/projects', auth, async (req, res) => {
   try {
-    res.json(await db.select().from(projects).orderBy(asc(projects.displayOrder)));
+    const [rows] = await pool.query('SELECT * FROM projects ORDER BY display_order ASC');
+    res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -242,44 +201,47 @@ app.post('/api/projects', auth, async (req, res) => {
       'INSERT INTO projects (title, meta, short_desc, detailed_desc, technologies, repo_url, live_link, display_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [title, meta ?? null, shortDesc, detailedDesc ?? null, JSON.stringify(technologies ?? []), repoUrl ?? null, liveLink ?? null, displayOrder]
     );
-    const [row] = await db.select().from(projects).where(eq(projects.id, result.insertId));
-    res.status(201).json(row);
+    const [rows] = await pool.query('SELECT * FROM projects WHERE id = ?', [result.insertId]);
+    res.status(201).json(rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.put('/api/projects/:id', auth, async (req, res) => {
   const id = Number(req.params.id);
   const { title, meta, shortDesc, detailedDesc, technologies, repoUrl, liveLink, displayOrder } = req.body;
+  const fields = [];
+  const values = [];
+  if (title        !== undefined) { fields.push('title = ?');         values.push(title); }
+  if (meta         !== undefined) { fields.push('meta = ?');          values.push(meta); }
+  if (shortDesc    !== undefined) { fields.push('short_desc = ?');    values.push(shortDesc); }
+  if (detailedDesc !== undefined) { fields.push('detailed_desc = ?'); values.push(detailedDesc); }
+  if (technologies !== undefined) { fields.push('technologies = ?');  values.push(JSON.stringify(technologies)); }
+  if (repoUrl      !== undefined) { fields.push('repo_url = ?');      values.push(repoUrl); }
+  if (liveLink     !== undefined) { fields.push('live_link = ?');     values.push(liveLink); }
+  if (displayOrder !== undefined) { fields.push('display_order = ?'); values.push(displayOrder); }
+  if (!fields.length) return res.status(400).json({ error: 'Nothing to update' });
   try {
-    await db.update(projects).set({
-      ...(title        !== undefined && { title }),
-      ...(meta         !== undefined && { meta }),
-      ...(shortDesc    !== undefined && { shortDesc }),
-      ...(detailedDesc !== undefined && { detailedDesc }),
-      ...(technologies !== undefined && { technologies }),
-      ...(repoUrl      !== undefined && { repoUrl }),
-      ...(liveLink     !== undefined && { liveLink }),
-      ...(displayOrder !== undefined && { displayOrder }),
-    }).where(eq(projects.id, id));
-    const [row] = await db.select().from(projects).where(eq(projects.id, id));
-    if (!row) return res.status(404).json({ error: 'Not found' });
-    res.json(row);
+    await pool.query(`UPDATE projects SET ${fields.join(', ')} WHERE id = ?`, [...values, id]);
+    const [rows] = await pool.query('SELECT * FROM projects WHERE id = ?', [id]);
+    if (!rows.length) return res.status(404).json({ error: 'Not found' });
+    res.json(rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/projects/:id', auth, async (req, res) => {
   try {
-    await db.delete(projects).where(eq(projects.id, Number(req.params.id)));
+    await pool.query('DELETE FROM projects WHERE id = ?', [Number(req.params.id)]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 9. TECH STACK CRUD
+// 8. TECH STACK CRUD
 // ============================================================
 app.get('/api/stack', auth, async (req, res) => {
   try {
-    res.json(await db.select().from(techStack).orderBy(asc(techStack.displayOrder)));
+    const [rows] = await pool.query('SELECT * FROM tech_stack ORDER BY display_order ASC');
+    res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -291,39 +253,42 @@ app.post('/api/stack', auth, async (req, res) => {
       'INSERT INTO tech_stack (name, color, display_order) VALUES (?, ?, ?)',
       [name, color, displayOrder]
     );
-    const [row] = await db.select().from(techStack).where(eq(techStack.id, result.insertId));
-    res.status(201).json(row);
+    const [rows] = await pool.query('SELECT * FROM tech_stack WHERE id = ?', [result.insertId]);
+    res.status(201).json(rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.put('/api/stack/:id', auth, async (req, res) => {
   const id = Number(req.params.id);
   const { name, color, displayOrder } = req.body;
+  const fields = [];
+  const values = [];
+  if (name         !== undefined) { fields.push('name = ?');          values.push(name); }
+  if (color        !== undefined) { fields.push('color = ?');         values.push(color); }
+  if (displayOrder !== undefined) { fields.push('display_order = ?'); values.push(displayOrder); }
+  if (!fields.length) return res.status(400).json({ error: 'Nothing to update' });
   try {
-    await db.update(techStack).set({
-      ...(name         !== undefined && { name }),
-      ...(color        !== undefined && { color }),
-      ...(displayOrder !== undefined && { displayOrder }),
-    }).where(eq(techStack.id, id));
-    const [row] = await db.select().from(techStack).where(eq(techStack.id, id));
-    if (!row) return res.status(404).json({ error: 'Not found' });
-    res.json(row);
+    await pool.query(`UPDATE tech_stack SET ${fields.join(', ')} WHERE id = ?`, [...values, id]);
+    const [rows] = await pool.query('SELECT * FROM tech_stack WHERE id = ?', [id]);
+    if (!rows.length) return res.status(404).json({ error: 'Not found' });
+    res.json(rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/stack/:id', auth, async (req, res) => {
   try {
-    await db.delete(techStack).where(eq(techStack.id, Number(req.params.id)));
+    await pool.query('DELETE FROM tech_stack WHERE id = ?', [Number(req.params.id)]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 10. SOCIALS CRUD
+// 9. SOCIALS CRUD
 // ============================================================
 app.get('/api/socials', auth, async (req, res) => {
   try {
-    res.json(await db.select().from(socials).orderBy(asc(socials.displayOrder)));
+    const [rows] = await pool.query('SELECT * FROM socials ORDER BY display_order ASC');
+    res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -335,35 +300,37 @@ app.post('/api/socials', auth, async (req, res) => {
       'INSERT INTO socials (name, url, display_order) VALUES (?, ?, ?)',
       [name, url, displayOrder]
     );
-    const [row] = await db.select().from(socials).where(eq(socials.id, result.insertId));
-    res.status(201).json(row);
+    const [rows] = await pool.query('SELECT * FROM socials WHERE id = ?', [result.insertId]);
+    res.status(201).json(rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.put('/api/socials/:id', auth, async (req, res) => {
   const id = Number(req.params.id);
   const { name, url, displayOrder } = req.body;
+  const fields = [];
+  const values = [];
+  if (name         !== undefined) { fields.push('name = ?');          values.push(name); }
+  if (url          !== undefined) { fields.push('url = ?');           values.push(url); }
+  if (displayOrder !== undefined) { fields.push('display_order = ?'); values.push(displayOrder); }
+  if (!fields.length) return res.status(400).json({ error: 'Nothing to update' });
   try {
-    await db.update(socials).set({
-      ...(name         !== undefined && { name }),
-      ...(url          !== undefined && { url }),
-      ...(displayOrder !== undefined && { displayOrder }),
-    }).where(eq(socials.id, id));
-    const [row] = await db.select().from(socials).where(eq(socials.id, id));
-    if (!row) return res.status(404).json({ error: 'Not found' });
-    res.json(row);
+    await pool.query(`UPDATE socials SET ${fields.join(', ')} WHERE id = ?`, [...values, id]);
+    const [rows] = await pool.query('SELECT * FROM socials WHERE id = ?', [id]);
+    if (!rows.length) return res.status(404).json({ error: 'Not found' });
+    res.json(rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/socials/:id', auth, async (req, res) => {
   try {
-    await db.delete(socials).where(eq(socials.id, Number(req.params.id)));
+    await pool.query('DELETE FROM socials WHERE id = ?', [Number(req.params.id)]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ============================================================
-// 11. STATIC + SPA FALLBACK
+// 10. STATIC + SPA FALLBACK
 // ============================================================
 const distPath = path.join(__dirname, 'dist');
 if (fs.existsSync(distPath)) {
@@ -380,7 +347,7 @@ app.get('/{*splat}', (req, res) => {
 });
 
 // ============================================================
-// 12. START
+// 11. START
 // ============================================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
