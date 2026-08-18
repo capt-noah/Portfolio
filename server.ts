@@ -39,6 +39,10 @@ async function readData() {
   return JSON.parse(data);
 }
 
+app.get('/hello', (req, res) => {
+  res.send("Hello From Capt Noah!!")
+})
+
 // API routes first
 app.get("/api/data", async (req, res) => {
   try {

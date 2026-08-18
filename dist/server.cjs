@@ -63,6 +63,9 @@ async function readData() {
   const data = await import_promises.default.readFile(DEV_DATA_PATH, "utf-8");
   return JSON.parse(data);
 }
+app.get("/hello", (req, res) => {
+  res.send("Hello From Capt Noah!!");
+});
 app.get("/api/data", async (req, res) => {
   try {
     const data = await readData();
