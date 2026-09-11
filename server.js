@@ -61,42 +61,48 @@ pool.query("SHOW COLUMNS FROM news LIKE 'image_paths'")
 // ============================================================
 // 2. PATH RESOLUTION (PORTFOLIO & SELIHOM)
 // ============================================================
-function findSelihomDir() {
+function findSelihomDist() {
   const candidates = [
+    // Double nested candidates (e.g. Portfolio/selihom/selihom/dist or Portfolio/selihom/selihom)
+    path.join(__dirname, 'selihom', 'selihom', 'dist'),
+    path.join(__dirname, 'selihom', 'selihom'),
+    path.join(__dirname, 'selihom-charity', 'selihom-charity', 'dist'),
+    path.join(__dirname, 'selihom', 'dist'),
+    path.join(__dirname, 'selihom-charity', 'dist'),
     path.join(__dirname, 'selihom'),
     path.join(__dirname, 'selihom-charity'),
+    path.join(__dirname, 'dist', 'selihom'),
+    path.join(__dirname, '..', 'selihom-charity', 'dist'),
+    path.join(__dirname, '..', 'selihom', 'dist'),
     path.join(__dirname, '..', 'selihom-charity'),
     path.join(__dirname, '..', 'selihom'),
   ];
+
+  // 1. Highest priority: directory containing BOTH index.html and assets
   for (const c of candidates) {
-    if (fs.existsSync(c)) return c;
+    if (fs.existsSync(path.join(c, 'index.html')) && fs.existsSync(path.join(c, 'assets'))) {
+      return c;
+    }
   }
-  return null;
+
+  // 2. Second priority: directory containing index.html
+  for (const c of candidates) {
+    if (fs.existsSync(path.join(c, 'index.html'))) {
+      return c;
+    }
+  }
+
+  return path.join(__dirname, 'selihom', 'dist');
 }
 
-function findSelihomDist() {
-  const sDir = findSelihomDir();
-  const candidates = [
-    sDir ? path.join(sDir, 'dist') : null,
-    sDir, // in case selihom folder itself contains index.html
-    path.join(__dirname, 'dist', 'selihom'),
-    path.join(__dirname, 'selihom', 'dist'),
-    path.join(__dirname, 'selihom'),
-    path.join(__dirname, 'selihom-charity', 'dist'),
-    path.join(__dirname, 'selihom-charity'),
-    path.join(__dirname, '..', 'selihom-charity', 'dist'),
-    path.join(__dirname, '..', 'selihom', 'dist'),
-  ].filter(Boolean);
-
-  // Prefer folder that has both index.html and assets
-  for (const c of candidates) {
-    if (fs.existsSync(path.join(c, 'index.html')) && fs.existsSync(path.join(c, 'assets'))) return c;
+function findSelihomDir() {
+  const sDist = findSelihomDist();
+  if (sDist && fs.existsSync(sDist)) {
+    // If sDist ends with 'dist', the parent is sDir
+    if (path.basename(sDist) === 'dist') return path.dirname(sDist);
+    return sDist;
   }
-  // Otherwise any folder with index.html
-  for (const c of candidates) {
-    if (fs.existsSync(path.join(c, 'index.html'))) return c;
-  }
-  return sDir ? path.join(sDir, 'dist') : null;
+  return path.join(__dirname, 'selihom');
 }
 
 // Uploads directory storage
@@ -1413,9 +1419,10 @@ app.use('/api', selihomRouter);
 const portfolioDist = path.join(__dirname, 'dist');
 const selihomDist = findSelihomDist();
 
-// 1) Ensure /selihom has trailing slash for correct relative path resolution
-app.get('/selihom', (req, res) => {
-  res.redirect(301, '/selihom/');
+// 1) Redirect any duplicate /selihom/selihom paths to /selihom
+app.get(/^\/selihom\/selihom(\/.*)?$/, (req, res) => {
+  const cleanPath = req.url.replace(/^\/selihom\/selihom/, '/selihom');
+  res.redirect(301, cleanPath || '/selihom');
 });
 
 // 2) Serve Portfolio static assets first
@@ -1437,7 +1444,7 @@ if (selihomDist && fs.existsSync(selihomDist)) {
   console.log('! Notice: Selihom dist directory not found. Ensure selihom/dist is built.');
 }
 
-// 4) Selihom SPA Fallback (matches /selihom/*)
+// 4) Selihom direct & SPA Fallback (matches /selihom and /selihom/*)
 app.get(/^\/selihom(\/.*)?$/, (req, res) => {
   const activeSelihomDist = findSelihomDist();
   if (activeSelihomDist) {
