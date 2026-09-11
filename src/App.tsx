@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Cursor, { CursorType } from './components/Cursor';
-import Background from './components/Background';
 import Hero from './components/Hero';
 import Experience from './components/Experience';
 import Work from './components/Work';
@@ -66,7 +65,7 @@ function LandingPage({
   }, [containerRef.current]);
 
   return (
-    <div className="snap-container" ref={containerRef}>
+    <div className="snap-container relative z-10 bg-transparent" ref={containerRef}>
       <Navigation isInFooter={isInFooter} activeSection={activeSection} />
       <Hero />
       <Experience data={data?.experience || []} />
@@ -114,9 +113,9 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <main className="relative h-screen overflow-hidden">
+      <main className="relative h-screen overflow-hidden bg-bg">
         <Cursor type={cursorType} />
-        <Background />
+        <div className="grain-overlay" />
         
         <Routes>
           <Route path="/" element={

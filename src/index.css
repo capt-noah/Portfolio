@@ -1,20 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&family=Oxanium:wght@400;500;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-display: 'Unbounded', sans-serif;
-  --font-body: 'Space Grotesk', sans-serif;
-  --font-mono: 'Share Tech Mono', monospace;
+  --font-display: 'Oxanium', 'Chakra Petch', sans-serif;
+  --font-heading: 'Chakra Petch', 'Oxanium', sans-serif;
+  --font-body: 'Rajdhani', 'Chakra Petch', sans-serif;
+  --font-mono: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  --font-pixel: 'Chakra Petch', monospace;
 
-  --color-bg: #EDEFF2;
-  --color-muted: #5A6270;
-  --color-accent: #00A375;
-  --color-accent-red: #DC2626;
-  --color-fg: #0B0D11;
-  --color-border-alpha: rgba(11, 13, 17, 0.08);
-  --color-glass: rgba(255, 255, 255, 0.45);
+  --color-bg: #EAECEF;
+  --color-fg: #0B0D10;
+  --color-surface: #FFFFFF;
+  --color-plate: #F4F5F8;
+  --color-muted: #525866;
+  --color-accent: #FF5500;
+  --color-accent-hover: #FF6A1A;
+  --color-accent-amber: #FF9500;
+  --color-accent-blue: #2563EB;
+  --color-accent-red: #E11D48;
+  --color-border-alpha: rgba(11, 13, 16, 0.09);
+  --color-trace: rgba(255, 85, 0, 0.35);
 
-  --radius-custom: 0px; /* Brutalist sharp corners */
+  --radius-custom: 0px;
 }
 
 @layer base {
@@ -30,7 +37,7 @@
     @apply bg-bg text-fg font-body antialiased selection:bg-accent selection:text-white;
   }
 
-  /* Only hide mouse cursor on desktop pointer devices */
+  /* Hide system mouse cursor on fine pointers for custom tactical cursor */
   @media (pointer: fine) {
     body, * {
       cursor: none !important;
@@ -56,59 +63,179 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Technical Dither & Scanlines overlays */
+/* Technical Drafting & PCB Tracing overlays */
 .tech-grid-bg {
   background-image: 
-    linear-gradient(to right, rgba(11, 13, 17, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(11, 13, 17, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(11, 13, 16, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(11, 13, 16, 0.08) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 .tech-dot-bg {
-  background-image: radial-gradient(rgba(11, 13, 17, 0.08) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-image: radial-gradient(rgba(11, 13, 16, 0.16) 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
 }
 
-/* Scanlines animation */
-.scanlines {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.03) 50%
-  ), linear-gradient(
-    90deg,
-    rgba(255, 0, 0, 0.01),
-    rgba(0, 255, 0, 0.005),
-    rgba(0, 0, 255, 0.01)
+/* Diagonal Hazard/Hardware Stripes */
+.stripe-pattern {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(11, 13, 16, 0.06),
+    rgba(11, 13, 16, 0.06) 4px,
+    transparent 4px,
+    transparent 8px
   );
-  background-size: 100% 4px, 6px 100%;
-  z-index: 100000;
 }
 
-/* Grain Texture Overlay */
+.stripe-pattern-orange {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 85, 0, 0.2),
+    rgba(255, 85, 0, 0.2) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+.zebra-box-dark {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #0B0D10,
+    #0B0D10 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
+.zebra-box-accent {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #FF5500,
+    #FF5500 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
+.hazard-hatch-red {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #E11D48,
+    #E11D48 3.5px,
+    transparent 3.5px,
+    transparent 7.5px
+  );
+}
+
+/* 45-Degree Chamfer Cuts */
+.chamfer-tr {
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+}
+
+.chamfer-tl {
+  clip-path: polygon(16px 0, 100% 0, 100% 100%, 0 100%, 0 16px);
+}
+
+.chamfer-br {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+}
+
+.chamfer-bl {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+.chamfer-both-top {
+  clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%, 0 16px);
+}
+
+.chamfer-octagonal {
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
+}
+
+/* Grain Overlay */
 .grain-overlay::before {
   content: "";
   @apply fixed inset-0 pointer-events-none z-[100000];
   background-image: url("https://www.transparenttextures.com/patterns/p6.png");
-  opacity: 0.07;
+  opacity: 0.04;
 }
 
-/* Custom crisp scrollbar for technical interface */
+/* Custom Tactical Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #EDEFF2;
-  border-left: 1px solid rgba(11, 13, 17, 0.08);
+  background: #EAECEF;
+  border-left: 1px solid rgba(11, 13, 16, 0.08);
 }
 ::-webkit-scrollbar-thumb {
-  background: #0B0D11;
+  background: #0B0D10;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00A375;
+  background: #FF5500;
+}
+
+/* Custom Cyberpunk HUD Plate Polygon Masks */
+.hud-plate-a {
+  clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%, 0 18px);
+}
+
+.hud-plate-b {
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+}
+
+.hud-plate-c {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+}
+
+.hud-plate-tab {
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+
+.hud-pill {
+  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+}
+
+/* Diagonal Hazard/Zebra Hatch Styles */
+.hazard-hatch-dark {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #0B0D10,
+    #0B0D10 3px,
+    transparent 3px,
+    transparent 7px
+  );
+}
+
+.hazard-hatch-accent {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #FF5500,
+    #FF5500 3px,
+    transparent 3px,
+    transparent 7px
+  );
+}
+
+.hazard-hatch-white {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.9) 3px,
+    transparent 3px,
+    transparent 7px
+  );
+}
+
+.hazard-hatch-subtle {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(11, 13, 16, 0.12),
+    rgba(11, 13, 16, 0.12) 3px,
+    transparent 3px,
+    transparent 7px
+  );
 }
 
 @keyframes blink {
@@ -120,7 +247,9 @@
   animation: blink 1s infinite;
 }
 
-.glow-text-emerald {
-  text-shadow: 0 0 10px rgba(0, 163, 117, 0.2);
+.glow-orange {
+  box-shadow: 0 0 20px rgba(255, 85, 0, 0.35);
 }
+
+
 

@@ -1,3 +1,5 @@
+import defaultData from '../../data.json';
+
 // ─────────────────────────────────────────────────────────────
 // Types — match the DB schema and the shape the UI uses
 // ─────────────────────────────────────────────────────────────
@@ -65,7 +67,12 @@ async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
 // ─────────────────────────────────────────────────────────────
 
 export async function getPortfolioData(): Promise<PortfolioData> {
-  return apiFetch<PortfolioData>('/api/data');
+  try {
+    return await apiFetch<PortfolioData>('/api/data');
+  } catch (err) {
+    console.warn('API fetch failed, falling back to local dataset:', err);
+    return defaultData as unknown as PortfolioData;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
