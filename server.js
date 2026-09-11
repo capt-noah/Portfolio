@@ -78,11 +78,21 @@ function findSelihomDist() {
   const sDir = findSelihomDir();
   const candidates = [
     sDir ? path.join(sDir, 'dist') : null,
+    sDir, // in case selihom folder itself contains index.html
     path.join(__dirname, 'dist', 'selihom'),
     path.join(__dirname, 'selihom', 'dist'),
+    path.join(__dirname, 'selihom'),
     path.join(__dirname, 'selihom-charity', 'dist'),
+    path.join(__dirname, 'selihom-charity'),
     path.join(__dirname, '..', 'selihom-charity', 'dist'),
+    path.join(__dirname, '..', 'selihom', 'dist'),
   ].filter(Boolean);
+
+  // Prefer folder that has both index.html and assets
+  for (const c of candidates) {
+    if (fs.existsSync(path.join(c, 'index.html')) && fs.existsSync(path.join(c, 'assets'))) return c;
+  }
+  // Otherwise any folder with index.html
   for (const c of candidates) {
     if (fs.existsSync(path.join(c, 'index.html'))) return c;
   }
@@ -136,13 +146,23 @@ function auth(req, res, next) {
 // 4. PORTFOLIO API ENDPOINTS
 // ============================================================
 app.get('/hello', (req, res) => {
+  const sDist = findSelihomDist();
+  const sDir  = findSelihomDir();
   res.json({
     status: 'ok',
     message: 'Unified Express server running (Portfolio + Selihom)',
     timestamp: new Date().toISOString(),
     nodeVersion: process.version,
     port: process.env.PORT || 3000,
-    selihomMounted: !!findSelihomDist(),
+    selihomMounted: !!(sDist && fs.existsSync(path.join(sDist, 'index.html'))),
+    paths: {
+      portfolioDist: portfolioDist,
+      portfolioDistExists: fs.existsSync(portfolioDist),
+      selihomDir: sDir,
+      selihomDist: sDist,
+      selihomDistExists: sDist ? fs.existsSync(sDist) : false,
+      selihomIndexExists: sDist ? fs.existsSync(path.join(sDist, 'index.html')) : false,
+    }
   });
 });
 
@@ -1393,20 +1413,31 @@ app.use('/api', selihomRouter);
 const portfolioDist = path.join(__dirname, 'dist');
 const selihomDist = findSelihomDist();
 
-// A) Serve Selihom static assets
-if (selihomDist && fs.existsSync(selihomDist)) {
-  console.log(`✓ Selihom dist mounted from: ${selihomDist}`);
-  app.use('/selihom', express.static(selihomDist));
-} else {
-  console.log('! Notice: Selihom dist directory not found. Ensure selihom/dist is built.');
-}
+// 1) Ensure /selihom has trailing slash for correct relative path resolution
+app.get('/selihom', (req, res) => {
+  res.redirect(301, '/selihom/');
+});
 
-// B) Serve Portfolio static assets
+// 2) Serve Portfolio static assets first
 if (fs.existsSync(portfolioDist)) {
   app.use(express.static(portfolioDist));
 }
 
-// C) Selihom SPA Fallback (matches /selihom and /selihom/*)
+// 3) Serve Selihom static assets at /selihom and fallback for root /assets
+if (selihomDist && fs.existsSync(selihomDist)) {
+  console.log(`✓ Selihom dist mounted from: ${selihomDist}`);
+  app.use('/selihom', express.static(selihomDist));
+
+  // Fallback: If Selihom was built with base '/' and requests /assets/*, serve from Selihom dist
+  const selihomAssets = path.join(selihomDist, 'assets');
+  if (fs.existsSync(selihomAssets)) {
+    app.use('/assets', express.static(selihomAssets));
+  }
+} else {
+  console.log('! Notice: Selihom dist directory not found. Ensure selihom/dist is built.');
+}
+
+// 4) Selihom SPA Fallback (matches /selihom/*)
 app.get(/^\/selihom(\/.*)?$/, (req, res) => {
   const activeSelihomDist = findSelihomDist();
   if (activeSelihomDist) {
@@ -1418,7 +1449,7 @@ app.get(/^\/selihom(\/.*)?$/, (req, res) => {
   res.status(404).send('Selihom Charity frontend not found. Ensure selihom/dist is built.');
 });
 
-// D) Portfolio SPA Fallback (all other routes)
+// 5) Portfolio SPA Fallback (all other routes)
 app.get('*', (req, res) => {
   const indexPath = path.join(portfolioDist, 'index.html');
   if (fs.existsSync(indexPath)) {
