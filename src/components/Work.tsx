@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { ArrowUpRight, Github, ExternalLink, Terminal, ShieldCheck, Sparkles, Activity } from 'lucide-react';
 import { Project } from '../services/dataService';
+import { cyberAudio } from '../utils/cyberAudio';
 
 interface WorkProps {
   data: Project[];
@@ -170,8 +171,21 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, margin: "-30px" }}
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-                  onClick={() => project.id && onSelectProject(project.id)}
-                  className="xl:col-span-2 bg-accent text-white p-6 sm:p-10 flex flex-col justify-between min-h-[460px] relative shadow-[0_20px_50px_rgba(255,85,0,0.3)] group cursor-none hover:-translate-y-1.5 transition-all duration-300 hud-plate-b"
+                  onClick={() => {
+                    cyberAudio.playMechanicalClick();
+                    if (project.id) onSelectProject(project.id);
+                  }}
+                  onMouseEnter={() => cyberAudio.playHoverChirp()}
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    e.currentTarget.style.transform = `perspective(1000px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg) translateY(-4px)`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+                  }}
+                  className="xl:col-span-2 bg-accent text-white p-6 sm:p-10 flex flex-col justify-between min-h-[460px] relative shadow-[0_20px_50px_rgba(255,85,0,0.3)] group cursor-none transition-transform duration-200 hud-plate-b"
                 >
                   {/* Top HUD Callout Strip (Icon removed next to FLAGSHIP_SPECIMEN) */}
                   <div className="flex items-center justify-between border-b border-white/25 pb-4 mb-6">
@@ -259,8 +273,21 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, margin: "-30px" }}
                 transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: 0.15 + i * 0.1 }}
-                onClick={() => project.id && onSelectProject(project.id)}
-                className="bg-surface/90 border border-fg/20 p-6 sm:p-8 flex flex-col justify-between min-h-[460px] relative transition-all duration-300 hover:border-accent hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 group cursor-none hud-plate-a"
+                onClick={() => {
+                  cyberAudio.playMechanicalClick();
+                  if (project.id) onSelectProject(project.id);
+                }}
+                onMouseEnter={() => cyberAudio.playHoverChirp()}
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = (e.clientX - rect.left) / rect.width - 0.5;
+                  const y = (e.clientY - rect.top) / rect.height - 0.5;
+                  e.currentTarget.style.transform = `perspective(1000px) rotateX(${-y * 7}deg) rotateY(${x * 7}deg) translateY(-3px)`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+                }}
+                className="bg-surface/90 border border-fg/20 p-6 sm:p-8 flex flex-col justify-between min-h-[460px] relative transition-transform duration-200 hover:border-accent hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] group cursor-none hud-plate-a"
               >
                 {/* Top Corner Badge & Callout Pin */}
                 <div className="flex items-center justify-between border-b border-fg/10 pb-4 mb-6">

@@ -18,6 +18,7 @@ import {
   Sparkles,
   Triangle
 } from "lucide-react";
+import { cyberAudio } from "../utils/cyberAudio";
 
 const SOCIAL_ICONS_MAP: Record<string, React.ReactNode> = {
   GitHub: <Github size={16} />,
@@ -46,8 +47,10 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
     e.preventDefault();
     if (!formData.email || !formData.message) return;
     
+    cyberAudio.playMechanicalClick();
     setIsTransmitting(true);
     setTimeout(() => {
+      cyberAudio.playUiClick();
       setIsTransmitting(false);
       setIsSent(true);
       setFormData({ email: "", message: "" });
@@ -203,6 +206,8 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
                     href={social.url}
                     target="_blank"
                     rel="noreferrer"
+                    onMouseEnter={() => cyberAudio.playHoverChirp()}
+                    onClick={() => cyberAudio.playUiClick()}
                     initial={{ opacity: 0, scale: 0.92 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}

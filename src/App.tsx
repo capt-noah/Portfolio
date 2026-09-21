@@ -1,5 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
 import Cursor, { CursorType } from './components/Cursor';
 import Hero from './components/Hero';
 import Experience from './components/Experience';
@@ -8,11 +12,16 @@ import Stack from './components/Stack';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 import Modal from './components/Modal';
+import SciFiGateLoader from './components/SciFiGateLoader';
+import CyberScene3D from './components/CyberScene3D';
+import TacticalHudOverlay from './components/TacticalHudOverlay';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import { getPortfolioData, PortfolioData } from './services/dataService';
 
-// Add a simple ProtectedRoute component
+gsap.registerPlugin(ScrollTrigger);
+
+// ProtectedRoute component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('admin_token');
   if (!token) {
@@ -27,45 +36,51 @@ function LandingPage({
   setIsInFooter, 
   setSelectedProjectId, 
   selectedProjectId, 
-  isInFooter 
+  isInFooter,
+  isWireframe,
+  setIsWireframe
 }: { 
   data: PortfolioData | null,
   setCursorType: (type: CursorType) => void,
   setIsInFooter: (inFooter: boolean) => void,
   setSelectedProjectId: (id: string | null) => void,
   selectedProjectId: string | null,
-  isInFooter: boolean
+  isInFooter: boolean,
+  isWireframe: boolean,
+  setIsWireframe: React.Dispatch<React.SetStateAction<boolean>>
 }) {
   const [activeSection, setActiveSection] = useState('hero');
   const sections = ['hero', 'experience', 'work', 'stack', 'footer'];
-  const containerRef = useRef<HTMLDivElement>(null);
 
+  // Track active section smoothly during Lenis inertia scrolling
   useEffect(() => {
-    const observerOptions = {
-      root: containerRef.current,
-      rootMargin: '0px',
-      threshold: 0.5,
-    };
-
-    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + window.innerHeight * 0.4;
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(sections[i]);
+          break;
         }
-      });
+      }
     };
-
-    const observer = new IntersectionObserver(handleIntersect, observerOptions);
-    sections.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [containerRef.current]);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <div className="snap-container relative z-10 bg-transparent" ref={containerRef}>
+    <div className="relative z-10 bg-transparent min-h-screen">
+      {/* 3D WebGL Persistent Cyber-Artifact Canvas */}
+      <CyberScene3D isWireframe={isWireframe} />
+
+      {/* Fixed Screen-Space Tactical HUD Layer */}
+      <TacticalHudOverlay 
+        activeSection={activeSection}
+        isWireframe={isWireframe}
+        onToggleWireframe={() => setIsWireframe(prev => !prev)}
+      />
+
       <Navigation isInFooter={isInFooter} activeSection={activeSection} />
       <Hero />
       <Experience data={data?.experience || []} />
@@ -96,6 +111,32 @@ export default function App() {
   const [isInFooter, setIsInFooter] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [data, setData] = useState<PortfolioData | null>(null);
+  const [isWireframe, setIsWireframe] = useState(false);
+  const [isGateOpen, setIsGateOpen] = useState(false);
+
+  // Initialize Lenis Smooth Inertia Scrolling Engine & GSAP Ticker Synchronization
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.25,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+      touchMultiplier: 1.5,
+    });
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    const updateTicker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(updateTicker);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      gsap.ticker.remove(updateTicker);
+      lenis.destroy();
+    };
+  }, []);
 
   useEffect(() => {
     getPortfolioData().then(setData).catch(console.error);
@@ -113,9 +154,14 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <main className="relative h-screen overflow-hidden bg-bg">
+      {/* Sci-Fi Hydraulic Blast Gate & Reactor Loader */}
+      {!isGateOpen && (
+        <SciFiGateLoader onComplete={() => setIsGateOpen(true)} />
+      )}
+
+      <main className="relative min-h-screen bg-bg overflow-x-hidden">
         <Cursor type={cursorType} />
-        <div className="grain-overlay" />
+        <div className="grain-overlay pointer-events-none" />
         
         <Routes>
           <Route path="/" element={
@@ -126,17 +172,19 @@ export default function App() {
               setSelectedProjectId={setSelectedProjectId}
               selectedProjectId={selectedProjectId}
               isInFooter={isInFooter}
+              isWireframe={isWireframe}
+              setIsWireframe={setIsWireframe}
             />
           } />
           <Route path="/admin" element={
-            <div className="h-screen overflow-y-auto">
+            <div className="min-h-screen overflow-y-auto">
               <ProtectedRoute>
                 <Admin />
               </ProtectedRoute>
             </div>
           } />
           <Route path="/login" element={
-            <div className="h-screen overflow-y-auto">
+            <div className="min-h-screen overflow-y-auto">
               <Login />
             </div>
           } />

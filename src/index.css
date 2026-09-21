@@ -28,8 +28,7 @@
   html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
     background-color: var(--color-bg);
   }
 
@@ -46,21 +45,29 @@
 
   section {
     @apply relative w-full overflow-hidden;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
     min-height: 100vh;
   }
 }
 
-/* Scroll Snap Container */
-.snap-container {
-  height: 100vh;
-  width: 100vw;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: auto;
-  -webkit-overflow-scrolling: touch;
+/* Lenis Official Momentum Smooth Scroll Rules */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 /* Technical Drafting & PCB Tracing overlays */

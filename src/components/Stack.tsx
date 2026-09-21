@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { StackItem } from '../services/dataService';
 import { Terminal, Cpu, Activity, Zap, CheckCircle2, Radio } from 'lucide-react';
 import { TECH_ICONS, getIconUrl } from '../constants/techIcons';
+import { cyberAudio } from '../utils/cyberAudio';
 
 export default function Stack({ data }: { data: StackItem[] }) {
   const [selectedTech, setSelectedTech] = useState<string | null>(data[0]?.name || "React");
@@ -14,6 +15,7 @@ export default function Stack({ data }: { data: StackItem[] }) {
 
   const handleTechHover = (techName: string) => {
     if (selectedTech === techName) return;
+    cyberAudio.playHoverChirp();
     setSelectedTech(techName);
     
     const randomHash = Math.random().toString(16).substring(2, 10).toUpperCase();

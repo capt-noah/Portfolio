@@ -20,6 +20,7 @@ export interface Project {
   technologies?: string[];
   repo:          string;         // DB column: repo_url
   link:          string;         // DB column: live_link
+  image?:        string;
 }
 
 export interface StackItem {

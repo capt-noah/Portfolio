@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowUpRight, Compass, Terminal, ShieldCheck, Activity } from 'lucide-react';
+import { cyberAudio } from '../utils/cyberAudio';
 
 export default function Hero() {
   const [scrambledTitle, setScrambledTitle] = useState("N           ");
@@ -290,7 +291,11 @@ export default function Hero() {
             className="flex flex-wrap items-center gap-4 sm:gap-6 mt-8 sm:mt-10 w-full"
           >
             <button
-              onClick={scrollToWork}
+              onClick={() => {
+                cyberAudio.playMechanicalClick();
+                scrollToWork();
+              }}
+              onMouseEnter={() => cyberAudio.playHoverChirp()}
               className="px-8 sm:px-10 py-4 sm:py-5 bg-accent hover:bg-accent-hover text-white font-mono text-sm sm:text-base font-bold uppercase tracking-widest flex items-center gap-2.5 transition-all duration-300 shadow-[0_6px_25px_rgba(255,85,0,0.35)] hover:-translate-y-0.5 cursor-none relative overflow-hidden group chamfer-tr"
             >
               <span className="relative z-10">EXPLORE PROJECTS</span>
@@ -301,8 +306,10 @@ export default function Hero() {
               href="#footer"
               onClick={(e) => {
                 e.preventDefault();
+                cyberAudio.playMechanicalClick();
                 document.getElementById('footer')?.scrollIntoView({ behavior: 'smooth' });
               }}
+              onMouseEnter={() => cyberAudio.playHoverChirp()}
               className="px-8 sm:px-9 py-4 sm:py-5 bg-surface/80 hover:bg-surface text-fg border border-fg/20 font-mono text-sm sm:text-base font-bold uppercase tracking-widest flex items-center gap-2.5 transition-all duration-300 hover:border-accent hover:text-accent cursor-none chamfer-tr shadow-xs"
             >
               <Compass size={18} />

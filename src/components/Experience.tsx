@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { Calendar, CheckCircle2, ChevronRight, Hash, Terminal, Clock, Activity, ShieldCheck } from 'lucide-react';
 import { Experience as ExperienceType } from '../services/dataService';
+import { cyberAudio } from '../utils/cyberAudio';
 
 export default function Experience({ data }: { data: ExperienceType[] }) {
   return (
@@ -193,7 +194,10 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                   <div className="hidden sm:block absolute left-[35px] top-5 w-6 h-[2px] bg-fg/20 group-hover:bg-accent transition-colors" />
 
                   {/* Milestone Card Plate */}
-                  <div className="flex-1 bg-surface/90 border border-fg/20 hover:border-accent transition-all duration-300 p-6 sm:p-7 hud-plate-a hover:shadow-[0_16px_36px_rgba(255,85,0,0.12)] relative overflow-hidden">
+                  <div 
+                    onMouseEnter={() => cyberAudio.playHoverChirp()}
+                    className="flex-1 bg-surface/90 border border-fg/20 hover:border-accent transition-all duration-300 p-6 sm:p-7 hud-plate-a hover:shadow-[0_16px_36px_rgba(255,85,0,0.12)] relative overflow-hidden"
+                  >
                     
                     {/* Top Callout Header Strip */}
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-fg/10 pb-3.5 mb-4">
