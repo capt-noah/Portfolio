@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { MouseEvent, useState, useEffect } from 'react';
+import { MouseEvent, useState, useEffect, useRef } from 'react';
 import { 
   X, Github, ArrowUpRight, Cpu, ExternalLink, Globe, 
-  RotateCw, Eye, ShieldCheck, Sparkles 
+  RotateCw, Eye, ShieldCheck, Sparkles, Monitor 
 } from 'lucide-react';
 import { Project } from '../services/dataService';
 
@@ -12,18 +12,64 @@ interface ModalProps {
   projects: Project[];
 }
 
+const RATIO_CONFIGS = {
+  '16:10': {
+    className: 'aspect-[16/10]',
+    virtualWidth: 1280,
+    virtualHeight: 800,
+    label: '16:10',
+    thumCrop: 'width/1280/crop/800',
+  },
+  '16:9': {
+    className: 'aspect-video',
+    virtualWidth: 1280,
+    virtualHeight: 720,
+    label: '16:9',
+    thumCrop: 'width/1280/crop/720',
+  },
+  '4:3': {
+    className: 'aspect-[4/3]',
+    virtualWidth: 1024,
+    virtualHeight: 768,
+    label: '4:3',
+    thumCrop: 'width/1024/crop/768',
+  },
+} as const;
+
+type RatioKey = keyof typeof RATIO_CONFIGS;
+
 export default function Modal({ projectId, onClose, projects }: ModalProps) {
   const data = projectId ? projects.find(p => p.id === projectId) : null;
   const [viewMode, setViewMode] = useState<'iframe' | 'snapshot'>('iframe');
+  const [activeRatio, setActiveRatio] = useState<RatioKey>('16:10');
   const [isLoading, setIsLoading] = useState(true);
   const [iframeFailed, setIframeFailed] = useState(false);
   const [keyTrigger, setKeyTrigger] = useState(0);
+  const [isInteracting, setIsInteracting] = useState(false);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  // Monitor preview container dimensions to dynamically scale desktop iframe
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.clientWidth);
+      }
+    };
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [projectId, activeRatio]);
 
   // Reset loading states when project changes
   useEffect(() => {
     setIsLoading(true);
     setIframeFailed(false);
-  }, [projectId, keyTrigger]);
+    setIsInteracting(false);
+  }, [projectId, keyTrigger, activeRatio]);
 
   if (!projectId || !data) return null;
 
@@ -35,11 +81,12 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
 
   const hasLiveLink = Boolean(data.link && data.link !== '#' && !data.link.includes('example.com'));
   const activeUrl = hasLiveLink ? data.link : (data.repo && data.repo !== '#' ? data.repo : 'https://noah-portfolio.system');
+  const currentConfig = RATIO_CONFIGS[activeRatio];
   
-  // Real high-resolution live website snapshot fallback
+  // Real high-resolution live website snapshot fallback calibrated to exact aspect ratio
   const snapshotUrl = hasLiveLink 
-    ? `https://image.thum.io/get/width/1200/crop/800/noanimate/${data.link}`
-    : (data.image || `https://image.thum.io/get/width/1200/crop/800/noanimate/https://github.com/capt-noah`);
+    ? `https://image.thum.io/get/${currentConfig.thumCrop}/noanimate/${data.link}`
+    : (data.image || `https://image.thum.io/get/${currentConfig.thumCrop}/noanimate/https://github.com/capt-noah`);
 
   const handleReload = () => {
     setIsLoading(true);
@@ -160,7 +207,7 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
               {/* --- RIGHT COLUMN: Project Visual Preview & Action Triggers (5 Cols) --- */}
               <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
                 
-                {/* High-End Project Live Website Preview Section (Preserved Original 16:9 Aspect Video Dimensions) */}
+                {/* High-End Project Live Website Preview Section (Calibrated Virtual Desktop Viewport & Dynamic Aspect Ratio) */}
                 <div className="bg-plate/70 border border-fg/15 p-4 sm:p-5 relative chamfer-tr flex flex-col">
                   {/* Top Preview Bar with Live URL & Controls */}
                   <div className="flex items-center justify-between border-b border-fg/10 pb-3 mb-3 font-mono text-[9.5px]">
@@ -171,6 +218,21 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
+                      {/* Aspect Ratio Switcher */}
+                      <button
+                        onClick={() => {
+                          const keys: RatioKey[] = ['16:10', '16:9', '4:3'];
+                          const nextIdx = (keys.indexOf(activeRatio) + 1) % keys.length;
+                          setActiveRatio(keys[nextIdx]);
+                        }}
+                        className="px-1.5 py-0.5 bg-fg/5 hover:bg-fg/10 border border-fg/15 text-fg/80 text-[8.5px] cursor-none flex items-center gap-1 transition-colors font-mono"
+                        title="Cycle Aspect Ratio (16:10 / 16:9 / 4:3)"
+                      >
+                        <span className="text-fg/50">RATIO:</span>
+                        <span className="text-accent font-bold">{activeRatio}</span>
+                      </button>
+
+                      {/* View Mode Toggle */}
                       <button
                         onClick={() => setViewMode(prev => prev === 'iframe' ? 'snapshot' : 'iframe')}
                         className="px-1.5 py-0.5 bg-fg/5 hover:bg-fg/10 border border-fg/15 text-fg/80 text-[8.5px] cursor-none flex items-center gap-1 transition-colors"
@@ -179,6 +241,8 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                         <Eye size={10} className="text-accent" />
                         <span>{viewMode === 'iframe' ? 'LIVE' : 'SNAP'}</span>
                       </button>
+
+                      {/* Reload Trigger */}
                       <button
                         onClick={handleReload}
                         className="p-1 hover:bg-fg/10 text-fg/60 hover:text-fg transition-colors cursor-none"
@@ -197,27 +261,53 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                     </span>
                   </div>
 
-                  {/* Preview Viewport Canvas (Exact 16:9 Aspect Ratio) */}
-                  <div className="w-full aspect-video bg-[#080A0E] border border-fg/20 relative overflow-hidden flex items-center justify-center group/preview">
+                  {/* Preview Viewport Canvas (Calibrated Aspect Ratio with Scaled Desktop Rendering) */}
+                  <div 
+                    ref={containerRef}
+                    className={`w-full ${currentConfig.className} bg-[#080A0E] border border-fg/20 relative overflow-hidden flex items-center justify-center group/preview transition-all duration-300`}
+                  >
                     
-                    {/* 1. Interactive Live Iframe View */}
+                    {/* 1. Interactive Scaled Desktop Iframe View */}
                     {viewMode === 'iframe' && !iframeFailed && hasLiveLink ? (
-                      <div className="w-full h-full relative overflow-hidden bg-white">
+                      <div 
+                        className="w-full h-full relative overflow-hidden bg-white"
+                        onMouseLeave={() => setIsInteracting(false)}
+                      >
                         <iframe
-                          key={`${data.id}-${keyTrigger}`}
+                          key={`${data.id}-${keyTrigger}-${activeRatio}`}
                           src={data.link}
                           title={`${data.title} Live Preview`}
                           sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                           onLoad={() => setIsLoading(false)}
                           onError={() => { setIframeFailed(true); setIsLoading(false); }}
-                          className={`w-full h-full border-0 transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                          style={{
+                            width: `${currentConfig.virtualWidth}px`,
+                            height: `${currentConfig.virtualHeight}px`,
+                            transform: `scale(${containerWidth > 0 ? containerWidth / currentConfig.virtualWidth : 0.3})`,
+                            transformOrigin: 'top left',
+                            pointerEvents: isInteracting ? 'auto' : 'none',
+                          }}
+                          className={`border-0 transition-opacity duration-500 absolute top-0 left-0 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
                         />
+
+                        {/* Interactive Click-to-Scroll Focus Overlay */}
+                        {!isInteracting && !isLoading && (
+                          <div 
+                            onClick={() => setIsInteracting(true)}
+                            className="absolute inset-0 cursor-pointer z-10 flex items-end justify-center pb-2 opacity-0 hover:opacity-100 transition-opacity bg-black/10"
+                            title="Click to interact with website"
+                          >
+                            <span className="px-2 py-0.5 bg-black/85 text-white font-mono text-[8px] font-bold uppercase tracking-wider border border-white/20 shadow-md">
+                              CLICK TO INTERACT
+                            </span>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       /* 2. High-Resolution Live Snapshot Render View */
                       <div className="w-full h-full relative overflow-hidden bg-[#0A0C10] flex items-center justify-center group/shot">
                         <img
-                          key={`${data.id}-snap-${keyTrigger}`}
+                          key={`${data.id}-snap-${keyTrigger}-${activeRatio}`}
                           src={snapshotUrl}
                           alt={`${data.title} Web Preview`}
                           onLoad={() => setIsLoading(false)}
@@ -229,7 +319,7 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-0 group-hover/shot:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 text-white">
                           <div className="font-mono text-[9px] text-accent font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
                             <Sparkles size={11} />
-                            LIVE ARTIFACT SNAPSHOT
+                            LIVE ARTIFACT SNAPSHOT ({activeRatio})
                           </div>
                           {hasLiveLink && (
                             <a
