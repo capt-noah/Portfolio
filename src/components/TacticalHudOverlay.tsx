@@ -4,14 +4,10 @@ import { cyberAudio } from '../utils/cyberAudio';
 
 interface TacticalHudOverlayProps {
   activeSection: string;
-  isWireframe: boolean;
-  onToggleWireframe: () => void;
 }
 
 export default function TacticalHudOverlay({
   activeSection,
-  isWireframe,
-  onToggleWireframe,
 }: TacticalHudOverlayProps) {
   const [isMuted, setIsMuted] = useState(cyberAudio.getMuted());
   const [fps, setFps] = useState(60);
@@ -55,11 +51,6 @@ export default function TacticalHudOverlay({
     if (!next) cyberAudio.playUiClick();
   };
 
-  const handleWireframeToggle = () => {
-    cyberAudio.playModeSwitch();
-    onToggleWireframe();
-  };
-
   return (
     <div className="fixed inset-0 pointer-events-none z-40 select-none overflow-hidden font-mono text-[9px]">
       {/* CORNER RETICLES WITH CALIBRATION TICKS */}
@@ -95,16 +86,6 @@ export default function TacticalHudOverlay({
             NODE // {activeSection.toUpperCase()}
           </span>
         </div>
-
-        {/* 3D Wireframe / Shaded Mode Toggle (Lando Norris Style) */}
-        <button
-          onClick={handleWireframeToggle}
-          className="px-2 py-1 bg-fg/5 hover:bg-accent hover:text-white border border-fg/15 text-fg font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-none"
-          title="Toggle 3D Core Rendering (PBR / Wireframe)"
-        >
-          <Eye size={11} className="text-accent" />
-          <span>{isWireframe ? 'WIREFRAME' : 'CYBER_CORE'}</span>
-        </button>
 
         {/* Sound Audio Mute Toggle */}
         <button

@@ -13,7 +13,6 @@ import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 import Modal from './components/Modal';
 import SciFiGateLoader from './components/SciFiGateLoader';
-import CyberScene3D from './components/CyberScene3D';
 import TacticalHudOverlay from './components/TacticalHudOverlay';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
@@ -36,18 +35,14 @@ function LandingPage({
   setIsInFooter, 
   setSelectedProjectId, 
   selectedProjectId, 
-  isInFooter,
-  isWireframe,
-  setIsWireframe
+  isInFooter
 }: { 
   data: PortfolioData | null,
   setCursorType: (type: CursorType) => void,
   setIsInFooter: (inFooter: boolean) => void,
   setSelectedProjectId: (id: string | null) => void,
   selectedProjectId: string | null,
-  isInFooter: boolean,
-  isWireframe: boolean,
-  setIsWireframe: React.Dispatch<React.SetStateAction<boolean>>
+  isInFooter: boolean
 }) {
   const [activeSection, setActiveSection] = useState('hero');
   const sections = ['hero', 'experience', 'work', 'stack', 'footer'];
@@ -71,14 +66,9 @@ function LandingPage({
 
   return (
     <div className="relative z-10 bg-transparent min-h-screen">
-      {/* 3D WebGL Persistent Cyber-Artifact Canvas */}
-      <CyberScene3D isWireframe={isWireframe} />
-
       {/* Fixed Screen-Space Tactical HUD Layer */}
       <TacticalHudOverlay 
         activeSection={activeSection}
-        isWireframe={isWireframe}
-        onToggleWireframe={() => setIsWireframe(prev => !prev)}
       />
 
       <Navigation isInFooter={isInFooter} activeSection={activeSection} />
@@ -111,7 +101,6 @@ export default function App() {
   const [isInFooter, setIsInFooter] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [data, setData] = useState<PortfolioData | null>(null);
-  const [isWireframe, setIsWireframe] = useState(false);
   const [isGateOpen, setIsGateOpen] = useState(false);
 
   // Initialize Lenis Smooth Inertia Scrolling Engine & GSAP Ticker Synchronization
@@ -172,8 +161,6 @@ export default function App() {
               setSelectedProjectId={setSelectedProjectId}
               selectedProjectId={selectedProjectId}
               isInFooter={isInFooter}
-              isWireframe={isWireframe}
-              setIsWireframe={setIsWireframe}
             />
           } />
           <Route path="/admin" element={
