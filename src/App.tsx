@@ -12,7 +12,6 @@ import Stack from './components/Stack';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 import Modal from './components/Modal';
-import SciFiGateLoader from './components/SciFiGateLoader';
 import TacticalHudOverlay from './components/TacticalHudOverlay';
 import CyberScene3D from './components/CyberScene3D';
 import Admin from './pages/Admin';
@@ -36,16 +35,14 @@ function LandingPage({
   setIsInFooter, 
   setSelectedProjectId, 
   selectedProjectId, 
-  isInFooter,
-  gateOpened
+  isInFooter
 }: { 
   data: PortfolioData | null,
   setCursorType: (type: CursorType) => void,
   setIsInFooter: (inFooter: boolean) => void,
   setSelectedProjectId: (id: string | null) => void,
   selectedProjectId: string | null,
-  isInFooter: boolean,
-  gateOpened: boolean
+  isInFooter: boolean
 }) {
   const [activeSection, setActiveSection] = useState('hero');
   const sections = ['hero', 'experience', 'work', 'stack', 'footer'];
@@ -78,7 +75,7 @@ function LandingPage({
       />
 
       <Navigation isInFooter={isInFooter} activeSection={activeSection} />
-      <Hero gateOpened={gateOpened} />
+      <Hero />
       <Experience data={data?.experience || []} />
       <Work 
         data={data?.projects || []}
@@ -107,7 +104,6 @@ export default function App() {
   const [isInFooter, setIsInFooter] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [data, setData] = useState<PortfolioData | null>(null);
-  const [isGateOpen, setIsGateOpen] = useState(false);
 
   // Initialize Lenis Smooth Inertia Scrolling Engine & GSAP Ticker Synchronization
   useEffect(() => {
@@ -149,11 +145,6 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {/* Sci-Fi Hydraulic Blast Gate & Reactor Loader */}
-      {!isGateOpen && (
-        <SciFiGateLoader onComplete={() => setIsGateOpen(true)} />
-      )}
-
       <main className="relative min-h-screen bg-bg overflow-x-hidden">
         <Cursor type={cursorType} />
         <div className="grain-overlay pointer-events-none" />
@@ -167,7 +158,6 @@ export default function App() {
               setSelectedProjectId={setSelectedProjectId}
               selectedProjectId={selectedProjectId}
               isInFooter={isInFooter}
-              gateOpened={isGateOpen}
             />
           } />
           <Route path="/admin" element={

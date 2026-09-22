@@ -1,13 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ArrowUpRight, Compass, Terminal } from 'lucide-react';
-import { cyberAudio } from '../utils/cyberAudio';
 
-interface HeroProps {
-  gateOpened?: boolean;
-}
-
-export default function Hero({ gateOpened = true }: HeroProps) {
+export default function Hero() {
   const [scrambledTitle, setScrambledTitle] = useState("N           ");
   const originalTitle = "NOAH TESFAYE";
 
@@ -56,12 +51,12 @@ export default function Hero({ gateOpened = true }: HeroProps) {
     }, 35);
   };
 
-  // Coordinated Lenis-Style Masked Line Unmasking Timeline
+  // Coordinated Lenis-Style Masked Line Unmasking Timeline on Mount
   useEffect(() => {
-    if (!gateOpened || hasAnimatedRef.current) return;
+    if (hasAnimatedRef.current) return;
     hasAnimatedRef.current = true;
 
-    const tl = gsap.timeline({ delay: 0.15 });
+    const tl = gsap.timeline({ delay: 0.1 });
 
     // Step 1: Badge unmasks smoothly from top
     if (badgeRef.current) {
@@ -129,7 +124,7 @@ export default function Hero({ gateOpened = true }: HeroProps) {
         '-=0.45'
       );
     }
-  }, [gateOpened]);
+  }, []);
 
   const scrollToWork = () => {
     const el = document.getElementById('work');
@@ -337,11 +332,7 @@ export default function Hero({ gateOpened = true }: HeroProps) {
               className="flex flex-wrap items-center gap-4 sm:gap-6 will-change-transform"
             >
               <button
-                onClick={() => {
-                  cyberAudio.playMechanicalClick();
-                  scrollToWork();
-                }}
-                onMouseEnter={() => cyberAudio.playHoverChirp()}
+                onClick={() => scrollToWork()}
                 className="px-8 sm:px-10 py-4 sm:py-5 bg-accent hover:bg-accent-hover text-white font-mono text-sm sm:text-base font-bold uppercase tracking-widest flex items-center gap-2.5 transition-all duration-300 shadow-[0_6px_25px_rgba(255,85,0,0.35)] hover:-translate-y-0.5 cursor-none relative overflow-hidden group chamfer-tr"
               >
                 <span className="relative z-10">EXPLORE PROJECTS</span>
@@ -352,10 +343,8 @@ export default function Hero({ gateOpened = true }: HeroProps) {
                 href="#footer"
                 onClick={(e) => {
                   e.preventDefault();
-                  cyberAudio.playMechanicalClick();
                   document.getElementById('footer')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                onMouseEnter={() => cyberAudio.playHoverChirp()}
                 className="px-8 sm:px-9 py-4 sm:py-5 bg-surface/80 hover:bg-surface text-fg border border-fg/20 font-mono text-sm sm:text-base font-bold uppercase tracking-widest flex items-center gap-2.5 transition-all duration-300 hover:border-accent hover:text-accent cursor-none chamfer-tr shadow-xs"
               >
                 <Compass size={18} />

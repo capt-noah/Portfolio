@@ -18,7 +18,6 @@ import {
   Radio,
   Sparkles
 } from "lucide-react";
-import { cyberAudio } from "../utils/cyberAudio";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -148,10 +147,8 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
     e.preventDefault();
     if (!formData.email || !formData.message) return;
     
-    cyberAudio.playMechanicalClick();
     setIsTransmitting(true);
     setTimeout(() => {
-      cyberAudio.playUiClick();
       setIsTransmitting(false);
       setIsSent(true);
       setFormData({ email: "", message: "" });
@@ -252,8 +249,6 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
                     href={social.url}
                     target="_blank"
                     rel="noreferrer"
-                    onMouseEnter={() => cyberAudio.playHoverChirp()}
-                    onClick={() => cyberAudio.playUiClick()}
                     className="social-chip-item flex items-center gap-2.5 px-4 py-2.5 bg-white/[0.04] border border-white/15 hover:border-accent hover:bg-accent hover:text-white transition-all duration-300 font-mono text-xs uppercase font-bold tracking-wider cursor-none chamfer-tr group will-change-transform"
                   >
                     <span className="text-accent group-hover:text-white transition-colors">

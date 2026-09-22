@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Eye, ShieldCheck, Activity } from 'lucide-react';
-import { cyberAudio } from '../utils/cyberAudio';
+import { Activity } from 'lucide-react';
 
 interface TacticalHudOverlayProps {
   activeSection: string;
 }
 
 export default function TacticalHudOverlay({
-  activeSection,
+  activeSection: _activeSection,
 }: TacticalHudOverlayProps) {
-  const [isMuted, setIsMuted] = useState(cyberAudio.getMuted());
   const [fps, setFps] = useState(60);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -45,12 +43,6 @@ export default function TacticalHudOverlay({
     };
   }, []);
 
-  const handleAudioToggle = () => {
-    const next = cyberAudio.toggleMute();
-    setIsMuted(next);
-    if (!next) cyberAudio.playUiClick();
-  };
-
   return (
     <div className="fixed inset-0 pointer-events-none z-40 select-none overflow-hidden font-mono text-[9px]">
       {/* CORNER RETICLES WITH CALIBRATION TICKS */}
@@ -75,36 +67,6 @@ export default function TacticalHudOverlay({
           <span>FPS: {fps}</span>
         </div>
         <span className="text-accent font-bold text-xs">[ + ]</span>
-      </div>
-
-      {/* TOP TACTICAL CONTROL BAR (POINTER-EVENTS-AUTO) */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto flex items-center gap-2 bg-plate/90 border border-fg/15 px-3 py-1.5 shadow-sm backdrop-blur-md chamfer-tr">
-        {/* Active Section Node */}
-        <div className="flex items-center gap-2 pr-3 border-r border-fg/15">
-          <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
-          <span className="font-bold text-fg uppercase tracking-wider">
-            NODE // {activeSection.toUpperCase()}
-          </span>
-        </div>
-
-        {/* Sound Audio Mute Toggle */}
-        <button
-          onClick={handleAudioToggle}
-          className="px-2 py-1 bg-fg/5 hover:bg-accent hover:text-white border border-fg/15 text-fg font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-none"
-          title="Toggle Tactical Audio FX"
-        >
-          {isMuted ? (
-            <>
-              <VolumeX size={11} className="text-fg/40" />
-              <span className="text-fg/40">MUTED</span>
-            </>
-          ) : (
-            <>
-              <Volume2 size={11} className="text-accent" />
-              <span className="text-accent">AUDIO_ON</span>
-            </>
-          )}
-        </button>
       </div>
 
       {/* RIGHT EDGE VERTICAL SCROLL PROGRESS GAUGE */}

@@ -3,7 +3,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight, Github, Terminal, ShieldCheck } from 'lucide-react';
 import { Project } from '../services/dataService';
-import { cyberAudio } from '../utils/cyberAudio';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -152,10 +151,8 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   key={`${project.id}-${i}`}
                   ref={(el) => (cardRefs.current[i] = el)}
                   onClick={() => {
-                    cyberAudio.playMechanicalClick();
                     if (project.id) onSelectProject(project.id);
                   }}
-                  onMouseEnter={() => cyberAudio.playHoverChirp()}
                   onMouseMove={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -250,10 +247,8 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                 key={`${project.id}-${i}`}
                 ref={(el) => (cardRefs.current[i] = el)}
                 onClick={() => {
-                  cyberAudio.playMechanicalClick();
                   if (project.id) onSelectProject(project.id);
                 }}
-                onMouseEnter={() => cyberAudio.playHoverChirp()}
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = (e.clientX - rect.left) / rect.width - 0.5;

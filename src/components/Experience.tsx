@@ -3,7 +3,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Calendar, Activity, ShieldCheck } from 'lucide-react';
 import { Experience as ExperienceType } from '../services/dataService';
-import { cyberAudio } from '../utils/cyberAudio';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,8 +19,8 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
       const headerTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 75%',
-          toggleActions: 'play none none reverse'
+          start: 'top 80%',
+          once: true
         }
       });
 
@@ -29,7 +28,7 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         headerTl.fromTo(
           tagRef.current,
           { yPercent: 100, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: 0.6, ease: 'power4.out' }
+          { yPercent: 0, opacity: 1, duration: 0.5, ease: 'power4.out' }
         );
       }
 
@@ -37,8 +36,8 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         headerTl.fromTo(
           headingRef.current,
           { yPercent: 110, skewY: 2, opacity: 0 },
-          { yPercent: 0, skewY: 0, opacity: 1, duration: 0.85, ease: 'power4.out' },
-          '-=0.35'
+          { yPercent: 0, skewY: 0, opacity: 1, duration: 0.7, ease: 'power4.out' },
+          '-=0.3'
         );
       }
 
@@ -52,7 +51,7 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
             ease: 'none',
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: 'top 65%',
+              start: 'top 70%',
               end: 'bottom 85%',
               scrub: 1.0
             }
@@ -60,26 +59,25 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         );
       }
 
-      // 3. Staggered Lenis-Style Milestone Card Unmasking
-      cardRefs.current.forEach((card) => {
+      // 3. Smooth Milestone Card Entrance (No clipping, visible immediately upon scroll)
+      cardRefs.current.forEach((card, idx) => {
         if (!card) return;
         gsap.fromTo(
           card,
           {
-            y: 50,
-            opacity: 0,
-            clipPath: 'polygon(0 25%, 100% 25%, 100% 100%, 0 100%)'
+            y: 35,
+            opacity: 0
           },
           {
             y: 0,
             opacity: 1,
-            clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
-            duration: 0.85,
-            ease: 'power4.out',
+            duration: 0.6,
+            delay: (idx % 2) * 0.08,
+            ease: 'power3.out',
             scrollTrigger: {
               trigger: card,
-              start: 'top 85%',
-              toggleActions: 'play none none reverse'
+              start: 'top 92%',
+              once: true
             }
           }
         );
@@ -194,10 +192,7 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                   <div className="hidden sm:block absolute left-[35px] top-5 w-6 h-[2px] bg-fg/20 group-hover:bg-accent transition-colors" />
 
                   {/* Milestone Card Plate */}
-                  <div 
-                    onMouseEnter={() => cyberAudio.playHoverChirp()}
-                    className="flex-1 bg-surface/90 border border-fg/20 hover:border-accent transition-all duration-300 p-6 sm:p-7 hud-plate-a hover:shadow-[0_16px_36px_rgba(255,85,0,0.12)] relative overflow-hidden"
-                  >
+                  <div className="flex-1 bg-surface/90 border border-fg/20 hover:border-accent transition-all duration-300 p-6 sm:p-7 hud-plate-a hover:shadow-[0_16px_36px_rgba(255,85,0,0.12)] relative overflow-hidden">
                     {/* Top Callout Header Strip */}
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-fg/10 pb-3.5 mb-4">
                       <div className="flex items-center gap-2.5">

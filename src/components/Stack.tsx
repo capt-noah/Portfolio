@@ -4,7 +4,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { StackItem } from '../services/dataService';
 import { Cpu, Activity, CheckCircle2 } from 'lucide-react';
 import { TECH_ICONS, getIconUrl } from '../constants/techIcons';
-import { cyberAudio } from '../utils/cyberAudio';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -97,7 +96,6 @@ export default function Stack({ data }: { data: StackItem[] }) {
 
   const handleTechHover = (techName: string) => {
     if (selectedTech === techName) return;
-    cyberAudio.playHoverChirp();
     setSelectedTech(techName);
     
     const randomHash = Math.random().toString(16).substring(2, 10).toUpperCase();
