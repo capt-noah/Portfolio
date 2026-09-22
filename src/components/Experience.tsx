@@ -1,15 +1,102 @@
-import { motion } from 'motion/react';
-import { Calendar, CheckCircle2, ChevronRight, Hash, Terminal, Clock, Activity, ShieldCheck } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Calendar, Activity, ShieldCheck } from 'lucide-react';
 import { Experience as ExperienceType } from '../services/dataService';
 import { cyberAudio } from '../utils/cyberAudio';
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function Experience({ data }: { data: ExperienceType[] }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const tagRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const timelineRailRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Lenis-Style Masked Header Line Reveal
+      const headerTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 75%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      if (tagRef.current) {
+        headerTl.fromTo(
+          tagRef.current,
+          { yPercent: 100, opacity: 0 },
+          { yPercent: 0, opacity: 1, duration: 0.6, ease: 'power4.out' }
+        );
+      }
+
+      if (headingRef.current) {
+        headerTl.fromTo(
+          headingRef.current,
+          { yPercent: 110, skewY: 2, opacity: 0 },
+          { yPercent: 0, skewY: 0, opacity: 1, duration: 0.85, ease: 'power4.out' },
+          '-=0.35'
+        );
+      }
+
+      // 2. Timeline Spine Parallax Scrubbing
+      if (timelineRailRef.current) {
+        gsap.fromTo(
+          timelineRailRef.current,
+          { scaleY: 0, transformOrigin: 'top center' },
+          {
+            scaleY: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 65%',
+              end: 'bottom 85%',
+              scrub: 1.0
+            }
+          }
+        );
+      }
+
+      // 3. Staggered Lenis-Style Milestone Card Unmasking
+      cardRefs.current.forEach((card) => {
+        if (!card) return;
+        gsap.fromTo(
+          card,
+          {
+            y: 50,
+            opacity: 0,
+            clipPath: 'polygon(0 25%, 100% 25%, 100% 100%, 0 100%)'
+          },
+          {
+            y: 0,
+            opacity: 1,
+            clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
+            duration: 0.85,
+            ease: 'power4.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse'
+            }
+          }
+        );
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [data]);
+
   return (
-    <section id="experience" className="min-h-screen w-full flex flex-col justify-between py-16 sm:py-24 border-b border-fg/10 bg-transparent select-none relative overflow-hidden">
-      
-      {/* Experience Section Subtle Wireframe Drafting Background (Stazquez aesthetic) */}
+    <section
+      ref={sectionRef}
+      id="experience"
+      className="min-h-screen w-full flex flex-col justify-between py-16 sm:py-24 border-b border-fg/10 bg-transparent select-none relative overflow-hidden"
+    >
+      {/* Drafting SVG Background */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
-        {/* Subtle grid & dot matrix */}
         <div className="absolute inset-0 tech-grid-bg opacity-40" />
         <div className="absolute inset-0 tech-dot-bg opacity-25" />
 
@@ -19,123 +106,28 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
           viewBox="0 0 1920 1080"
           preserveAspectRatio="xMidYMid slice"
         >
-          {/* Outer Framing Chassis */}
           <rect x="60" y="45" width="1800" height="990" rx="4" fill="none" stroke="currentColor" strokeWidth="1" className="text-fg/20" />
-
-          {/* Continuous Architectural Guide Conduits extending across sections */}
           <line x1="240" y1="-50" x2="240" y2="1150" stroke="currentColor" strokeWidth="1.5" strokeDasharray="8 6" className="text-fg/20" />
           <line x1="1680" y1="-50" x2="1680" y2="1150" stroke="currentColor" strokeWidth="1.2" strokeDasharray="8 6" className="text-fg/20" />
 
-          {/* Continuous Vertical Spine Bar connecting with Hero */}
           <rect x="1590" y="-50" width="12" height="520" rx="6" fill="#0B0D10" opacity="0.8" />
           <polygon points="1610,60 1670,60 1640,150 1610,150" fill="#0B0D10" opacity="0.8" />
           <rect x="1614" y="70" width="4" height="16" fill="#FF5500" rx="1" />
 
-          {/* _(5) Long Stepped Horizontal Cyber Rail across Upper Background */}
-          <polygon
-            points="240,160 840,160 880,200 1560,200 1560,235 860,235 820,195 240,195"
-            fill="rgba(11, 13, 16, 0.035)"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            className="text-fg/30"
-          />
-
-          {/* _(5) Lower Stepped Cyber Rail across Lower Background */}
-          <polygon
-            points="340,880 980,880 1020,920 1720,920 1720,955 1000,955 960,915 340,915"
-            fill="rgba(11, 13, 16, 0.035)"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            className="text-fg/30"
-          />
-
-          {/* Stazquez Right Bank: 8 Stacked Angled Louver Slot Capsules */}
-          {[0, 1, 2, 3, 4, 5, 6, 7].map((idx) => {
-            const y = 280 + idx * 24;
-            return (
-              <polygon
-                key={`exp-louver-rt-${idx}`}
-                points={`1720,${y} 1790,${y - 20} 1806,${y - 20} 1736,${y}`}
-                fill="rgba(11, 13, 16, 0.04)"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                className="text-fg/30"
-              />
-            );
-          })}
-
-          {/* Timeline Node Depth Backplates (Chamfered sub-plates behind milestones) */}
-          <polygon
-            points="360,280 880,280 910,310 910,430 870,470 360,470"
-            fill="rgba(11, 13, 16, 0.025)"
-            stroke="currentColor"
-            strokeWidth="1"
-            className="text-fg/20"
-          />
-          <polygon
-            points="360,510 920,510 950,540 950,660 910,700 360,700"
-            fill="rgba(11, 13, 16, 0.025)"
-            stroke="currentColor"
-            strokeWidth="1"
-            className="text-fg/20"
-          />
-          <polygon
-            points="360,740 860,740 890,770 890,890 850,930 360,930"
-            fill="rgba(11, 13, 16, 0.025)"
-            stroke="currentColor"
-            strokeWidth="1"
-            className="text-fg/20"
-          />
-
-          {/* Stazquez Lower-Right Translucent Sub-Plate for Depth */}
-          <rect
-            x="1440"
-            y="560"
-            width="360"
-            height="340"
-            rx="10"
-            fill="rgba(11, 13, 16, 0.04)"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            className="text-fg/25"
-          />
-          <rect
-            x="1480"
-            y="600"
-            width="200"
-            height="22"
-            rx="11"
-            fill="rgba(11, 13, 16, 0.035)"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            className="text-fg/30"
-          />
-
-          {/* Stazquez Bottom Beveled Stadium Bar */}
-          <polygon
-            points="120,980 460,980 485,1005 145,1005"
-            fill="rgba(11, 13, 16, 0.04)"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            className="text-fg/30"
-          />
-
-          {/* _(5) Mechanical Eyelet Accent */}
-          <circle cx="240" cy="180" r="14" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/35" />
-          <circle cx="240" cy="180" r="5" fill="#FF5500" />
-
-          {/* Corner Registration Brackets */}
+          {/* Registration Markers */}
           <path d="M 40 70 L 40 40 L 70 40" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
           <path d="M 1850 40 L 1880 40 L 1880 70" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
           <path d="M 40 1010 L 40 1040 L 70 1040" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
           <path d="M 1850 1040 L 1880 1040 L 1880 1010" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
 
-          {/* Registration Markers */}
-          <text x="120" y="70" fontFamily="monospace" fontSize="9" fontWeight="bold" className="fill-accent">EPOCH_LOG // PROTOCOL_02</text>
-          <text x="1800" y="160" fontFamily="monospace" fontSize="12" fontWeight="bold" className="fill-accent">☒</text>
+          <text x="120" y="70" fontFamily="monospace" fontSize="9" fontWeight="bold" className="fill-accent">
+            EPOCH_LOG // PROTOCOL_02
+          </text>
+          <text x="1800" y="160" fontFamily="monospace" fontSize="12" fontWeight="bold" className="fill-accent">
+            ☒
+          </text>
         </svg>
 
-        {/* Background Section Identification Watermark */}
         <div className="absolute right-6 top-8 font-mono text-[9vw] font-black text-fg/[0.03] leading-none pointer-events-none select-none">
           02_CAREER
         </div>
@@ -143,39 +135,47 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
 
       <div className="w-full px-6 sm:px-12 lg:px-20 mx-auto flex-1 flex flex-col justify-between relative z-10">
         
-        {/* Section Header Strip with Standardized Section Name: CAREER */}
+        {/* Lenis Masked Header Line Reveal */}
         <div className="border-b border-fg/10 pb-6 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-2 h-2 bg-accent inline-block animate-ping" />
-              <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent font-bold">
-                [SYSTEM.02 // CHRONOLOGY_TIMELINE]
-              </span>
+            <div className="overflow-hidden mb-2">
+              <div ref={tagRef} className="flex items-center gap-2 will-change-transform">
+                <span className="w-2 h-2 bg-accent inline-block animate-ping" />
+                <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent font-bold">
+                  [SYSTEM.02 // CHRONOLOGY_TIMELINE]
+                </span>
+              </div>
             </div>
-            <h2 className="font-display font-black text-[clamp(2.5rem,5.5vw,5.5rem)] leading-[0.9] uppercase text-fg tracking-tighter">
-              CAREER
-            </h2>
+
+            <div className="overflow-hidden">
+              <h2
+                ref={headingRef}
+                className="font-display font-black text-[clamp(2.5rem,5.5vw,5.5rem)] leading-[0.9] uppercase text-fg tracking-tighter will-change-transform"
+              >
+                CAREER
+              </h2>
+            </div>
           </div>
         </div>
 
         {/* --- Interactive Cyberpunk Vertical Timeline Highway --- */}
         <div className="relative max-w-4xl w-full my-auto pl-4 sm:pl-10">
           
-          {/* Main Continuous Vertical Timeline Rail Spine */}
-          <div className="absolute left-[20px] sm:left-[35px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-accent via-fg/30 to-fg/10" />
+          {/* Main Continuous Vertical Timeline Rail Spine with Scroll Parallax */}
+          <div
+            ref={timelineRailRef}
+            className="absolute left-[20px] sm:left-[35px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-accent via-fg/30 to-fg/10 will-change-transform"
+          />
 
           {/* Timeline Nodes & Milestones */}
           <div className="space-y-8 sm:space-y-10 relative">
             {data.map((exp, i) => {
               const isCurrent = i === 0;
               return (
-                <motion.div 
+                <div
                   key={`${exp.role}-${i}`}
-                  initial={{ opacity: 0, y: 35, scale: 0.98 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true, margin: "-30px" }}
-                  transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: 0.1 + i * 0.14 }}
-                  className="relative flex items-start gap-4 sm:gap-8 group cursor-none"
+                  ref={(el) => (cardRefs.current[i] = el)}
+                  className="relative flex items-start gap-4 sm:gap-8 group cursor-none will-change-transform"
                 >
                   {/* Timeline Pip / Node on the Rail */}
                   <div className="relative flex-shrink-0 z-20 mt-1">
@@ -190,7 +190,7 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                     )}
                   </div>
 
-                  {/* Horizontal Branching Trace Connector (Circuit line from node to card) */}
+                  {/* Horizontal Branching Trace Connector */}
                   <div className="hidden sm:block absolute left-[35px] top-5 w-6 h-[2px] bg-fg/20 group-hover:bg-accent transition-colors" />
 
                   {/* Milestone Card Plate */}
@@ -198,7 +198,6 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                     onMouseEnter={() => cyberAudio.playHoverChirp()}
                     className="flex-1 bg-surface/90 border border-fg/20 hover:border-accent transition-all duration-300 p-6 sm:p-7 hud-plate-a hover:shadow-[0_16px_36px_rgba(255,85,0,0.12)] relative overflow-hidden"
                   >
-                    
                     {/* Top Callout Header Strip */}
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-fg/10 pb-3.5 mb-4">
                       <div className="flex items-center gap-2.5">
@@ -245,8 +244,7 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                     {/* Diagonal Zebra Hatch Corner Accent */}
                     <div className="absolute top-0 right-0 w-8 h-8 hazard-hatch-dark opacity-10 group-hover:opacity-25 transition-opacity pointer-events-none" />
                   </div>
-
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -263,8 +261,6 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         </div>
         <div className="hidden sm:block font-pixel text-[8px]">STATION_LIDETA // ARCHITECT_LOG</div>
       </div>
-
     </section>
   );
 }
-

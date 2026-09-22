@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ShieldAlert, Cpu, Radio, Zap } from 'lucide-react';
 import { cyberAudio } from '../utils/cyberAudio';
+import { Radio, Zap } from 'lucide-react';
 
 interface SciFiGateLoaderProps {
   onComplete: () => void;
@@ -9,38 +9,33 @@ interface SciFiGateLoaderProps {
 
 export default function SciFiGateLoader({ onComplete }: SciFiGateLoaderProps) {
   const [progress, setProgress] = useState(0);
-  const [statusLog, setStatusLog] = useState('SYS.INITIALIZE_CORE');
+  const [statusLog, setStatusLog] = useState('SYS.BOOT_DIAGNOSTICS');
   const [isDone, setIsDone] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const leftDoorRef = useRef<HTMLDivElement>(null);
-  const rightDoorRef = useRef<HTMLDivElement>(null);
-  const hudCenterRef = useRef<HTMLDivElement>(null);
-  const clampTopRef = useRef<HTMLDivElement>(null);
-  const clampBottomRef = useRef<HTMLDivElement>(null);
-  const steamVentsRef = useRef<HTMLDivElement>(null);
+  const topLeftPanelRef = useRef<HTMLDivElement>(null);
+  const bottomRightPanelRef = useRef<HTMLDivElement>(null);
+  const hudOverlayRef = useRef<HTMLDivElement>(null);
 
-  // Diagnostic status phases
   const phases = [
-    { threshold: 15, text: 'DIAGNOSTIC // BUS_SYNC' },
-    { threshold: 35, text: 'REACTOR // CHARGING_CELLS' },
-    { threshold: 55, text: 'NEURAL_LINK // ACTIVE' },
-    { threshold: 75, text: 'HYDRAULICS // PRE-IGNITION' },
-    { threshold: 92, text: 'DEPRESSURIZING_CHAMBER' },
+    { threshold: 18, text: 'DIAGNOSTIC // BUS_SYNC_OK' },
+    { threshold: 38, text: 'REACTOR // CHARGING_CELLS' },
+    { threshold: 60, text: 'HYDRAULICS // PRESSURE_980_BAR' },
+    { threshold: 82, text: 'CHAMBER // DEPRESSURIZING' },
+    { threshold: 95, text: 'SYSTEM_VERIFIED // UNLOCK_GATE' },
     { threshold: 100, text: 'ACCESS_GRANTED // OPEN_GATE' }
   ];
 
   useEffect(() => {
     let current = 0;
     const interval = setInterval(() => {
-      // Non-linear organic progress progression
-      const increment = Math.floor(Math.random() * 4) + 1;
+      const increment = Math.floor(Math.random() * 5) + 2;
       current = Math.min(current + increment, 100);
       setProgress(current);
 
       cyberAudio.playReactorSpool(current);
 
-      const matchingPhase = phases.find(p => current <= p.threshold);
+      const matchingPhase = phases.find((p) => current <= p.threshold);
       if (matchingPhase) {
         setStatusLog(matchingPhase.text);
       }
@@ -55,240 +50,307 @@ export default function SciFiGateLoader({ onComplete }: SciFiGateLoaderProps) {
   }, []);
 
   const triggerGateOpening = () => {
-    // 1. Play heavy pneumatic depressurization sound
+    // 1. Heavy pneumatic depressurization sound
     cyberAudio.playHydraulicRelease();
+
+    // 2. Dispatch completion immediately so Hero entrance begins in direct synchronization
+    onComplete();
 
     const tl = gsap.timeline({
       onComplete: () => {
         setIsDone(true);
-        onComplete();
       }
     });
 
-    // Step A: Clamp unlatching recoil
-    tl.to([clampTopRef.current, clampBottomRef.current], {
-      scaleY: 0.2,
-      opacity: 0,
-      duration: 0.4,
-      ease: 'back.in(2)'
-    })
-    // Step B: Center HUD collapses and blasts outward with flash
-    .to(hudCenterRef.current, {
-      scale: 1.3,
-      opacity: 0,
-      duration: 0.35,
-      ease: 'power3.in'
-    }, '-=0.1')
-    // Step C: Steam vent smoke flash
-    .to(steamVentsRef.current, {
-      opacity: 1,
-      duration: 0.2,
-      yoyo: true,
-      repeat: 1
-    }, '-=0.2')
-    // Step D: Massive mechanical split doors slide apart with high-inertia easing
-    .to(leftDoorRef.current, {
-      xPercent: -102,
-      duration: 1.25,
-      ease: 'power4.inOut'
-    }, '+=0.05')
-    .to(rightDoorRef.current, {
-      xPercent: 102,
-      duration: 1.25,
-      ease: 'power4.inOut'
-    }, '<')
-    // Step E: Fade container completely to allow seamless pointer interaction
-    .to(containerRef.current, {
+    // Step A: HUD Diagnostics blast outward and collapse
+    tl.to(hudOverlayRef.current, {
+      scale: 1.15,
       opacity: 0,
       duration: 0.3,
-      ease: 'power2.out'
-    }, '-=0.3');
+      ease: 'power3.in'
+    })
+    // Step B: 45° Diagonal Blast Door Opening
+    .to(
+      topLeftPanelRef.current,
+      {
+        xPercent: -125,
+        yPercent: -125,
+        duration: 1.35,
+        ease: 'power4.inOut'
+      },
+      '+=0.05'
+    )
+    .to(
+      bottomRightPanelRef.current,
+      {
+        xPercent: 125,
+        yPercent: 125,
+        duration: 1.35,
+        ease: 'power4.inOut'
+      },
+      '<'
+    )
+    // Step C: Fade out master overlay container
+    .to(
+      containerRef.current,
+      {
+        opacity: 0,
+        duration: 0.25,
+        ease: 'power2.out'
+      },
+      '-=0.3'
+    );
   };
 
   if (isDone) return null;
 
-  return (
-    <div 
-      ref={containerRef}
-      className="fixed inset-0 z-[999999] pointer-events-auto select-none overflow-hidden bg-black font-mono flex items-center justify-center cursor-none"
+  // Reusable exact vector graphic component matching media_1789972682058.jpg
+  const GateGraphic = () => (
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1920 1080"
+      preserveAspectRatio="xMidYMid slice"
     >
-      {/* LEFT HYDRAULIC BLAST DOOR */}
-      <div 
-        ref={leftDoorRef}
-        className="absolute top-0 left-0 w-1/2 h-full bg-[#080A0E] border-r-2 border-[#1E2430] flex flex-col justify-between p-6 sm:p-12 overflow-hidden shadow-[20px_0_60px_rgba(0,0,0,0.8)] z-10"
-      >
-        {/* Door surface metallic plating & seams */}
-        <div className="absolute inset-0 tech-grid-bg opacity-30 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/60 pointer-events-none" />
+      <defs>
+        {/* Exact 45° Black-and-Light-Gray Hazard Stripe Pattern */}
+        <pattern
+          id="mecha-hazard-stripes"
+          width="48"
+          height="48"
+          patternTransform="rotate(45 0 0)"
+          patternUnits="userSpaceOnUse"
+        >
+          <rect width="24" height="48" fill="#111317" />
+          <rect x="24" width="24" height="48" fill="#E8ECEF" />
+        </pattern>
+      </defs>
 
-        {/* Top Header Plate Telemetry */}
-        <div className="relative z-10 flex items-center gap-3 text-fg/40 text-[9px] uppercase tracking-widest">
-          <span className="w-2 h-2 bg-accent inline-block animate-ping" />
-          <span className="font-bold text-accent">SECTOR_GATE // LEFT_BULKHEAD</span>
-          <span className="hidden sm:inline">| HYD.PRES: 980 BAR</span>
-        </div>
+      {/* 1. Base Industrial Chassis Plate */}
+      <rect width="1920" height="1080" fill="#E8ECEF" />
 
-        {/* Diagonal Structural Reinforcement Truss Bars */}
-        <div className="absolute top-1/4 -left-20 w-96 h-4 bg-accent/20 rotate-45 border-y border-accent/40" />
-        <div className="absolute top-1/3 -left-20 w-96 h-4 bg-accent/20 rotate-45 border-y border-accent/40" />
-        <div className="absolute bottom-1/4 -left-20 w-96 h-4 bg-accent/20 rotate-45 border-y border-accent/40" />
+      {/* 2. Top-Left 5 Diagonal Louver Slats (#CDD5DC) */}
+      <g fill="#CDD5DC">
+        <polygon points="340,0 380,0 600,220 560,220" />
+        <polygon points="400,0 440,0 600,160 560,160" />
+        <polygon points="460,0 500,0 600,100 560,100" />
+        <polygon points="520,0 560,0 600,40 560,40" />
+        <polygon points="280,0 320,0 600,280 560,280" />
+      </g>
 
-        {/* Hazard Chevron Stripes along central seam */}
-        <div className="absolute top-0 right-0 w-4 h-full stripe-pattern-orange opacity-40 border-l border-accent/30" />
+      {/* 3. Hairline Circuit Conduits (Thin Orange & Gray with 90° & 45° Doglegs) */}
+      <g fill="none" strokeWidth="1.2">
+        {/* Top circuit trace */}
+        <path
+          d="M 860,0 L 860,280 L 980,400 L 1090,400"
+          stroke="#C2CBD4"
+        />
+        {/* Middle connector trace */}
+        <path
+          d="M 160,190 L 230,190 L 230,80 L 600,80 L 640,120 L 640,460 L 580,520 L 460,520"
+          stroke="#FF5500"
+          strokeWidth="1.2"
+        />
+        {/* Center stepped trace */}
+        <path
+          d="M 820,500 L 910,500 L 910,600 L 1100,600"
+          stroke="#FF5500"
+          strokeWidth="1.2"
+        />
+        {/* Lower diagonal trace */}
+        <path
+          d="M 440,780 L 540,680 L 700,680 L 760,740 L 760,770"
+          stroke="#C2CBD4"
+          strokeWidth="1.4"
+        />
+      </g>
 
-        {/* Mechanical Teeth Cutouts along Seam */}
-        <div className="absolute top-1/2 right-0 -translate-y-1/2 flex flex-col gap-4">
-          {[0, 1, 2, 3, 4].map(idx => (
-            <div 
-              key={`tooth-l-${idx}`}
-              className="w-4 h-10 bg-[#12161F] border-y border-l border-accent/40 shadow-inner"
-            />
-          ))}
-        </div>
-
-        {/* Bottom Status Readout */}
-        <div className="relative z-10 font-mono text-[9px] text-fg/40 flex justify-between items-end">
-          <div>
-            <div className="text-accent font-bold">CORE_STATUS</div>
-            <div>STABLE // 120_FPS</div>
-          </div>
-          <div className="font-display font-bold text-lg text-fg/30 tracking-wider">
-            [SYS_01]
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT HYDRAULIC BLAST DOOR */}
-      <div 
-        ref={rightDoorRef}
-        className="absolute top-0 right-0 w-1/2 h-full bg-[#080A0E] border-l-2 border-[#1E2430] flex flex-col justify-between p-6 sm:p-12 overflow-hidden shadow-[-20px_0_60px_rgba(0,0,0,0.8)] z-10"
-      >
-        {/* Door surface metallic plating & seams */}
-        <div className="absolute inset-0 tech-grid-bg opacity-30 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-black/60 pointer-events-none" />
-
-        {/* Top Header Plate Telemetry */}
-        <div className="relative z-10 flex items-center justify-end gap-3 text-fg/40 text-[9px] uppercase tracking-widest">
-          <span className="hidden sm:inline">AUTH: CLASSIFIED // 0x88F</span>
-          <span className="font-bold text-accent">RIGHT_BULKHEAD</span>
-          <span className="w-2 h-2 bg-emerald-500 inline-block animate-pulse" />
-        </div>
-
-        {/* Diagonal Structural Reinforcement Truss Bars */}
-        <div className="absolute top-1/4 -right-20 w-96 h-4 bg-accent/20 -rotate-45 border-y border-accent/40" />
-        <div className="absolute top-1/3 -right-20 w-96 h-4 bg-accent/20 -rotate-45 border-y border-accent/40" />
-        <div className="absolute bottom-1/4 -right-20 w-96 h-4 bg-accent/20 -rotate-45 border-y border-accent/40" />
-
-        {/* Hazard Chevron Stripes along central seam */}
-        <div className="absolute top-0 left-0 w-4 h-full stripe-pattern-orange opacity-40 border-r border-accent/30" />
-
-        {/* Mechanical Teeth Cutouts along Seam */}
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 flex flex-col gap-4">
-          {[0, 1, 2, 3, 4].map(idx => (
-            <div 
-              key={`tooth-r-${idx}`}
-              className="w-4 h-10 bg-[#12161F] border-y border-r border-accent/40 shadow-inner"
-            />
-          ))}
-        </div>
-
-        {/* Bottom Status Readout */}
-        <div className="relative z-10 font-mono text-[9px] text-fg/40 flex justify-between items-end">
-          <div className="font-display font-bold text-lg text-fg/30 tracking-wider">
-            [GATE_LOCK]
-          </div>
-          <div className="text-right">
-            <div className="text-accent font-bold">PORTFOLIO_ENTRY</div>
-            <div>VER // 2026.04</div>
-          </div>
-        </div>
-      </div>
-
-      {/* TOP & BOTTOM MECHANICAL LOCK CLAMPS */}
-      <div 
-        ref={clampTopRef}
-        className="absolute top-0 z-20 w-36 h-12 bg-[#121620] border-2 border-accent flex items-center justify-center shadow-[0_0_30px_rgba(255,85,0,0.4)]"
-      >
-        <span className="text-[9px] font-bold text-accent tracking-widest flex items-center gap-1">
-          <Zap size={11} className="animate-bounce" /> LOCK_PIN_ALPHA
-        </span>
-      </div>
-
-      <div 
-        ref={clampBottomRef}
-        className="absolute bottom-0 z-20 w-36 h-12 bg-[#121620] border-2 border-accent flex items-center justify-center shadow-[0_0_30px_rgba(255,85,0,0.4)]"
-      >
-        <span className="text-[9px] font-bold text-accent tracking-widest flex items-center gap-1">
-          <ShieldAlert size={11} className="animate-pulse" /> HYDRAULIC_SEAL
-        </span>
-      </div>
-
-      {/* STEAM VENT BURST OVERLAY */}
-      <div 
-        ref={steamVentsRef}
-        className="absolute inset-0 pointer-events-none opacity-0 bg-radial from-accent/30 via-white/10 to-transparent z-40 transition-opacity"
+      {/* 4. Top-Left Tactical Orange Chevron Armature */}
+      <polygon
+        points="0,0 310,0 590,280 590,390 530,390 380,240 230,240 230,170 120,60 0,60"
+        fill="#FF5500"
       />
 
-      {/* CENTRAL REACTOR CALIBRATION HUD RING */}
-      <div 
-        ref={hudCenterRef}
-        className="relative z-30 flex flex-col items-center justify-center p-8 text-center"
+      {/* 5. Middle-Left Tactical Orange Chevron Beam */}
+      <polygon
+        points="0,620 90,620 380,390 380,500 100,720 0,720"
+        fill="#FF5500"
+      />
+
+      {/* 6. Bottom-Left Tactical Orange Chamfered Notch */}
+      <polygon
+        points="370,825 470,825 640,995 540,1080 470,1080 370,980"
+        fill="#FF5500"
+      />
+
+      {/* 7. Bottom-Center 45° Diagonal Hazard Stripe Telemetry Box */}
+      <rect
+        x="515"
+        y="770"
+        width="1050"
+        height="240"
+        fill="url(#mecha-hazard-stripes)"
+      />
+
+      {/* PART-041 Label directly above hazard stripe box */}
+      <text
+        x="1050"
+        y="750"
+        fill="#FF5500"
+        fontFamily="monospace"
+        fontSize="24"
+        fontWeight="900"
+        letterSpacing="3"
       >
-        {/* Circular Calibration Progress Ring */}
-        <div className="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
-          {/* Outer Rotating Gear Ring */}
-          <div className="absolute inset-0 rounded-full border border-dashed border-accent/40 animate-[spin_12s_linear_infinite]" />
-          <div className="absolute inset-2 rounded-full border border-accent/20" />
-          <div className="absolute inset-4 rounded-full border border-dashed border-white/20 animate-[spin_8s_linear_infinite_reverse]" />
+        PART-041
+      </text>
 
-          {/* SVG Circular Progress Arc */}
-          <svg className="w-full h-full -rotate-90">
-            <circle
-              cx="50%"
-              cy="50%"
-              r="44%"
-              fill="none"
-              stroke="rgba(255, 85, 0, 0.15)"
-              strokeWidth="6"
-            />
-            <circle
-              cx="50%"
-              cy="50%"
-              r="44%"
-              fill="none"
-              stroke="#FF5500"
-              strokeWidth="6"
-              strokeDasharray="600"
-              strokeDashoffset={600 - (600 * progress) / 100}
-              strokeLinecap="round"
-              className="transition-[stroke-dashoffset] duration-75"
-            />
-          </svg>
+      {/* 8. Solid Matte Black Bulkhead Plate on Right Edge */}
+      <rect x="1670" y="70" width="250" height="570" fill="#111317" />
 
-          {/* Inner Quantum Reactor Core Value Display */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#07090C]/90 rounded-full m-8 border border-accent/30 shadow-[0_0_40px_rgba(255,85,0,0.25)]">
-            <Cpu size={24} className="text-accent mb-1 animate-pulse" />
-            <div className="font-display font-black text-4xl sm:text-5xl text-white tracking-tighter">
-              {String(progress).padStart(3, '0')}
-              <span className="text-sm text-accent ml-1 font-mono">%</span>
-            </div>
-            <div className="font-mono text-[8.5px] text-accent/80 font-bold uppercase tracking-wider mt-1">
-              SYS.CALIBRATING
-            </div>
+      {/* 9. Top-Right Outline Typography: YC9 */}
+      <g
+        stroke="#B4BEC8"
+        strokeWidth="2.8"
+        fill="none"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+      >
+        {/* Y */}
+        <path d="M 1060,70 L 1100,120 L 1100,180 M 1140,70 L 1100,120" />
+        {/* C */}
+        <path d="M 1250,70 L 1180,70 L 1180,180 L 1250,180" />
+        {/* 9 */}
+        <path d="M 1350,125 L 1280,125 L 1280,70 L 1350,70 L 1350,180 L 1280,180" />
+      </g>
+
+      {/* Registration Crosshairs (+) */}
+      <g stroke="#FF5500" strokeWidth="2.5" strokeLinecap="square">
+        <line x1="1025" y1="80" x2="1025" y2="100" />
+        <line x1="1015" y1="90" x2="1035" y2="90" />
+
+        <line x1="1025" y1="325" x2="1025" y2="345" />
+        <line x1="1015" y1="335" x2="1035" y2="335" />
+      </g>
+
+      {/* 10. Upper Diagonal Tactical Orange Armature (Center-Right) */}
+      <polygon
+        points="1860,0 1690,0 1490,90 1050,530 1050,615 1170,615 1770,150 1770,75 1920,0"
+        fill="#FF5500"
+      />
+
+      {/* 11. Main Heavy Right Tactical Orange Armature (Interlocking with black plate) */}
+      <polygon
+        points="1890,300 1770,300 1240,830 1240,990 1440,990 1480,950 1480,910 1600,910 1600,840 1890,550"
+        fill="#FF5500"
+      />
+
+      {/* 12. Lower-Right Angled Orange Bracket */}
+      <polygon
+        points="1670,640 1730,640 1920,830 1920,950 1850,950 1760,860 1760,760 1670,670"
+        fill="#FF5500"
+      />
+
+      {/* 13. Left Edge Vertical Barcode and Serial (#710646316) */}
+      <g transform="translate(45, 620) rotate(-90)">
+        {/* Barcode Lines */}
+        <line x1="0" y1="-8" x2="140" y2="-8" stroke="#111317" strokeWidth="3" />
+        <line x1="0" y1="-4" x2="140" y2="-4" stroke="#111317" strokeWidth="6" />
+        <line x1="0" y1="3" x2="140" y2="3" stroke="#111317" strokeWidth="2" />
+        <line x1="0" y1="8" x2="140" y2="8" stroke="#111317" strokeWidth="4" />
+        {/* Serial Text */}
+        <text
+          x="155"
+          y="3"
+          fill="#111317"
+          fontFamily="monospace"
+          fontSize="22"
+          fontWeight="900"
+          letterSpacing="3"
+        >
+          | #710646316
+        </text>
+      </g>
+
+      {/* Bottom-Left Corner Alignment Brackets */}
+      <g stroke="#B0B8C0" strokeWidth="1.8" fill="none">
+        <path d="M 170,830 L 190,830 M 180,820 L 180,840" />
+        <path d="M 170,890 L 190,890 M 180,880 L 180,900" />
+      </g>
+    </svg>
+  );
+
+  return (
+    <div
+      ref={containerRef}
+      className="fixed inset-0 z-[999999] pointer-events-auto select-none overflow-hidden bg-[#E8ECEF] font-mono cursor-none"
+    >
+      {/* --- TOP-LEFT 45° DIAGONAL BLAST PANEL --- */}
+      <div
+        ref={topLeftPanelRef}
+        style={{
+          clipPath: 'polygon(0 0, 100% 0, 0 100%)'
+        }}
+        className="absolute inset-0 w-full h-full pointer-events-none shadow-[20px_20px_80px_rgba(0,0,0,0.6)] z-10"
+      >
+        <GateGraphic />
+      </div>
+
+      {/* --- BOTTOM-RIGHT 45° DIAGONAL BLAST PANEL --- */}
+      <div
+        ref={bottomRightPanelRef}
+        style={{
+          clipPath: 'polygon(100% 0, 100% 100%, 0 100%)'
+        }}
+        className="absolute inset-0 w-full h-full pointer-events-none shadow-[-20px_-20px_80px_rgba(0,0,0,0.6)] z-10"
+      >
+        <GateGraphic />
+      </div>
+
+      {/* --- CENTRAL HIGH-TECH DIAGNOSTIC HUD LAYER --- */}
+      <div
+        ref={hudOverlayRef}
+        className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center pointer-events-none"
+      >
+        {/* Main Tactical Reactor Capsule Plate */}
+        <div className="bg-[#111317]/95 border-2 border-accent text-white p-6 sm:p-8 flex flex-col items-center shadow-[0_20px_60px_rgba(0,0,0,0.7),0_0_40px_rgba(255,85,0,0.4)] chamfer-tr max-w-sm w-full">
+          
+          {/* Top Telemetry Header */}
+          <div className="w-full flex items-center justify-between border-b border-accent/30 pb-3 mb-5 font-mono text-[9.5px] uppercase tracking-widest text-accent font-bold">
+            <span className="flex items-center gap-1.5">
+              <Zap size={12} className="animate-pulse text-accent" />
+              CYBER_GATE // V26
+            </span>
+            <span>SEC_01 // OK</span>
           </div>
+
+          {/* Glowing Digital Percentage Display */}
+          <div className="font-display font-black text-6xl sm:text-7xl text-white tracking-tighter flex items-baseline leading-none mb-3">
+            <span>{String(progress).padStart(3, '0')}</span>
+            <span className="text-xl text-accent font-mono ml-1.5">%</span>
+          </div>
+
+          {/* High-Tech Progress Segment Bar */}
+          <div className="w-full bg-white/10 h-2 p-0.5 border border-white/20 mb-4 flex">
+            <div
+              className="bg-accent h-full transition-all duration-75 shadow-[0_0_12px_#FF5500]"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          {/* Live System Diagnostics Log */}
+          <div className="w-full bg-black/60 border border-accent/20 px-3 py-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-wider text-accent font-bold">
+            <div className="flex items-center gap-2">
+              <Radio size={12} className="text-accent animate-spin" />
+              <span className="text-white truncate">{statusLog}</span>
+            </div>
+            <span className="w-1.5 h-1.5 bg-accent rounded-full animate-ping" />
+          </div>
+
         </div>
 
-        {/* Live Diagnostics Log Strip */}
-        <div className="mt-8 bg-[#0D1017] border border-accent/30 px-6 py-2 rounded-none flex items-center gap-3 shadow-lg">
-          <Radio size={13} className="text-accent animate-spin" />
-          <span className="font-mono text-[10px] text-white font-bold tracking-widest uppercase">
-            {statusLog}
-          </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
-        </div>
-
-        {/* Peripheral Telemetry Coordinates */}
-        <div className="mt-3 font-mono text-[8.5px] text-fg/40 tracking-widest flex items-center gap-4">
+        {/* Outer Lat/Long Coordinates Strip */}
+        <div className="mt-4 bg-[#111317]/80 border border-accent/20 px-4 py-1.5 font-mono text-[8.5px] text-white/70 tracking-widest uppercase flex items-center gap-4">
           <span>PORT: 3000 // PROD</span>
           <span>LAT: 9.0320° N</span>
           <span>LON: 38.7469° E</span>

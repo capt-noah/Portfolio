@@ -1,9 +1,12 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
+import { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { StackItem } from '../services/dataService';
-import { Terminal, Cpu, Activity, Zap, CheckCircle2, Radio } from 'lucide-react';
+import { Cpu, Activity, CheckCircle2 } from 'lucide-react';
 import { TECH_ICONS, getIconUrl } from '../constants/techIcons';
 import { cyberAudio } from '../utils/cyberAudio';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Stack({ data }: { data: StackItem[] }) {
   const [selectedTech, setSelectedTech] = useState<string | null>(data[0]?.name || "React");
@@ -12,6 +15,85 @@ export default function Stack({ data }: { data: StackItem[] }) {
     "VERIFYING HARDWARE RUNTIMES // STABLE",
     "HOVER OR QUERY ANY MODULE TO INSPECT TELEMETRY."
   ]);
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const tagRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const consoleRef = useRef<HTMLDivElement>(null);
+  const chipsContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Lenis Masked Header Line Reveal
+      const headerTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 75%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      if (tagRef.current) {
+        headerTl.fromTo(
+          tagRef.current,
+          { yPercent: 100, opacity: 0 },
+          { yPercent: 0, opacity: 1, duration: 0.6, ease: 'power4.out' }
+        );
+      }
+
+      if (headingRef.current) {
+        headerTl.fromTo(
+          headingRef.current,
+          { yPercent: 110, skewY: 2, opacity: 0 },
+          { yPercent: 0, skewY: 0, opacity: 1, duration: 0.85, ease: 'power4.out' },
+          '-=0.35'
+        );
+      }
+
+      // 2. Telemetry Console Reveal
+      if (consoleRef.current) {
+        gsap.fromTo(
+          consoleRef.current,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power4.out',
+            scrollTrigger: {
+              trigger: consoleRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse'
+            }
+          }
+        );
+      }
+
+      // 3. Tech Module Chips Staggered Unmasking
+      const chips = chipsContainerRef.current?.querySelectorAll('.tech-module-chip');
+      if (chips && chips.length > 0) {
+        gsap.fromTo(
+          chips,
+          { y: 30, opacity: 0, scale: 0.92 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.5,
+            stagger: 0.025,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: chipsContainerRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse'
+            }
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [data]);
 
   const handleTechHover = (techName: string) => {
     if (selectedTech === techName) return;
@@ -22,15 +104,17 @@ export default function Stack({ data }: { data: StackItem[] }) {
     const randomLatency = (Math.random() * 5 + 0.5).toFixed(2);
     const newLog = `QUERY_LINK: --module=${techName.toLowerCase()} --hash=0x${randomHash} --latency=${randomLatency}ms`;
     
-    setCliHistory(prev => [...prev.slice(-3), newLog]);
+    setCliHistory((prev) => [...prev.slice(-3), newLog]);
   };
 
   return (
-    <section id="stack" className="min-h-screen w-full flex flex-col justify-between py-16 sm:py-24 border-b border-fg/10 bg-transparent select-none relative overflow-hidden">
-      
-      {/* Tech Stack Section Subtle Wireframe Drafting Background (No Blurry Layers) */}
+    <section
+      ref={sectionRef}
+      id="stack"
+      className="min-h-screen w-full flex flex-col justify-between py-16 sm:py-24 border-b border-fg/10 bg-transparent select-none relative overflow-hidden"
+    >
+      {/* Tech Stack SVG Drafting Background */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
-        {/* Subtle grid & dot matrix */}
         <div className="absolute inset-0 tech-grid-bg opacity-40" />
         <div className="absolute inset-0 tech-dot-bg opacity-25" />
 
@@ -40,84 +124,15 @@ export default function Stack({ data }: { data: StackItem[] }) {
           viewBox="0 0 1920 1080"
           preserveAspectRatio="xMidYMid slice"
         >
-          {/* Outer Framing Chassis */}
           <rect x="60" y="45" width="1800" height="990" rx="4" fill="none" stroke="currentColor" strokeWidth="1" className="text-fg/20" />
-          
-          {/* Continuous Architectural Guide Conduits extending across sections */}
           <line x1="240" y1="-50" x2="240" y2="1150" stroke="currentColor" strokeWidth="1.2" strokeDasharray="8 6" className="text-fg/20" />
           <line x1="1680" y1="-50" x2="1680" y2="1150" stroke="currentColor" strokeWidth="1.2" strokeDasharray="8 6" className="text-fg/20" />
 
-          {/* _(5) Long Stepped Motherboard Cyber Rail */}
-          <polygon
-            points="240,160 920,160 960,200 1640,200 1640,235 940,235 900,195 240,195"
-            fill="rgba(11, 13, 16, 0.035)"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            className="text-fg/30"
-          />
-
-          {/* Microchip Terminal Solder Pad Pinouts */}
+          {/* Microchip Pinouts */}
           {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((idx) => {
             const x = 700 + idx * 30;
             return <circle key={`stack-pin-${idx}`} cx={x} cy={160} r={3} fill="#FF5500" />;
           })}
-
-          {/* Stazquez Right Bank: 8 Stacked Angled Louver Slot Capsules */}
-          {[0, 1, 2, 3, 4, 5, 6, 7].map((idx) => {
-            const y = 300 + idx * 24;
-            return (
-              <polygon
-                key={`stack-louver-rt-${idx}`}
-                points={`1720,${y} 1790,${y - 20} 1806,${y - 20} 1736,${y}`}
-                fill="rgba(11, 13, 16, 0.04)"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                className="text-fg/30"
-              />
-            );
-          })}
-
-          {/* Asymmetric Chamfered Sub-Plate Depth Layer */}
-          <polygon
-            points="120,240 560,240 600,280 600,480 560,520 120,520"
-            fill="rgba(11, 13, 16, 0.025)"
-            stroke="currentColor"
-            strokeWidth="1"
-            className="text-fg/20"
-          />
-
-          {/* Stazquez Bottom-Left: Double Horizontal Beveled Stadium Bars */}
-          <polygon
-            points="80,930 440,930 465,955 105,955"
-            fill="rgba(11, 13, 16, 0.04)"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            className="text-fg/30"
-          />
-          <polygon
-            points="80,970 400,970 425,995 105,995"
-            fill="rgba(11, 13, 16, 0.04)"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            className="text-fg/30"
-          />
-
-          {/* Sub-plate Stadium Capsule Slot */}
-          <rect
-            x="1340"
-            y="860"
-            width="300"
-            height="26"
-            rx="13"
-            fill="rgba(11, 13, 16, 0.035)"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            className="text-fg/25"
-          />
-
-          {/* _(5) Mechanical Eyelet Accent */}
-          <circle cx="240" cy="178" r="14" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/35" />
-          <circle cx="240" cy="178" r="5" fill="#FF5500" />
 
           {/* Corner Registration Brackets */}
           <path d="M 40 70 L 40 40 L 70 40" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
@@ -125,12 +140,14 @@ export default function Stack({ data }: { data: StackItem[] }) {
           <path d="M 40 1010 L 40 1040 L 70 1040" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
           <path d="M 1850 1040 L 1880 1040 L 1880 1010" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
 
-          {/* Telemetry Markers */}
-          <text x="120" y="70" fontFamily="monospace" fontSize="9" fontWeight="bold" className="fill-accent">HARDWARE_BUS // PROTOCOL_04</text>
-          <text x="1800" y="160" fontFamily="monospace" fontSize="12" fontWeight="bold" className="fill-accent">☒</text>
+          <text x="120" y="70" fontFamily="monospace" fontSize="9" fontWeight="bold" className="fill-accent">
+            HARDWARE_BUS // PROTOCOL_04
+          </text>
+          <text x="1800" y="160" fontFamily="monospace" fontSize="12" fontWeight="bold" className="fill-accent">
+            ☒
+          </text>
         </svg>
 
-        {/* Background Section Identification Watermark */}
         <div className="absolute right-6 top-8 font-mono text-[9vw] font-black text-fg/[0.03] leading-none pointer-events-none select-none">
           04_STACK
         </div>
@@ -138,34 +155,37 @@ export default function Stack({ data }: { data: StackItem[] }) {
 
       <div className="w-full px-6 sm:px-12 lg:px-16 mx-auto flex-1 flex flex-col justify-between">
         
-        {/* Section Header Strip with Standardized Section Name: TECH STACK */}
+        {/* Lenis Masked Header Line Reveal */}
         <div className="border-b border-fg/10 pb-8 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 bg-accent inline-block" />
-              <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent font-bold">
-                [SYSTEM.04 // RUNTIMES]
-              </span>
+            <div className="overflow-hidden mb-3">
+              <div ref={tagRef} className="flex items-center gap-2 will-change-transform">
+                <span className="w-2 h-2 bg-accent inline-block" />
+                <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent font-bold">
+                  [SYSTEM.04 // RUNTIMES]
+                </span>
+              </div>
             </div>
-            <h2 className="font-display font-black text-[clamp(2.5rem,5.5vw,5.5rem)] leading-[0.9] uppercase text-fg tracking-tighter">
-              TECH STACK
-            </h2>
+
+            <div className="overflow-hidden">
+              <h2
+                ref={headingRef}
+                className="font-display font-black text-[clamp(2.5rem,5.5vw,5.5rem)] leading-[0.9] uppercase text-fg tracking-tighter will-change-transform"
+              >
+                TECH STACK
+              </h2>
+            </div>
           </div>
         </div>
 
         {/* Main Open Hardware Chassis */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch my-auto">
           
-          {/* Left Side: Unboxed Telemetry Live Shell (Reference Card 3 style) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 35 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-30px" }}
-            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="lg:col-span-4 bg-surface/90 border border-fg/20 p-6 sm:p-8 flex flex-col justify-between relative hud-plate-a"
+          {/* Left Side: Unboxed Telemetry Live Shell */}
+          <div 
+            ref={consoleRef}
+            className="lg:col-span-4 bg-surface/90 border border-fg/20 p-6 sm:p-8 flex flex-col justify-between relative hud-plate-a will-change-transform"
           >
-            
-            {/* Window Top Bar with Callout Pin */}
             <div>
               <div className="flex items-center justify-between border-b border-fg/10 pb-4 mb-6">
                 <div className="flex items-center gap-2">
@@ -191,7 +211,6 @@ export default function Stack({ data }: { data: StackItem[] }) {
                   </div>
                 ))}
                 
-                {/* Active Prompt Line */}
                 <div className="flex items-center gap-1.5 text-fg font-bold pt-2 border-t border-fg/10">
                   <span className="text-accent">&gt;&gt;</span>
                   <span>FOCUS: {selectedTech?.toUpperCase() || "IDLE"}</span>
@@ -220,24 +239,22 @@ export default function Stack({ data }: { data: StackItem[] }) {
               </div>
             </div>
 
-            {/* Diagonal zebra hatch corner grip */}
             <div className="absolute top-0 right-0 w-8 h-8 hazard-hatch-dark opacity-10" />
-          </motion.div>
+          </div>
 
           {/* Right Side: Open Interactive Module Matrix */}
-          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 sm:gap-4">
+          <div 
+            ref={chipsContainerRef}
+            className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 sm:gap-4"
+          >
             {data.map((item, i) => {
               const isSelected = selectedTech === item.name;
               return (
-                <motion.div
+                <div
                   key={`${item.name}-${i}`}
                   onMouseEnter={() => handleTechHover(item.name)}
                   onClick={() => handleTechHover(item.name)}
-                  initial={{ opacity: 0, y: 25, scale: 0.94 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true, margin: "-20px" }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.05 + i * 0.025 }}
-                  className={`cursor-none p-4.5 border flex flex-col items-start justify-between min-h-[130px] transition-all duration-300 relative hud-plate-c ${
+                  className={`tech-module-chip cursor-none p-4.5 border flex flex-col items-start justify-between min-h-[130px] transition-all duration-300 relative hud-plate-c will-change-transform ${
                     isSelected 
                       ? "bg-accent text-white border-accent shadow-[0_12px_28px_rgba(255,85,0,0.35)] -translate-y-1 z-10" 
                       : "bg-surface/90 text-fg border-fg/15 hover:border-accent hover:bg-surface hover:-translate-y-0.5"
@@ -267,7 +284,6 @@ export default function Stack({ data }: { data: StackItem[] }) {
                       )}
                     </div>
                     
-                    {/* Slotted ventilation marker (======) from reference */}
                     <span className={`font-mono text-[8px] font-bold ${isSelected ? 'text-white/60' : 'text-fg/30'}`}>
                       0{i + 1}
                     </span>
@@ -282,11 +298,10 @@ export default function Stack({ data }: { data: StackItem[] }) {
                     </span>
                   </div>
 
-                  {/* Corner Accent for selected */}
                   {isSelected && (
                     <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-white inline-block" />
                   )}
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -303,8 +318,6 @@ export default function Stack({ data }: { data: StackItem[] }) {
         </div>
         <div>[MOD_TOTAL: {data.length}] // 04</div>
       </div>
-
     </section>
   );
 }
-

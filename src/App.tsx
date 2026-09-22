@@ -14,6 +14,7 @@ import Navigation from './components/Navigation';
 import Modal from './components/Modal';
 import SciFiGateLoader from './components/SciFiGateLoader';
 import TacticalHudOverlay from './components/TacticalHudOverlay';
+import CyberScene3D from './components/CyberScene3D';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import { getPortfolioData, PortfolioData } from './services/dataService';
@@ -35,14 +36,16 @@ function LandingPage({
   setIsInFooter, 
   setSelectedProjectId, 
   selectedProjectId, 
-  isInFooter
+  isInFooter,
+  gateOpened
 }: { 
   data: PortfolioData | null,
   setCursorType: (type: CursorType) => void,
   setIsInFooter: (inFooter: boolean) => void,
   setSelectedProjectId: (id: string | null) => void,
   selectedProjectId: string | null,
-  isInFooter: boolean
+  isInFooter: boolean,
+  gateOpened: boolean
 }) {
   const [activeSection, setActiveSection] = useState('hero');
   const sections = ['hero', 'experience', 'work', 'stack', 'footer'];
@@ -66,13 +69,16 @@ function LandingPage({
 
   return (
     <div className="relative z-10 bg-transparent min-h-screen">
+      {/* 3D Cyberpunk Particle Field in Background */}
+      <CyberScene3D />
+
       {/* Fixed Screen-Space Tactical HUD Layer */}
       <TacticalHudOverlay 
         activeSection={activeSection}
       />
 
       <Navigation isInFooter={isInFooter} activeSection={activeSection} />
-      <Hero />
+      <Hero gateOpened={gateOpened} />
       <Experience data={data?.experience || []} />
       <Work 
         data={data?.projects || []}
@@ -161,6 +167,7 @@ export default function App() {
               setSelectedProjectId={setSelectedProjectId}
               selectedProjectId={selectedProjectId}
               isInFooter={isInFooter}
+              gateOpened={isGateOpen}
             />
           } />
           <Route path="/admin" element={
