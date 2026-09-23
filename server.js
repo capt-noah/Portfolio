@@ -90,6 +90,33 @@ function findSelihomDist() {
   return path.join(__dirname, 'selihom', 'dist');
 }
 
+function findNotflixDir() {
+  const candidates = [
+    path.join(__dirname, 'notflix'),
+    path.join(__dirname, 'NOTFLIX-web'),
+    path.join(__dirname, '..', 'NOTFLIX-web'),
+  ];
+  for (const c of candidates) {
+    try { if (fs.existsSync(c)) return c; } catch (_) {}
+  }
+  return path.join(__dirname, 'notflix');
+}
+
+function findNotflixDist() {
+  const candidates = [
+    path.join(__dirname, 'notflix', 'dist'),
+    path.join(__dirname, 'notflix'),
+    path.join(__dirname, 'NOTFLIX-web', 'dist'),
+    path.join(__dirname, '..', 'NOTFLIX-web', 'dist'),
+  ];
+  for (const c of candidates) {
+    try {
+      if (fs.existsSync(path.join(c, 'index.html'))) return c;
+    } catch (_) {}
+  }
+  return path.join(__dirname, 'notflix', 'dist');
+}
+
 // Uploads directory storage (safe directory creation)
 const sDir = findSelihomDir();
 const uploadsDir = path.join(sDir, 'uploads');
@@ -138,14 +165,17 @@ function auth(req, res, next) {
 // ============================================================
 app.get('/hello', (req, res) => {
   const sDist = findSelihomDist();
+  const nDist = findNotflixDist();
   res.json({
     status: 'ok',
-    message: 'Unified Express server running (Portfolio + Selihom)',
+    message: 'Unified Express server running (Portfolio + Selihom + NotFlix)',
     timestamp: new Date().toISOString(),
     nodeVersion: process.version,
     port: process.env.PORT || 3000,
     selihomMounted: fs.existsSync(path.join(sDist, 'index.html')),
     selihomDist: sDist,
+    notflixMounted: fs.existsSync(path.join(nDist, 'index.html')),
+    notflixDist: nDist,
   });
 });
 
@@ -1390,11 +1420,44 @@ selihomRouter.get(['/db','/db/download'], async (req, res) => {
 app.use('/selihom/api', selihomRouter);
 app.use('/api', selihomRouter);
 
+// Mount NotFlix API router dynamically at /notflix/api
+let notflixRouter = null;
+const notflixDir = findNotflixDir();
+const notflixRouterCandidates = [
+  path.join(notflixDir, 'server', 'router.js'),
+  path.join(__dirname, 'notflix', 'server', 'router.js'),
+  path.join(__dirname, '..', 'NOTFLIX-web', 'server', 'router.js'),
+];
+
+for (const candidate of notflixRouterCandidates) {
+  if (fs.existsSync(candidate)) {
+    try {
+      const mod = await import(candidate);
+      notflixRouter = mod.default || mod.notflixRouter;
+      if (notflixRouter) {
+        console.log(`✓ NotFlix API router mounted from ${candidate}`);
+        break;
+      }
+    } catch (e) {
+      console.warn(`! Failed to import NotFlix router from ${candidate}: ${e.message}`);
+    }
+  }
+}
+
+if (notflixRouter) {
+  app.use('/notflix/api', notflixRouter);
+} else {
+  app.use('/notflix/api', (req, res) => {
+    res.status(503).json({ error: 'NotFlix API router is not installed on this server instance.' });
+  });
+}
+
 // ============================================================
 // 6. STATIC ASSETS & SPA ROUTING
 // ============================================================
 const portfolioDist = path.join(__dirname, 'dist');
 const selihomDist = findSelihomDist();
+const notflixDist = findNotflixDist();
 
 // 1) Serve Portfolio static assets
 if (fs.existsSync(portfolioDist)) {
@@ -1414,7 +1477,16 @@ if (selihomDist && fs.existsSync(selihomDist)) {
   }
 }
 
-// 3) Selihom SPA Fallback (serves Selihom index.html for any /selihom and /selihom/* request)
+// 3) Serve NotFlix static assets at /notflix
+if (notflixDist && fs.existsSync(notflixDist)) {
+  app.use('/notflix', express.static(notflixDist));
+  const notflixAssets = path.join(notflixDist, 'assets');
+  if (fs.existsSync(notflixAssets)) {
+    app.use('/notflix/assets', express.static(notflixAssets));
+  }
+}
+
+// 4) Selihom SPA Fallback (serves Selihom index.html for any /selihom and /selihom/* request)
 app.get(['/selihom', '/selihom/*'], (req, res, next) => {
   if (req.path.startsWith('/selihom/api') || req.path.startsWith('/api')) {
     return next();
@@ -1429,7 +1501,22 @@ app.get(['/selihom', '/selihom/*'], (req, res, next) => {
   res.status(404).send('Selihom Charity frontend not found.');
 });
 
-// 4) Portfolio SPA Fallback (all other routes, including /admin and /)
+// 5) NotFlix SPA Fallback (serves NotFlix index.html for any /notflix and /notflix/* request)
+app.get(['/notflix', '/notflix/*'], (req, res, next) => {
+  if (req.path.startsWith('/notflix/api')) {
+    return next();
+  }
+  const nDist = findNotflixDist();
+  if (nDist) {
+    const indexPath = path.join(nDist, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath);
+    }
+  }
+  res.status(404).send('NotFlix frontend not found.');
+});
+
+// 6) Portfolio SPA Fallback (all other routes, including /admin and /)
 app.get('*', (req, res) => {
   const indexPath = path.join(portfolioDist, 'index.html');
   if (fs.existsSync(indexPath)) {
@@ -1446,4 +1533,5 @@ app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
   console.log(`- Portfolio root: http://localhost:${PORT}/`);
   console.log(`- Selihom route:  http://localhost:${PORT}/selihom`);
+  console.log(`- NotFlix route: http://localhost:${PORT}/notflix`);
 });
