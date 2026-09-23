@@ -3,8 +3,16 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import mysql from 'mysql2/promise';
+
+// Prevent unhandled errors from crashing the Node.js process / Passenger
+process.on('unhandledRejection', (reason) => {
+  console.error('! Unhandled Promise Rejection:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('! Uncaught Exception:', err);
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -233,7 +241,16 @@ app.get('/api/data', async (req, res) => {
       socials: soc.map(s => ({ id: s.id, name: s.name, url: s.url })),
     });
   } catch (err) {
-    console.error('GET /api/data:', err);
+    console.warn(`GET /api/data: MySQL query failed (${err.message}). Serving fallback data.json`);
+    try {
+      const dataJsonPath = path.join(__dirname, 'data.json');
+      if (fs.existsSync(dataJsonPath)) {
+        const raw = fs.readFileSync(dataJsonPath, 'utf8');
+        return res.json(JSON.parse(raw));
+      }
+    } catch (fsErr) {
+      console.error('Fallback to data.json also failed:', fsErr);
+    }
     res.status(500).json({ error: 'Failed to fetch portfolio data', detail: err.message });
   }
 });
@@ -1432,7 +1449,8 @@ const notflixRouterCandidates = [
 for (const candidate of notflixRouterCandidates) {
   if (fs.existsSync(candidate)) {
     try {
-      const mod = await import(candidate);
+      const candidateUrl = pathToFileURL(candidate).href;
+      const mod = await import(candidateUrl);
       notflixRouter = mod.default || mod.notflixRouter;
       if (notflixRouter) {
         console.log(`✓ NotFlix API router mounted from ${candidate}`);
@@ -1458,6 +1476,22 @@ if (notflixRouter) {
 const portfolioDist = path.join(__dirname, 'dist');
 const selihomDist = findSelihomDist();
 const notflixDist = findNotflixDist();
+
+// Enforce trailing slashes on subpath apps so relative ./assets/ work properly
+app.get('/notflix', (req, res, next) => {
+  if (req.originalUrl === '/notflix' || req.originalUrl.startsWith('/notflix?')) {
+    const query = req.originalUrl.includes('?') ? req.originalUrl.slice(req.originalUrl.indexOf('?')) : '';
+    return res.redirect(301, `/notflix/${query}`);
+  }
+  next();
+});
+app.get('/selihom', (req, res, next) => {
+  if (req.originalUrl === '/selihom' || req.originalUrl.startsWith('/selihom?')) {
+    const query = req.originalUrl.includes('?') ? req.originalUrl.slice(req.originalUrl.indexOf('?')) : '';
+    return res.redirect(301, `/selihom/${query}`);
+  }
+  next();
+});
 
 // 1) Serve Portfolio static assets
 if (fs.existsSync(portfolioDist)) {
@@ -1526,7 +1560,21 @@ app.get('*', (req, res) => {
 });
 
 // ============================================================
-// 7. START SERVER
+// 7. GLOBAL ERROR HANDLER
+// ============================================================
+app.use((err, req, res, next) => {
+  console.error('! Unhandled server route error on', req.method, req.url, ':', err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: process.env.NODE_ENV === 'production' ? 'An unexpected error occurred.' : err.message,
+  });
+});
+
+// ============================================================
+// 8. START SERVER
 // ============================================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

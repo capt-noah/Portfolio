@@ -5,7 +5,15 @@
  */
 
 import { Readable } from 'node:stream';
-import nacl from 'tweetnacl';
+
+// Graceful import for tweetnacl (avoids crash if dependencies haven't been installed yet)
+let nacl = null;
+try {
+    const naclModule = await import('tweetnacl');
+    nacl = naclModule.default || naclModule;
+} catch (_) {
+    console.warn('[StreamResolver] Notice: tweetnacl package is not installed. Vidlink provider will be unavailable until "npm install tweetnacl" is run.');
+}
 
 // In-memory stream cache with 2-hour TTL
 const streamCache = new Map();
@@ -18,6 +26,9 @@ const VIDLINK_KEY = Uint8Array.from(Buffer.from('c75136c5668bbfe65a7ecad431a745d
 const VIDLINK_NONCE = new Uint8Array(24);
 
 function encryptVidlinkToken(mediaId) {
+    if (!nacl || !nacl.secretbox) {
+        throw new Error('tweetnacl is not available on this server');
+    }
     const timestamp = Math.floor(Date.now() / 1000) + 480;
     const mediaIdBuf = Buffer.from(String(mediaId), 'utf-8');
     const timeBuf = Buffer.alloc(8);
