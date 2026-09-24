@@ -6,7 +6,14 @@
 
 import { Readable } from 'node:stream';
 
-import nacl from 'tweetnacl';
+// Graceful import for tweetnacl (avoids crash if dependencies haven't been installed yet)
+let nacl = null;
+try {
+    const naclModule = await import('tweetnacl');
+    nacl = naclModule.default || naclModule;
+} catch (_) {
+    console.warn('[StreamResolver] Notice: tweetnacl package is not installed. Vidlink provider will be unavailable until "npm install tweetnacl" is run.');
+}
 
 // In-memory stream cache with 2-hour TTL
 const streamCache = new Map();
@@ -377,15 +384,17 @@ export async function resolveStream({ tmdbId, type = 'movie', season = 1, episod
     }
 
     // Configure provider order based on user selection or default auto order
-    let providers = [resolveVixSrc, resolveVidLink, resolveAutoEmbed, resolveVidSrc, resolveVidCore];
-    if (provider === 'vixsrc') {
-        providers = [resolveVixSrc, resolveVidLink, resolveAutoEmbed, resolveVidSrc];
+    let providers = [resolveVidSrc, resolveVixSrc, resolveVidLink, resolveAutoEmbed, resolveVidCore];
+    if (provider === 'vidsrc') {
+        providers = [resolveVidSrc, resolveVixSrc, resolveVidLink, resolveAutoEmbed, resolveVidCore];
     } else if (provider === 'vidlink') {
-        providers = [resolveVidLink, resolveVixSrc, resolveAutoEmbed, resolveVidSrc];
-    } else if (provider === 'vidsrc') {
-        providers = [resolveVidSrc, resolveVixSrc, resolveVidLink, resolveAutoEmbed];
+        providers = [resolveVidLink, resolveVidSrc, resolveVixSrc, resolveAutoEmbed, resolveVidCore];
+    } else if (provider === 'vixsrc' || provider === 'auto') {
+        providers = [resolveVidSrc, resolveVixSrc, resolveVidLink, resolveAutoEmbed, resolveVidCore];
+    } else if (provider === 'vidbing' || provider === 'vidfast' || provider === 'vidzee' || provider === 'vidcore') {
+        providers = [resolveVidCore, resolveVidSrc, resolveVixSrc, resolveVidLink, resolveAutoEmbed];
     } else if (provider === 'autoembed') {
-        providers = [resolveAutoEmbed, resolveVixSrc, resolveVidLink, resolveVidSrc];
+        providers = [resolveAutoEmbed, resolveVidSrc, resolveVixSrc, resolveVidLink, resolveVidCore];
     }
 
     for (const resolver of providers) {
