@@ -1,6 +1,4 @@
 import express from 'express';
-import cors from 'cors';
-import rateLimit from 'express-rate-limit';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -13,32 +11,22 @@ const distPath = path.resolve(__dirname, '../dist');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+// Native CORS middleware
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204);
+    }
+    next();
+});
 app.use(express.json());
 
 // Health check endpoint for uptime monitors and Railway
 app.get(['/health', '/api/health'], (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: process.env.NODE_ENV === 'production' ? 500 : 2000, // Increased limit to prevent blank pages during dev
-    message: { error: 'Too many requests, please try again later' },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
-
-const reviewLimiter = rateLimit({
-    windowMs: 60 * 1000,
-    max: 5,
-    message: { error: 'Too many reviews submitted, please wait before trying again' },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
-
-app.use('/api/', limiter);
-app.use('/api/reviews', reviewLimiter);
 
 const sanitizeString = (str) => {
     if (typeof str !== 'string') return '';
