@@ -3,8 +3,9 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import mysql from 'mysql2/promise';
+import notflixRouter from './notflix/server/router.js';
 
 // Prevent unhandled errors from crashing the Node.js process / Passenger
 process.on('unhandledRejection', (reason) => {
@@ -46,23 +47,23 @@ const pool = mysql.createPool({
   timezone: 'Z',
 });
 
-pool.getConnection()
-  .then(conn => {
+async function initDatabaseSchema() {
+  try {
+    const conn = await pool.getConnection();
     console.log(`✓ MySQL connected to ${process.env.DB_HOST || 'mysql-db02.remote'}/${process.env.DB_NAME || 'portfolio_db'}`);
     conn.release();
-  })
-  .catch(err => {
-    console.warn(`! MySQL initial connection warning: ${err.message}`);
-  });
 
-// Ensure news table has image_paths column for Selihom
-pool.query("SHOW COLUMNS FROM news LIKE 'image_paths'")
-  .then(([rows]) => {
-    if (rows && rows.length === 0) {
-      return pool.query("ALTER TABLE news ADD COLUMN image_paths TEXT AFTER cover_image");
-    }
-  })
-  .catch(() => {});
+    try {
+      const [rows] = await pool.query("SHOW COLUMNS FROM news LIKE 'image_paths'");
+      if (rows && rows.length === 0) {
+        await pool.query("ALTER TABLE news ADD COLUMN image_paths TEXT AFTER cover_image");
+      }
+    } catch (_) {}
+  } catch (err) {
+    console.warn(`! MySQL initial connection warning: ${err.message}`);
+  }
+}
+initDatabaseSchema();
 
 // ============================================================
 // 2. PATH RESOLUTION (PORTFOLIO & SELIHOM)
@@ -1437,31 +1438,7 @@ selihomRouter.get(['/db','/db/download'], async (req, res) => {
 app.use('/selihom/api', selihomRouter);
 app.use('/api', selihomRouter);
 
-// Mount NotFlix API router dynamically at /notflix/api
-let notflixRouter = null;
-const notflixDir = findNotflixDir();
-const notflixRouterCandidates = [
-  path.join(notflixDir, 'server', 'router.js'),
-  path.join(__dirname, 'notflix', 'server', 'router.js'),
-  path.join(__dirname, '..', 'NOTFLIX-web', 'server', 'router.js'),
-];
-
-for (const candidate of notflixRouterCandidates) {
-  if (fs.existsSync(candidate)) {
-    try {
-      const candidateUrl = pathToFileURL(candidate).href;
-      const mod = await import(candidateUrl);
-      notflixRouter = mod.default || mod.notflixRouter;
-      if (notflixRouter) {
-        console.log(`✓ NotFlix API router mounted from ${candidate}`);
-        break;
-      }
-    } catch (e) {
-      console.warn(`! Failed to import NotFlix router from ${candidate}: ${e.message}`);
-    }
-  }
-}
-
+// Mount NotFlix API router at /notflix/api
 if (notflixRouter) {
   app.use('/notflix/api', notflixRouter);
 } else {
@@ -1503,10 +1480,8 @@ if (selihomDist && fs.existsSync(selihomDist)) {
   app.use('/selihom', express.static(selihomDist));
   app.use('/selihom/selihom', express.static(selihomDist));
 
-  // Fallback for root /assets in case bundle requests /assets/*
   const selihomAssets = path.join(selihomDist, 'assets');
   if (fs.existsSync(selihomAssets)) {
-    app.use('/assets', express.static(selihomAssets));
     app.use('/selihom/assets', express.static(selihomAssets));
   }
 }

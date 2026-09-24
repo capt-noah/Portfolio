@@ -18,35 +18,15 @@ const distPath = path.resolve(__dirname, '../dist');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// CORS setup (graceful if package not installed)
-let corsMiddleware = (req, res, next) => {
+// CORS setup
+app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.sendStatus(200);
     next();
-};
-try {
-    const corsModule = await import('cors');
-    corsMiddleware = (corsModule.default || corsModule)();
-} catch (_) {}
-
-app.use(corsMiddleware);
+});
 app.use(express.json());
-
-// Global Rate Limiting (graceful if package not installed)
-try {
-    const rlModule = await import('express-rate-limit');
-    const rateLimit = rlModule.default || rlModule;
-    const limiter = rateLimit({
-        windowMs: 15 * 60 * 1000,
-        max: process.env.NODE_ENV === 'production' ? 1000 : 5000,
-        message: { error: 'Too many requests, please try again later' },
-        standardHeaders: true,
-        legacyHeaders: false,
-    });
-    app.use(['/api/', '/notflix/api/'], limiter);
-} catch (_) {}
 
 // Top-level Health Checks
 app.get(['/health', '/api/health', '/notflix/health', '/notflix/api/health'], (req, res) => {

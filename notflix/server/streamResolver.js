@@ -6,14 +6,7 @@
 
 import { Readable } from 'node:stream';
 
-// Graceful import for tweetnacl (avoids crash if dependencies haven't been installed yet)
-let nacl = null;
-try {
-    const naclModule = await import('tweetnacl');
-    nacl = naclModule.default || naclModule;
-} catch (_) {
-    console.warn('[StreamResolver] Notice: tweetnacl package is not installed. Vidlink provider will be unavailable until "npm install tweetnacl" is run.');
-}
+import nacl from 'tweetnacl';
 
 // In-memory stream cache with 2-hour TTL
 const streamCache = new Map();
