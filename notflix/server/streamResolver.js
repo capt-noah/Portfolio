@@ -6,16 +6,13 @@
 
 import { Readable } from 'node:stream';
 
-let naclInstance = null;
-async function getNacl() {
-    if (naclInstance) return naclInstance;
-    try {
-        const mod = await import('tweetnacl');
-        naclInstance = mod.default || mod;
-        return naclInstance;
-    } catch (_) {
-        return null;
-    }
+// Graceful import for tweetnacl (avoids crash if dependencies haven't been installed yet)
+let nacl = null;
+try {
+    const naclModule = await import('tweetnacl');
+    nacl = naclModule.default || naclModule;
+} catch (_) {
+    console.warn('[StreamResolver] Notice: tweetnacl package is not installed. Vidlink provider will be unavailable until "npm install tweetnacl" is run.');
 }
 
 // In-memory stream cache with 2-hour TTL
@@ -28,8 +25,7 @@ const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/
 const VIDLINK_KEY = Uint8Array.from(Buffer.from('c75136c5668bbfe65a7ecad431a745db68b5f381555b38d8f6c699449cf11fcd', 'hex'));
 const VIDLINK_NONCE = new Uint8Array(24);
 
-async function encryptVidlinkToken(mediaId) {
-    const nacl = await getNacl();
+function encryptVidlinkToken(mediaId) {
     if (!nacl || !nacl.secretbox) {
         throw new Error('tweetnacl is not available on this server');
     }
@@ -162,7 +158,7 @@ async function resolveVixSrc(tmdbId, type = 'movie', season = 1, episode = 1) {
  */
 async function resolveVidLink(tmdbId, type = 'movie', season = 1, episode = 1) {
     try {
-        const token = await encryptVidlinkToken(tmdbId);
+        const token = encryptVidlinkToken(tmdbId);
         const url = type === 'movie'
             ? `https://vidlink.pro/api/b/movie/${token}?multiLang=1`
             : `https://vidlink.pro/api/b/tv/${token}/${season}/${episode}?multiLang=1`;
