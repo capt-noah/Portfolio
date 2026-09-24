@@ -1552,9 +1552,16 @@ app.use((err, req, res, next) => {
 // 8. START SERVER
 // ============================================================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-  console.log(`- Portfolio root: http://localhost:${PORT}/`);
-  console.log(`- Selihom route:  http://localhost:${PORT}/selihom`);
-  console.log(`- NotFlix route: http://localhost:${PORT}/notflix`);
-});
+if (typeof PhusionPassenger !== 'undefined') {
+  PhusionPassenger.configure({ autoInstall: false });
+  app.listen('passenger', () => {
+    console.log('✓ Server listening via Phusion Passenger');
+  });
+} else {
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+    console.log(`- Portfolio root: http://localhost:${PORT}/`);
+    console.log(`- Selihom route:  http://localhost:${PORT}/selihom`);
+    console.log(`- NotFlix route:  http://localhost:${PORT}/notflix`);
+  });
+}
