@@ -172,7 +172,17 @@ function auth(req, res, next) {
 // ============================================================
 // 4. PORTFOLIO API ENDPOINTS
 // ============================================================
-app.get('/hello', (req, res) => {
+app.get(['/health', '/ping', '/api/health', '/api/ping'], (req, res) => {
+  res.json({
+    status: 'ok',
+    app: 'Portfolio Unified Server',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    port: process.env.PORT || 3000,
+  });
+});
+
+app.get(['/hello', '/api/hello'], (req, res) => {
   const sDist = findSelihomDist();
   const nDist = findNotflixDist();
   res.json({
@@ -188,7 +198,7 @@ app.get('/hello', (req, res) => {
   });
 });
 
-app.get('/api/db-test', async (req, res) => {
+app.get(['/api/db-test', '/db-test'], async (req, res) => {
   try {
     const [ping]   = await pool.query('SELECT 1+1 AS result, NOW() AS server_time');
     const [tables] = await pool.query('SHOW TABLES');
@@ -618,13 +628,23 @@ async function buildVolCategory(catRow) {
   };
 }
 
-// Selihom ping / health
+// Selihom ping / health & db-test
 selihomRouter.get(['/ping', '/health'], async (_req, res) => {
   try {
     await pool.execute('SELECT 1 AS ping');
     res.json({ status: 'ok', db: 'connected', app: 'Selihom Charity API', timestamp: new Date().toISOString() });
   } catch (e) {
     res.status(200).json({ status: 'warning', db: 'disconnected', error: e.message, timestamp: new Date().toISOString() });
+  }
+});
+
+selihomRouter.get(['/db-test', '/db/test'], async (req, res) => {
+  try {
+    const [ping]   = await pool.query('SELECT 1+1 AS result, NOW() AS server_time');
+    const [tables] = await pool.query('SHOW TABLES');
+    res.json({ status: 'success', app: 'Selihom Charity API', ping: ping[0], tables });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
   }
 });
 
@@ -1470,32 +1490,53 @@ app.get('/selihom', (req, res, next) => {
   next();
 });
 
+const staticOptions = {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    } else if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+    }
+  },
+};
+
 // 1) Serve Portfolio static assets
 if (fs.existsSync(portfolioDist)) {
-  app.use(express.static(portfolioDist));
+  app.use(express.static(portfolioDist, staticOptions));
 }
 
 // 2) Serve Selihom static assets at /selihom and /selihom/selihom
 if (selihomDist && fs.existsSync(selihomDist)) {
-  app.use('/selihom', express.static(selihomDist));
-  app.use('/selihom/selihom', express.static(selihomDist));
+  app.use('/selihom', express.static(selihomDist, staticOptions));
+  app.use('/selihom/selihom', express.static(selihomDist, staticOptions));
 
   const selihomAssets = path.join(selihomDist, 'assets');
   if (fs.existsSync(selihomAssets)) {
-    app.use('/selihom/assets', express.static(selihomAssets));
+    app.use('/selihom/assets', express.static(selihomAssets, staticOptions));
+    // Also allow root /assets fallback for Selihom bundles
+    app.use('/assets', express.static(selihomAssets, staticOptions));
   }
 }
 
 // 3) Serve NotFlix static assets at /notflix
 if (notflixDist && fs.existsSync(notflixDist)) {
-  app.use('/notflix', express.static(notflixDist));
+  app.use('/notflix', express.static(notflixDist, staticOptions));
   const notflixAssets = path.join(notflixDist, 'assets');
   if (fs.existsSync(notflixAssets)) {
-    app.use('/notflix/assets', express.static(notflixAssets));
+    app.use('/notflix/assets', express.static(notflixAssets, staticOptions));
   }
 }
 
-// 4) Selihom SPA Fallback (serves Selihom index.html for any /selihom and /selihom/* request)
+// 4) Static Asset Guard: Never serve SPA HTML for missing assets/files with file extensions
+app.use(['/assets', '/selihom/assets', '/notflix/assets'], (req, res) => {
+  res.status(404).type('text/plain').send('Asset not found');
+});
+
+app.get(/\.(js|mjs|css|map|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot)$/i, (req, res) => {
+  res.status(404).type('text/plain').send('Static resource not found');
+});
+
+// 5) Selihom SPA Fallback (serves Selihom index.html for any /selihom and /selihom/* request)
 app.get(['/selihom', '/selihom/*'], (req, res, next) => {
   if (req.path.startsWith('/selihom/api') || req.path.startsWith('/api')) {
     return next();
@@ -1510,7 +1551,7 @@ app.get(['/selihom', '/selihom/*'], (req, res, next) => {
   res.status(404).send('Selihom Charity frontend not found.');
 });
 
-// 5) NotFlix SPA Fallback (serves NotFlix index.html for any /notflix and /notflix/* request)
+// 6) NotFlix SPA Fallback (serves NotFlix index.html for any /notflix and /notflix/* request)
 app.get(['/notflix', '/notflix/*'], (req, res, next) => {
   if (req.path.startsWith('/notflix/api')) {
     return next();
@@ -1525,7 +1566,7 @@ app.get(['/notflix', '/notflix/*'], (req, res, next) => {
   res.status(404).send('NotFlix frontend not found.');
 });
 
-// 6) Portfolio SPA Fallback (all other routes, including /admin and /)
+// 7) Portfolio SPA Fallback (all other routes, including /admin and /)
 app.get('*', (req, res) => {
   const indexPath = path.join(portfolioDist, 'index.html');
   if (fs.existsSync(indexPath)) {
