@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 const distPath = path.resolve(__dirname, '../dist');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 // CORS setup
 app.use((req, res, next) => {
