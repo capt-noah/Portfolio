@@ -23,11 +23,11 @@ const loadServerEnv = () => {
 
 loadServerEnv();
 
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+const TMDB_API_KEY = process.env.TMDB_API_KEY || process.env.VITE_TMDB_API_KEY || '21269750eb76a0b7c178e43c91b355e5';
 const TMDB_BASE_URL = process.env.TMDB_BASE_URL || 'https://api.themoviedb.org/3';
 
 if (!TMDB_API_KEY) {
-    throw new Error('TMDB_API_KEY environment variable is required');
+    console.warn('[TMDBProxy] Warning: TMDB_API_KEY is not defined. TMDB endpoints may return empty results.');
 }
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original';
