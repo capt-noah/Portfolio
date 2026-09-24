@@ -6,8 +6,6 @@
 
 import 'dotenv/config';
 import express from 'express';
-import cors from 'cors';
-import rateLimit from 'express-rate-limit';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -20,19 +18,17 @@ const distPath = path.resolve(__dirname, '../dist');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
-
-// Global Rate Limiting
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: process.env.NODE_ENV === 'production' ? 1000 : 5000,
-    message: { error: 'Too many requests, please try again later' },
-    standardHeaders: true,
-    legacyHeaders: false,
+// Middlewares: Native CORS and JSON parsing
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204);
+    }
+    next();
 });
-app.use(['/api/', '/notflix/api/'], limiter);
+app.use(express.json());
 
 // Top-level Health Checks
 app.get(['/health', '/api/health', '/notflix/health', '/notflix/api/health'], (req, res) => {
