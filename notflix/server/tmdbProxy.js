@@ -1,58 +1,34 @@
 import fs from 'fs';
 
 const loadServerEnv = () => {
-    const candidates = [
-        decodeURIComponent(new URL('./.env', import.meta.url).pathname),
-        decodeURIComponent(new URL('../.env', import.meta.url).pathname),
-        decodeURIComponent(new URL('../.env.local', import.meta.url).pathname)
-    ];
+    const envPath = decodeURIComponent(new URL('./.env', import.meta.url).pathname);
+    if (!fs.existsSync(envPath)) return;
 
-    for (const envPath of candidates) {
-        if (!fs.existsSync(envPath)) continue;
+    fs.readFileSync(envPath, 'utf8')
+        .split(/\r?\n/)
+        .forEach(line => {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) return;
 
-        fs.readFileSync(envPath, 'utf8')
-            .split(/\r?\n/)
-            .forEach(line => {
-                const trimmed = line.trim();
-                if (!trimmed || trimmed.startsWith('#')) return;
+            const separatorIndex = trimmed.indexOf('=');
+            if (separatorIndex === -1) return;
 
-                const separatorIndex = trimmed.indexOf('=');
-                if (separatorIndex === -1) return;
-
-                const key = trimmed.slice(0, separatorIndex).trim();
-                const value = trimmed.slice(separatorIndex + 1).trim();
-                if (key && value && process.env[key] === undefined) {
-                    process.env[key] = value;
-                }
-            });
-    }
+            const key = trimmed.slice(0, separatorIndex).trim();
+            const value = trimmed.slice(separatorIndex + 1).trim();
+            if (key && value && process.env[key] === undefined) {
+                process.env[key] = value;
+            }
+        });
 };
 
 loadServerEnv();
 
-const TMDB_API_KEY = process.env.TMDB_API_KEY || "21269750eb76a0b7c178e43c91b355e5";
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = process.env.TMDB_BASE_URL || 'https://api.themoviedb.org/3';
 
 if (!TMDB_API_KEY) {
-    console.warn('[TMDB Proxy] Warning: TMDB_API_KEY environment variable is not set. TMDB requests will fail.');
+    throw new Error('TMDB_API_KEY environment variable is required');
 }
-
-const cache = new Map();
-const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
-
-const getCached = (key) => {
-    const entry = cache.get(key);
-    if (!entry) return null;
-    if (Date.now() > entry.expiry) {
-        cache.delete(key);
-        return null;
-    }
-    return entry.data;
-};
-
-const setCached = (key, data, ttlMs = CACHE_TTL_MS) => {
-    cache.set(key, { data, expiry: Date.now() + ttlMs });
-};
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original';
 
@@ -80,14 +56,6 @@ const mapTMDBToNotFlix = (item, defaultType = 'movie') => {
 };
 
 const fetchTMDB = async (endpoint) => {
-    const cached = getCached(endpoint);
-    if (cached) return cached;
-
-    if (!TMDB_API_KEY) {
-        console.warn('[TMDB Proxy] Warning: TMDB_API_KEY is not configured');
-        return [];
-    }
-
     const separator = endpoint.includes('?') ? '&' : '?';
     const url = `${TMDB_BASE_URL}${endpoint}${separator}api_key=${TMDB_API_KEY}`;
 
@@ -99,20 +67,10 @@ const fetchTMDB = async (endpoint) => {
         throw new Error(`TMDB API Error: ${response.status} ${response.statusText}${body ? ` - ${body}` : ''}`);
     }
     const data = await response.json();
-    const results = data.results || [];
-    setCached(endpoint, results);
-    return results;
+    return data.results || [];
 };
 
 const fetchTMDBItem = async (endpoint) => {
-    const cached = getCached(endpoint);
-    if (cached) return cached;
-
-    if (!TMDB_API_KEY) {
-        console.warn('[TMDB Proxy] Warning: TMDB_API_KEY is not configured');
-        return null;
-    }
-
     const separator = endpoint.includes('?') ? '&' : '?';
     const url = `${TMDB_BASE_URL}${endpoint}${separator}api_key=${TMDB_API_KEY}`;
 
@@ -123,9 +81,7 @@ const fetchTMDBItem = async (endpoint) => {
         const body = await response.text().catch(() => '');
         throw new Error(`TMDB API Error: ${response.status} ${response.statusText}${body ? ` - ${body}` : ''}`);
     }
-    const data = await response.json();
-    setCached(endpoint, data);
-    return data;
+    return await response.json();
 };
 
 export const TMDBService = {
@@ -205,6 +161,12 @@ export const TMDBService = {
             character: actor.character,
             avatar: actor.profile_path ? `${IMAGE_BASE_URL}${actor.profile_path}` : 'https://via.placeholder.com/150'
         }));
+    },
+
+    getMediaVideos: async (id, type = 'movie') => {
+        const data = await fetchTMDBItem(`/${type}/${id}/videos`);
+        if (!data || !data.results) return [];
+        return data.results.filter(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser' || v.type === 'Clip'));
     },
 
     getMediaVideos: async (id, type = 'movie') => {
@@ -294,34 +256,7 @@ export const TMDBService = {
             }
         }
 
-        let results = await fetchTMDB(`${endpoint}?include_adult=false${queryParams}`);
-        
-        // Typo-tolerant fallback: if TMDB returned 0 results, test phonetic and character variations
-        if ((!results || results.length === 0) && query && query.trim().length >= 3) {
-            const cleanQ = query.toLowerCase().trim();
-            const variants = new Set();
-            if (cleanQ.includes('ie')) variants.add(cleanQ.replace(/ie/g, 'ei'));
-            if (cleanQ.includes('ei')) variants.add(cleanQ.replace(/ei/g, 'ie'));
-            if (cleanQ.includes('rak')) variants.add(cleanQ.replace('rak', 'reak'));
-            if (cleanQ.includes('ak')) variants.add(cleanQ.replace('ak', 'eak'));
-            if (cleanQ.includes('spidr')) variants.add(cleanQ.replace('spidr', 'spider'));
-            if (cleanQ.includes('avengr')) variants.add(cleanQ.replace('avengr', 'avenger'));
-            if (cleanQ.includes('oppenhiemer')) variants.add('oppenheimer');
-            if (cleanQ.includes('interstelar')) variants.add('interstellar');
-            const dedupe = cleanQ.replace(/(.)\1+/g, '$1');
-            if (dedupe !== cleanQ) variants.add(dedupe);
-            const words = cleanQ.split(/\s+/).filter(w => w.length >= 4);
-            for (const w of words) variants.add(w);
-
-            for (const variant of variants) {
-                if (variant === cleanQ) continue;
-                const altResults = await fetchTMDB(`${endpoint}?include_adult=false&query=${encodeURIComponent(variant)}`);
-                if (altResults && altResults.length > 0) {
-                    results = altResults;
-                    break;
-                }
-            }
-        }
+        const results = await fetchTMDB(`${endpoint}?include_adult=false${queryParams}`);
         
         let mapped = results.map(item => mapTMDBToNotFlix(item, endpoint.includes('tv') ? 'tv' : 'movie'))
             .filter(i => i.backdrop && i.poster);
