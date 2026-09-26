@@ -60,7 +60,6 @@ pool.query(`
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 `).catch(err => console.error("bank_accounts table init:", err.message));
 
-// Ensure site_settings table exists
 pool.query(`
   CREATE TABLE IF NOT EXISTS site_settings (
     id                     INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -85,7 +84,36 @@ pool.query(`
     linkedin_url           VARCHAR(255) NOT NULL DEFAULT '',
     updated_at             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-`).catch(err => console.error("site_settings table init:", err.message));
+`).then(async () => {
+  await pool.query(`
+    INSERT IGNORE INTO site_settings (
+      setting_key, org_name_en, org_name_am, motto_en, motto_am,
+      phones, email, address_en, address_am,
+      registration_number, registration_date, registration_agency_en, registration_agency_am,
+      telegram_url, facebook_url, tiktok_url, youtube_url, instagram_url, linkedin_url
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `, [
+    "global",
+    "Selihom Mentally Ill People Support Association",
+    "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
+    "Kind hearts excel beautiful faces!",
+    "ደግ ልቦች ከውብ ፊቶች ይበልጣሉ!",
+    JSON.stringify(["+251911004903", "+251953905050", "0118195444"]),
+    "selihome@gmail.com",
+    "Near Entoto St. Raguel and Elias Church, on the road leading toward Fetesha, Addis Ababa, Ethiopia",
+    "ከእንጦጦ ቅዱስ ራጉኤል ወኤልያስ ቤተክርስትያን ወደ ፍተሻ በሚወስደው መንገድ፣ አዲስ አበባ",
+    "1113/2019",
+    "Feb 03, 2020",
+    "Federal Democratic Republic of Ethiopia Agency for Civil Society Organizations",
+    "የኢትዮጵያ ፌደራላዊ ዲሞክራሲያዊ ሪፐብሊክ የሲቪል ማህበረሰብ ድርጅቶች ኤጀንሲ",
+    "https://t.me/Selihommentallyill",
+    "https://facebook.com/SelihomSupport",
+    "https://tiktok.com/@selihomcharity",
+    "https://youtube.com/@selihomcharity",
+    "",
+    "",
+  ]);
+}).catch(err => console.error("site_settings table init:", err.message));
 
 // Ensure estimated_delivery_date columns exist in pledge tables
 async function ensureEstimatedDateColumns() {
@@ -472,25 +500,29 @@ app.delete("/api/bookings/:id", async (req, res) => {
 
 // ─── PLEDGES ──────────────────────────────────────────────────────────────────
 
+async function allInKindPledges() {
+  const pledges = await q("SELECT * FROM pledges ORDER BY created_at DESC");
+  const result  = [];
+  for (const p of pledges) {
+    const items = await q("SELECT * FROM pledge_items WHERE pledge_id=?", [p.id]);
+    result.push({
+      id:                    p.id,
+      donorName:             p.donor_name,
+      donorEmail:            p.donor_email,
+      donorPhone:            p.donor_phone,
+      type:                  p.type,
+      date:                  p.date,
+      estimatedDeliveryDate: p.estimated_delivery_date || "",
+      status:                p.status,
+      pledgedItems: items.map(it => ({ itemId: it.item_id, name: it.item_name, quantity: it.quantity })),
+    });
+  }
+  return result;
+}
+
 app.get("/api/pledges", async (_req, res) => {
   try {
-    const pledges = await q("SELECT * FROM pledges ORDER BY created_at DESC");
-    const result  = [];
-    for (const p of pledges) {
-      const items = await q("SELECT * FROM pledge_items WHERE pledge_id=?", [p.id]);
-      result.push({
-        id:                    p.id,
-        donorName:             p.donor_name,
-        donorEmail:            p.donor_email,
-        donorPhone:            p.donor_phone,
-        type:                  p.type,
-        date:                  p.date,
-        estimatedDeliveryDate: p.estimated_delivery_date || "",
-        status:                p.status,
-        pledgedItems: items.map(it => ({ itemId: it.item_id, name: it.item_name, quantity: it.quantity })),
-      });
-    }
-    res.json(result);
+    res.json(await allInKindPledges());
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -522,24 +554,7 @@ app.post("/api/pledges", async (req, res) => {
         "INSERT INTO pledge_items (pledge_id,item_id,item_name,quantity) VALUES (?,?,?,?)",
         [id, sanitize(it.itemId,60), sanitize(it.name,200), Math.max(0,parseInt(it.quantity)||0)]);
     }
-    // Return full list (matches old JSON server behaviour)
-    const pledges = await q("SELECT * FROM pledges ORDER BY created_at DESC");
-    const result  = [];
-    for (const p of pledges) {
-      const items = await q("SELECT * FROM pledge_items WHERE pledge_id=?", [p.id]);
-      result.push({
-        id:                    p.id,
-        donorName:             p.donor_name,
-        donorEmail:            p.donor_email,
-        donorPhone:            p.donor_phone,
-        type:                  p.type,
-        date:                  p.date,
-        estimatedDeliveryDate: p.estimated_delivery_date || "",
-        status:                p.status,
-        pledgedItems: items.map(it => ({ itemId:it.item_id, name:it.item_name, quantity:it.quantity })),
-      });
-    }
-    res.json(result);
+    res.json(await allInKindPledges());
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -548,46 +563,14 @@ app.put("/api/pledges/:id/status", async (req, res) => {
     const status = whitelist(req.body?.status, PLEDGE_STATUSES, null);
     if (!status) return res.status(400).json({ error: "invalid status" });
     await pool.execute("UPDATE pledges SET status=? WHERE id=?", [status, req.params.id]);
-    const pledges = await q("SELECT * FROM pledges ORDER BY created_at DESC");
-    const result  = [];
-    for (const p of pledges) {
-      const items = await q("SELECT * FROM pledge_items WHERE pledge_id=?", [p.id]);
-      result.push({
-        id:                    p.id,
-        donorName:             p.donor_name,
-        donorEmail:            p.donor_email,
-        donorPhone:            p.donor_phone,
-        type:                  p.type,
-        date:                  p.date,
-        estimatedDeliveryDate: p.estimated_delivery_date || "",
-        status:                p.status,
-        pledgedItems: items.map(it => ({ itemId: it.item_id, name: it.item_name, quantity: it.quantity })),
-      });
-    }
-    res.json(result);
+    res.json(await allInKindPledges());
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.delete("/api/pledges/:id", async (req, res) => {
   try {
     await pool.execute("DELETE FROM pledges WHERE id=?", [req.params.id]);
-    const pledges = await q("SELECT * FROM pledges ORDER BY created_at DESC");
-    const result  = [];
-    for (const p of pledges) {
-      const items = await q("SELECT * FROM pledge_items WHERE pledge_id=?", [p.id]);
-      result.push({
-        id:                    p.id,
-        donorName:             p.donor_name,
-        donorEmail:            p.donor_email,
-        donorPhone:            p.donor_phone,
-        type:                  p.type,
-        date:                  p.date,
-        estimatedDeliveryDate: p.estimated_delivery_date || "",
-        status:                p.status,
-        pledgedItems: items.map(it => ({ itemId: it.item_id, name: it.item_name, quantity: it.quantity })),
-      });
-    }
-    res.json(result);
+    res.json(await allInKindPledges());
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -1616,7 +1599,7 @@ app.get(["/api/db","/api/db/download"], async (req, res) => {
     // Build full db shape
     const out = {
       bookings:          bookingRows.map(rowToBooking),
-      pledges:           pledgeRows.map(r => ({id:r.id,donorName:r.donor_name,donorEmail:r.donor_email,donorPhone:r.donor_phone,type:r.type,date:r.date,status:r.status,pledgedItems:[]})),
+      pledges:           await allInKindPledges(),
       volunteers:        volRows.map(rowToVolunteer),
       inKindNeeds:       needRows.map(rowToNeed),
       availabilitySlots: slotRows.map(rowToSlot),
@@ -1659,8 +1642,15 @@ app.get("*", (_req, res) => {
 });
 
 // ─── START ────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+const isDirectRun = process.argv[1] && (
+  process.argv[1] === fileURLToPath(import.meta.url) ||
+  process.argv[1].endsWith("server.js")
+);
+
+if (isDirectRun) {
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
+}
 
 export default app;
