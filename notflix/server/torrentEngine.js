@@ -4,7 +4,6 @@
  * Delivers instant playback start (1-3s) with full seek support for <video> and AVPlayer.
  */
 
-import WebTorrent from 'webtorrent';
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
@@ -19,12 +18,24 @@ if (!fs.existsSync(TORRENT_CACHE_DIR)) {
     }
 }
 
+// Global WebTorrent Client Singleton & Dynamic Loader
+let WebTorrentClass = null;
 let clientInstance = null;
 
-function getTorrentClient() {
+async function getTorrentClient() {
+    if (!WebTorrentClass) {
+        try {
+            const mod = await import('webtorrent');
+            WebTorrentClass = mod.default || mod;
+        } catch (_) {
+            console.warn('[TorrentEngine] Notice: webtorrent package is not installed. Torrent streaming will be unavailable until installed.');
+            return null;
+        }
+    }
+
     if (!clientInstance || clientInstance.destroyed) {
         try {
-            clientInstance = new WebTorrent({
+            clientInstance = new WebTorrentClass({
                 maxConns: 45,
                 dht: false, // Prevents raw UDP socket bind failures on constrained hosts like Plesk
                 tracker: true,
@@ -36,7 +47,7 @@ function getTorrentClient() {
             });
         } catch (err) {
             console.warn('[TorrentEngine] WebTorrent initialization warning:', err.message);
-            throw err;
+            return null;
         }
     }
     return clientInstance;
@@ -78,7 +89,10 @@ function getMimeType(filename) {
  * Adds or retrieves a torrent by infoHash / magnet link and waits until metadata is ready.
  */
 export async function getOrAddTorrent(torrentSource) {
-    const client = getTorrentClient();
+    const client = await getTorrentClient();
+    if (!client) {
+        throw new Error('WebTorrent client is not available on this server');
+    }
     const sourceStr = String(torrentSource || '').trim();
 
     if (!sourceStr) {
@@ -283,7 +297,7 @@ export async function handleTorrentStreamRequest(req, res) {
 }
 
 // Garbage collector for inactive torrents every 5 minutes
-setInterval(() => {
+const cleanupTimer = setInterval(() => {
     const now = Date.now();
     const MAX_IDLE_MS = 15 * 60 * 1000; // 15 minutes
 
@@ -301,3 +315,6 @@ setInterval(() => {
         }
     }
 }, 5 * 60 * 1000);
+if (cleanupTimer && typeof cleanupTimer.unref === 'function') {
+    cleanupTimer.unref();
+}
