@@ -11,11 +11,9 @@ import {
   Minus,
   UtensilsCrossed,
   Droplets,
-  Stethoscope,
   Brain,
   Pill,
   Calendar,
-  Sparkles,
 } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import {
@@ -37,7 +35,6 @@ import MedicinePledge from "./MedicinePledge";
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
   UtensilsCrossed,
   Droplets,
-  Stethoscope,
   Brain,
   Package,
   Pill,
@@ -54,6 +51,232 @@ const URGENCY_BADGE: Record<string, string> = {
   Medium: "bg-amber-100 text-amber-700 border-amber-200",
   Low: "bg-brand-sky-100 text-brand-sky-700 border-brand-sky-200",
 };
+
+// ── Built-in default single-word categories (Food, Hygiene, Psychiatry) ────────
+const DEFAULT_CATEGORIES: SupplyCategory[] = [
+  {
+    id: "cat-food",
+    name: { en: "Food", am: "ምግብ" },
+    icon: "UtensilsCrossed",
+    color: "bg-amber-500",
+    items: [
+      {
+        id: "food-1",
+        name: { en: "Teff & Grain Flour (Sacks)", am: "ጤፍ እና የእህል ዱቄት (ጆንያ)" },
+        neededQty: { en: "50 Sacks / Month", am: "በወር 50 ጆንያ" },
+        urgency: "High",
+        impactDesc: {
+          en: "Essential staple food for daily meals for 200+ beneficiaries.",
+          am: "ለ200+ ተጠቃሚዎች የዕለት ተዕለት እንጀራና ምግብ ማዘጋጃ።",
+        },
+      },
+      {
+        id: "food-2",
+        name: { en: "Cooking Oil (5L Cans)", am: "የምግብ ዘይት (ባለ 5 ሊትር)" },
+        neededQty: { en: "40 Cans / Month", am: "በወር 40 ጄሪካን" },
+        urgency: "High",
+        impactDesc: {
+          en: "Daily cooking and meal preparation.",
+          am: "ለምግብ ዝግጅትና ወጥ ማብሰያ።",
+        },
+      },
+      {
+        id: "food-3",
+        name: { en: "Lentils, Split Peas & Beans", am: "ምስር፣ ሽምብራና ባቄላ (ጥራጥሬ)" },
+        neededQty: { en: "30 Sacks", am: "30 ጆንያ" },
+        urgency: "Medium",
+        impactDesc: {
+          en: "High protein pulses for nutritional balance.",
+          am: "የተመጣጠነ የፕሮቲን ምግብ ምንጭ።",
+        },
+      },
+      {
+        id: "food-4",
+        name: { en: "Pasta, Macaroni & Rice", am: "ፓስታ፣ መኮሮኒና ሩዝ" },
+        neededQty: { en: "25 Cartons", am: "25 ካርቶን" },
+        urgency: "Medium",
+        impactDesc: {
+          en: "Quick carbohydrates and hearty dinner meals.",
+          am: "ለእራትና ለቁርስ የሚሆኑ ምግቦች።",
+        },
+      },
+      {
+        id: "food-5",
+        name: { en: "Sugar, Salt & Spices", am: "ስኳር፣ ጨው እና ቅመማቅመም" },
+        neededQty: { en: "15 Sacks / Packets", am: "15 ጆንያ/ፓኬት" },
+        urgency: "Low",
+        impactDesc: {
+          en: "Essential condiments for balanced kitchen prep.",
+          am: "የወጥ ቤት ማጣፈጫና ማዘጋጃ ግብአቶች።",
+        },
+      },
+    ],
+  },
+  {
+    id: "cat-hygiene",
+    name: { en: "Hygiene", am: "ንጽህና" },
+    icon: "Droplets",
+    color: "bg-brand-sky-500",
+    items: [
+      {
+        id: "hyg-1",
+        name: { en: "Body & Laundry Soap Bars", am: "የገላ እና የልብስ ሳሙና" },
+        neededQty: { en: "300 Bars / Month", am: "በወር 300 ፍሬ" },
+        urgency: "High",
+        impactDesc: {
+          en: "Maintains personal hygiene and disease prevention.",
+          am: "የተጠቃሚዎችን ንጽህና ለመጠበቅና ከበሽታ ለመከላከል የሚያስፈልግ።",
+        },
+      },
+      {
+        id: "hyg-2",
+        name: { en: "Toothpaste & Toothbrushes", am: "የጥርስ ብሩሽ እና ሳሙና" },
+        neededQty: { en: "200 Sets", am: "200 ስብስብ" },
+        urgency: "Medium",
+        impactDesc: {
+          en: "Daily oral hygiene and dental health care.",
+          am: "የአፍና የጥርስ ንጽህና ለመጠበቅ።",
+        },
+      },
+      {
+        id: "hyg-3",
+        name: { en: "Hair Shampoo & Conditioners", am: "የፀጉር ሻምፖና ቅባት" },
+        neededQty: { en: "100 Bottles", am: "100 ጠርሙስ" },
+        urgency: "Medium",
+        impactDesc: {
+          en: "Regular hair washing and grooming sessions.",
+          am: "ለተጠቃሚዎች ሳምንታዊ የፀጉር እንክብካቤ።",
+        },
+      },
+      {
+        id: "hyg-4",
+        name: { en: "Sanitary Pads (Dignity Kits)", am: "የሴቶች ንጽህና መጠበቂያ (ሞዴስ)" },
+        neededQty: { en: "150 Packs / Month", am: "በወር 150 ፓኬት" },
+        urgency: "High",
+        impactDesc: {
+          en: "Dignified menstrual hygiene care for female beneficiaries.",
+          am: "ለሴት ታካሚዎች ወርሃዊ የንጽህና መጠበቂያ።",
+        },
+      },
+      {
+        id: "hyg-5",
+        name: { en: "Disinfectants, Bleach & Detergent", am: "የወለል ማጽጃ፣ በረኪናና ዱቄት ሳሙና" },
+        neededQty: { en: "50 Large Cans", am: "50 ትላልቅ ጀሪካን" },
+        urgency: "High",
+        impactDesc: {
+          en: "Sanitising center dorms, bathrooms, and clinic rooms.",
+          am: "የማዕከሉን ክፍሎች፣ መታጠቢያዎችንና ግቢውን ንጹህ ለማድረግ።",
+        },
+      },
+    ],
+  },
+  {
+    id: "cat-psychiatry",
+    name: { en: "Psychiatry", am: "ስነ-አእምሮ" },
+    icon: "Brain",
+    color: "bg-purple-600",
+    items: [
+      {
+        id: "psy-1",
+        name: { en: "Art & Drawing Therapy Supplies", am: "የስዕልና የፈጠራ ቴራፒ ቁሳቁሶች" },
+        neededQty: { en: "50 Sets", am: "50 ስብስብ" },
+        urgency: "Medium",
+        impactDesc: {
+          en: "Helps patients express emotions, relieve stress, and rebuild focus.",
+          am: "ስሜትን ለመግለጽ፣ ውጥረትን ለመቀነስና አእምሮን ለማረጋጋት።",
+        },
+      },
+      {
+        id: "psy-2",
+        name: { en: "Sensory & Stress Relief Tools", am: "የጭንቀት ማስታገሻና የስሜት መረጋጊያ እቃዎች" },
+        neededQty: { en: "40 Units", am: "40 ፍሬ" },
+        urgency: "Medium",
+        impactDesc: {
+          en: "Reduces anxiety episodes and aids sensory grounding.",
+          am: "ጭንቀትንና ፍርሃትን ለመቀነስ የሚረዱ የቴራፒ እቃዎች።",
+        },
+      },
+      {
+        id: "psy-3",
+        name: { en: "Calming Weighted Blankets", am: "የእንቅልፍና የመረጋጊያ ከባድ ብርድልብሶች" },
+        neededQty: { en: "30 Blankets", am: "30 ብርድልብስ" },
+        urgency: "High",
+        impactDesc: {
+          en: "Helps traumatized and recovering individuals sleep peacefully.",
+          am: "የጭንቀትና የእንቅልፍ እጦት ያለባቸው ታካሚዎች በሰላም እንዲተኙ ይረዳል።",
+        },
+      },
+      {
+        id: "psy-4",
+        name: { en: "Cognitive Rehabilitation Games & Puzzles", am: "የአእምሮ ማነቃቂያ ጨዋታዎችና እንቆቅልሾች" },
+        neededQty: { en: "25 Sets", am: "25 ስብስብ" },
+        urgency: "Low",
+        impactDesc: {
+          en: "Rebuilds memory, logic, and social problem-solving skills.",
+          am: "የማስታወስ ችሎታንና ማህበራዊ ግንኙነትን ለማዳበር።",
+        },
+      },
+    ],
+  },
+  {
+    id: "cat-supplies",
+    name: { en: "Supplies", am: "ቁሳቁስ" },
+    icon: "Package",
+    color: "bg-teal-600",
+    items: [
+      {
+        id: "sup-1",
+        name: { en: "Warm Blankets & Bedding Sets", am: "ሞቅ ያሉ ብርድልብሶችና የመኝታ አንሶላዎች" },
+        neededQty: { en: "150 Sets", am: "150 ስብስብ" },
+        urgency: "High",
+        impactDesc: {
+          en: "Provides warmth and comfort for 200+ rescued and elderly residents in cold Entoto weather.",
+          am: "በእንጦጦ ብርድ ወቅት ለህሙማንና ለአዛውንቶች ሞቅ ያለ መኝታ ለማዘጋጀት።",
+        },
+      },
+      {
+        id: "sup-2",
+        name: { en: "Clothing, Jackets & Habesha Attire", am: "ንጹህ አልባሳት፣ ጃኬቶችና ባህላዊ ልብሶች" },
+        neededQty: { en: "200 Sets", am: "200 ስብስብ" },
+        urgency: "High",
+        impactDesc: {
+          en: "Dignified, clean clothing for newly rescued beneficiaries and holiday events.",
+          am: "ከጎዳና ለተነሱ ተጠቃሚዎች ንጹህ ልብስና ለበዓላት የሚሆኑ አልባሳት።",
+        },
+      },
+      {
+        id: "sup-3",
+        name: { en: "Kitchen Cookware, Pots & Utensils", am: "የወጥ ቤት ድስቶች፣ ሰሃኖችና የመመገቢያ እቃዎች" },
+        neededQty: { en: "20 Large Sets", am: "20 ትላልቅ ስብስብ" },
+        urgency: "Medium",
+        impactDesc: {
+          en: "Cooking and serving nutritious daily meals for the entire shelter.",
+          am: "የዕለት ምግብ ለማብሰልና ለተጠቃሚዎች ለማቅረብ የሚረዱ የወጥ ቤት ቁሳቁሶች።",
+        },
+      },
+      {
+        id: "sup-4",
+        name: { en: "Shoes, Slippers & Socks", am: "ጫማዎች፣ ነጠላ ጫማና ካልሲዎች" },
+        neededQty: { en: "150 Pairs", am: "150 ጥንድ" },
+        urgency: "Medium",
+        impactDesc: {
+          en: "Protects residents from injuries, fungal infections, and cold ground.",
+          am: "የእግር ቁስለትንና በሽታን ለመከላከል ለተጠቃሚዎች የሚታደል።",
+        },
+      },
+      {
+        id: "sup-5",
+        name: { en: "Stationery, Notebooks & Learning Toolkits", am: "የጽህፈት መሳሪያዎች፣ ደብተርና የስልጠና እቃዎች" },
+        neededQty: { en: "100 Packs", am: "100 ፓኬት" },
+        urgency: "Low",
+        impactDesc: {
+          en: "Supports vocational training, life skills, and children's education.",
+          am: "ለተጠቃሚዎች የሙያ ስልጠናና ለህጻናት ትምህርት ድጋፍ የሚውል።",
+        },
+      },
+    ],
+  },
+];
 
 // ── Single supply item row ─────────────────────────────────────────────────────
 function SupplyRow({
@@ -202,9 +425,11 @@ function SupplyRow({
 export default function SuppliesPledge() {
   const { language, t } = useLanguage();
 
-  const [categories, setCategories] = useState<SupplyCategory[]>([]);
+  const [categories, setCategories] = useState<SupplyCategory[]>(DEFAULT_CATEGORIES);
   const [loading, setLoading] = useState(true);
-  const [activeCatId, setActiveCatId] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<
+    "food" | "hygiene" | "medicine" | "psychiatry" | "supplies"
+  >("food");
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [customItems, setCustomItems] = useState<
     { id: string; name: string; qty: number }[]
@@ -225,15 +450,39 @@ export default function SuppliesPledge() {
   useEffect(() => {
     getSupplyCategories()
       .then((cats) => {
-        setCategories(cats);
-        if (cats.length > 0) setActiveCatId(cats[0].id);
+        if (cats && cats.length > 0) {
+          // Normalize server categories to filter out equipment and map properly
+          const cleanCats = cats.filter((c) => {
+            const nameEn = (c.name?.en || "").toLowerCase();
+            return !nameEn.includes("equipment");
+          });
+          if (cleanCats.length > 0) {
+            setCategories(cleanCats);
+          }
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  const isMedicineSelected = activeCatId === "medicine-category";
-  const activeCategory = categories.find((c) => c.id === activeCatId);
+  // Map active tab to active category
+  const activeCategory =
+    categories.find((c) => {
+      const nameEn = (c.name?.en || "").toLowerCase();
+      if (activeTab === "food") return nameEn.includes("food") || c.id === "cat-food";
+      if (activeTab === "hygiene") return nameEn.includes("hygiene") || c.id === "cat-hygiene";
+      if (activeTab === "psychiatry") return nameEn.includes("psychiatry") || nameEn.includes("therapy") || c.id === "cat-psychiatry";
+      if (activeTab === "supplies") return nameEn.includes("supplies") || nameEn.includes("ቁሳቁስ") || c.id === "cat-supplies";
+      return false;
+    }) ||
+    DEFAULT_CATEGORIES.find((c) => {
+      if (activeTab === "food") return c.id === "cat-food";
+      if (activeTab === "hygiene") return c.id === "cat-hygiene";
+      if (activeTab === "psychiatry") return c.id === "cat-psychiatry";
+      if (activeTab === "supplies") return c.id === "cat-supplies";
+      return false;
+    }) ||
+    categories[0];
 
   const changeQty = (itemId: string, delta: number) =>
     setQuantities((p) => ({
@@ -264,7 +513,7 @@ export default function SuppliesPledge() {
     .filter(([, qty]) => qty > 0)
     .map(([itemId, qty]) => {
       let itemName = "";
-      for (const cat of categories) {
+      for (const cat of [...categories, ...DEFAULT_CATEGORIES]) {
         const found = cat.items.find((it: SupplyItem) => it.id === itemId);
         if (found) {
           itemName = t(found.name);
@@ -332,7 +581,7 @@ export default function SuppliesPledge() {
       donorName: cleanName,
       donorPhone: cleanPhone,
       donorEmail: cleanEmail,
-      categoryId: activeCatId,
+      categoryId: activeCategory?.id || activeTab,
       items: allSelected,
       date: new Date().toLocaleDateString("en-US", {
         year: "numeric",
@@ -364,7 +613,7 @@ export default function SuppliesPledge() {
         </span>
         <h3 className="font-serif text-2xl font-bold text-brand-sky-950">
           {language === "am"
-            ? "ምስጋና! የዓይነት እቃ ቃልኪዳንዎ ደርሶናል።"
+            ? "ምስጋና! የዓይነት ቃልኪዳንዎ ደርሶናል።"
             : "Thank you! In-kind pledge received."}
         </h3>
         <p className="text-gray-500 text-sm leading-relaxed">
@@ -404,48 +653,86 @@ export default function SuppliesPledge() {
 
   return (
     <div className="space-y-8">
-      {/* Category Pills Header */}
-      <div className="flex flex-wrap gap-2.5 justify-center">
-        {categories.map((cat) => {
-          const Icon = ICON_MAP[cat.icon] || Package;
-          const isActive = activeCatId === cat.id;
-          return (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCatId(cat.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                isActive
-                  ? `${cat.color} text-white border-transparent shadow-md ring-2 ring-brand-sky-200`
-                  : "bg-white text-brand-sky-800 border-brand-sky-200 hover:border-brand-sky-400 hover:bg-brand-sky-50"
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{t(cat.name)}</span>
-            </button>
-          );
-        })}
-
-        {/* Integrated Medicine Category Option */}
+      {/* ── Strict Single-Word Category Options Bar: Food, Hygiene, Medicine, Psychiatry, Supplies ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5 max-w-4xl mx-auto">
+        {/* 1. Food (ምግብ) */}
         <button
-          onClick={() => setActiveCatId("medicine-category")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-            isMedicineSelected
-              ? "bg-rose-500 text-white border-transparent shadow-md ring-2 ring-rose-200"
-              : "bg-white text-rose-700 border-rose-200 hover:border-rose-400 hover:bg-rose-50"
+          type="button"
+          onClick={() => setActiveTab("food")}
+          className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer border ${
+            activeTab === "food"
+              ? "bg-amber-500 text-white border-transparent shadow-md ring-2 ring-amber-200"
+              : "bg-white text-amber-900 border-amber-200 hover:border-amber-400 hover:bg-amber-50"
           }`}
         >
-          <Pill className="w-4 h-4" />
-          <span>{language === "am" ? "መድሃኒቶች እና ህክምና (Goals)" : "Medicines & Health"}</span>
+          <UtensilsCrossed className="w-4 h-4 shrink-0" />
+          <span>{language === "am" ? "ምግብ" : "Food"}</span>
+        </button>
+
+        {/* 2. Hygiene (ንጽህና) */}
+        <button
+          type="button"
+          onClick={() => setActiveTab("hygiene")}
+          className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer border ${
+            activeTab === "hygiene"
+              ? "bg-brand-sky-500 text-white border-transparent shadow-md ring-2 ring-brand-sky-200"
+              : "bg-white text-brand-sky-900 border-brand-sky-200 hover:border-brand-sky-400 hover:bg-brand-sky-50"
+          }`}
+        >
+          <Droplets className="w-4 h-4 shrink-0" />
+          <span>{language === "am" ? "ንጽህና" : "Hygiene"}</span>
+        </button>
+
+        {/* 3. Medicine (መድሃኒት) */}
+        <button
+          type="button"
+          onClick={() => setActiveTab("medicine")}
+          className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer border ${
+            activeTab === "medicine"
+              ? "bg-rose-500 text-white border-transparent shadow-md ring-2 ring-rose-200"
+              : "bg-white text-rose-900 border-rose-200 hover:border-rose-400 hover:bg-rose-50"
+          }`}
+        >
+          <Pill className="w-4 h-4 shrink-0" />
+          <span>{language === "am" ? "መድሃኒት" : "Medicine"}</span>
+        </button>
+
+        {/* 4. Psychiatry (ስነ-አእምሮ) */}
+        <button
+          type="button"
+          onClick={() => setActiveTab("psychiatry")}
+          className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer border ${
+            activeTab === "psychiatry"
+              ? "bg-purple-600 text-white border-transparent shadow-md ring-2 ring-purple-200"
+              : "bg-white text-purple-900 border-purple-200 hover:border-purple-400 hover:bg-purple-50"
+          }`}
+        >
+          <Brain className="w-4 h-4 shrink-0" />
+          <span>{language === "am" ? "ስነ-አእምሮ" : "Psychiatry"}</span>
+        </button>
+
+        {/* 5. Supplies (ቁሳቁስ) */}
+        <button
+          type="button"
+          onClick={() => setActiveTab("supplies")}
+          className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer border col-span-2 sm:col-span-1 ${
+            activeTab === "supplies"
+              ? "bg-teal-600 text-white border-transparent shadow-md ring-2 ring-teal-200"
+              : "bg-white text-teal-900 border-teal-200 hover:border-teal-400 hover:bg-teal-50"
+          }`}
+        >
+          <Package className="w-4 h-4 shrink-0" />
+          <span>{language === "am" ? "ቁሳቁስ" : "Supplies"}</span>
         </button>
       </div>
 
-      {/* Render Medicine View with Motivational Goals if selected */}
-      {isMedicineSelected ? (
+      {/* ── Render Medicine View with Dynamic Goal Scale & Top Minimalistic Goal Card ── */}
+      {activeTab === "medicine" ? (
         <div className="bg-rose-50/20 p-2 sm:p-4 rounded-3xl border border-rose-100">
           <MedicinePledge />
         </div>
       ) : (
-        /* Render Standard Category Supplies View */
+        /* ── Render Standard Category Supplies View (Food, Hygiene, Psychiatry, Supplies) ── */
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="space-y-4">
             {/* Selection counter */}
@@ -674,7 +961,7 @@ export default function SuppliesPledge() {
                   ) : (
                     <>
                       <Package className="w-4 h-4" />
-                      <span>{language === "am" ? "የዓይነት እቃ ቃልኪዳን ላክ" : "Submit In-Kind Pledge"}</span>
+                      <span>{language === "am" ? "ቃልኪዳን ላክ" : "Submit Pledge"}</span>
                     </>
                   )}
                 </button>

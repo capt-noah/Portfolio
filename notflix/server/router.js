@@ -7,6 +7,7 @@
 import express from 'express';
 import { TMDBService } from './tmdbProxy.js';
 import { resolveStream, handleStreamProxy, handleSubtitleProxy } from './streamResolver.js';
+import { handleTorrentStreamRequest } from './torrentEngine.js';
 
 const router = express.Router();
 
@@ -73,6 +74,9 @@ router.get('/stream', async (req, res) => {
         res.status(500).json({ error: 'Failed to resolve stream', details: error.message });
     }
 });
+
+// Progressive Sequential Torrent Range Stream (HTTP 206)
+router.get('/stream/torrent', handleTorrentStreamRequest);
 
 // HLS Stream & Segment CORS Proxy
 router.get(['/stream/proxy', '/proxy/stream'], handleStreamProxy);

@@ -118,15 +118,18 @@ export function AdminMedicineTab({ language, onPledgeTypeChange }: { language: s
   const openAdd  = () => { setEditing(null); setForm({ name:"", monthlyQty:0, unitPrice:0, totalMonthly:0, patientsHelped:0, urgency:"Medium", description:{en:"",am:""} }); setShowForm(true); };
 
   const handleSave = async () => {
-    if (!form.name) return;
+    if (!form.name || !form.name.trim()) return;
+    const mQty = Number(form.monthlyQty) || 0;
+    const uPrice = Number(form.unitPrice) || 0;
+    const totM = Number(form.totalMonthly) || (mQty * uPrice);
     const item: MedicineItem = {
       id:             editing?.id || `med-${Date.now()}`,
-      name:           form.name!,
-      monthlyQty:     form.monthlyQty || 0,
-      unitPrice:      form.unitPrice  || 0,
-      totalMonthly:   form.totalMonthly || 0,
-      patientsHelped: form.patientsHelped || 0,
-      urgency:        form.urgency as MedicineItem["urgency"],
+      name:           form.name.trim(),
+      monthlyQty:     mQty,
+      unitPrice:      uPrice,
+      totalMonthly:   totM,
+      patientsHelped: Number(form.patientsHelped) || 0,
+      urgency:        (form.urgency as MedicineItem["urgency"]) || "Medium",
       description:    form.description || { en: "", am: "" },
     };
     await saveMedicineItem(item);
@@ -182,7 +185,7 @@ export function AdminMedicineTab({ language, onPledgeTypeChange }: { language: s
               className="px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"
             >
               <Gift className="w-4 h-4" />
-              <span>{language === "am" ? "ዓይነት እቃ" : "In-Kind"}</span>
+              <span>{language === "am" ? "የዓይነት ቃልኪዳን" : "In-Kind"}</span>
             </button>
 
             <button
@@ -588,7 +591,7 @@ export function AdminSuppliesTab({ language, onPledgeTypeChange }: { language: s
               className="px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"
             >
               <Gift className="w-4 h-4" />
-              <span>{language === "am" ? "ዓይነት እቃ" : "In-Kind"}</span>
+              <span>{language === "am" ? "የዓይነት ቃልኪዳን" : "In-Kind"}</span>
             </button>
 
             <button

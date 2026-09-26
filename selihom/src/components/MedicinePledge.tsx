@@ -38,7 +38,7 @@ const URGENCY_COLORS: Record<string, string> = {
   Low: "bg-brand-sky-100 text-brand-sky-700 border-brand-sky-200",
 };
 
-// ── Single medicine row with motivational goal scale ─────────────────────────
+// ── Single medicine row with polished collapsed & expanded progress scale ────
 export function MedicineRow({
   med,
   qty,
@@ -65,11 +65,11 @@ export function MedicineRow({
     <div
       className={`rounded-2xl border-2 transition-all duration-200 overflow-hidden ${
         selected
-          ? "border-brand-sky-400 bg-brand-sky-50/40"
-          : "border-gray-100 bg-white hover:border-brand-sky-200"
+          ? "border-rose-400 bg-rose-50/30"
+          : "border-gray-100 bg-white hover:border-rose-200"
       }`}
     >
-      {/* ── Collapsed row ── */}
+      {/* ── Collapsed row — Clean with integrated progress bar ── */}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -86,44 +86,53 @@ export function MedicineRow({
           }`}
         />
 
-        {/* Name & Quick Goal Bar */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-sm text-brand-sky-950 leading-snug">
-              {med.name}
+        {/* Name & Progress Bar */}
+        <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 pr-1">
+          <span className="font-semibold text-sm text-brand-sky-950 leading-snug truncate">
+            {med.name}
+          </span>
+
+          {/* Inline Progress Bar & Percentage */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="w-20 sm:w-28 bg-gray-100 h-2 rounded-full overflow-hidden border border-gray-200/60 shrink-0">
+              <div
+                className="bg-linear-to-r from-rose-400 via-amber-400 to-emerald-500 h-full rounded-full transition-all duration-300"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <span
+              className={`text-[10px] font-black px-1.5 py-0.5 rounded-md border shrink-0 ${
+                progressPercent >= 100
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : progressPercent >= 50
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : "bg-rose-50 text-rose-700 border-rose-200"
+              }`}
+            >
+              {progressPercent}%
             </span>
-            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-md">
-              {progressPercent}% {language === "am" ? "ተሟልቷል" : "funded"}
-            </span>
-          </div>
-          {/* Mini progress strip */}
-          <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden mt-1.5 max-w-[200px]">
-            <div
-              className="bg-linear-to-r from-brand-sky-400 to-emerald-500 h-full rounded-full transition-all duration-300"
-              style={{ width: `${progressPercent}%` }}
-            />
           </div>
         </div>
 
         {/* Patients helped — compact */}
-        <div className="hidden sm:flex items-center gap-1 text-[11px] text-brand-sky-600 font-bold shrink-0">
-          <Users className="w-3 h-3" />
-          {med.patientsHelped}
-          <span className="text-gray-400 font-normal">
+        <div className="hidden sm:flex items-center gap-1 text-[11px] text-rose-700 font-bold shrink-0 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-100">
+          <Users className="w-3.5 h-3.5" />
+          <span>{med.patientsHelped}</span>
+          <span className="text-gray-400 font-normal text-[10px]">
             {language === "am" ? "ታካሚ" : "pts"}
           </span>
         </div>
 
         {/* Urgency badge */}
         <span
-          className={`hidden sm:inline text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0 ${URGENCY_COLORS[med.urgency]}`}
+          className={`hidden md:inline text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0 ${URGENCY_COLORS[med.urgency]}`}
         >
           {med.urgency}
         </span>
 
         {/* Qty badge if selected */}
         {selected && (
-          <span className="bg-brand-sky-400 text-white text-[10px] font-black px-2 py-0.5 rounded-full shrink-0">
+          <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 shadow-xs">
             ×{qty}
           </span>
         )}
@@ -138,7 +147,7 @@ export function MedicineRow({
         </span>
       </button>
 
-      {/* ── Expanded detail ── */}
+      {/* ── Expanded detail — Rich motivational scale ── */}
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
@@ -155,7 +164,7 @@ export function MedicineRow({
               </p>
 
               {/* Motivational Goal Scale Box */}
-              <div className="bg-linear-to-r from-emerald-50/80 to-brand-sky-50/80 border border-emerald-200/70 rounded-2xl p-3.5 space-y-2">
+              <div className="bg-linear-to-r from-emerald-50/80 to-rose-50/80 border border-emerald-200/70 rounded-2xl p-3.5 space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1.5 font-bold text-brand-sky-950">
                     <Target className="w-3.5 h-3.5 text-emerald-600" />
@@ -172,7 +181,7 @@ export function MedicineRow({
                 {/* Main Progress Bar Scale */}
                 <div className="w-full bg-white/80 border border-emerald-200/50 h-3 rounded-full overflow-hidden p-0.5 shadow-inner">
                   <div
-                    className="bg-linear-to-r from-brand-sky-400 via-teal-400 to-emerald-500 h-full rounded-full transition-all duration-500"
+                    className="bg-linear-to-r from-rose-400 via-amber-400 to-emerald-500 h-full rounded-full transition-all duration-500"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -188,7 +197,7 @@ export function MedicineRow({
                         ? `ግብ ለማሟላት ${remainingNeeded.toLocaleString()} ክኒን ይቀራሉ`
                         : `${remainingNeeded.toLocaleString()} more needed to meet goal`}
                   </span>
-                  <span className="font-bold text-brand-sky-700 bg-white px-2 py-0.5 rounded-lg border border-brand-sky-100">
+                  <span className="font-bold text-rose-700 bg-white px-2 py-0.5 rounded-lg border border-rose-100">
                     {progressPercent}%
                   </span>
                 </div>
@@ -231,7 +240,7 @@ export function MedicineRow({
               <div
                 className={`flex items-center justify-between rounded-xl px-3 py-2.5 border ${
                   selected
-                    ? "bg-brand-sky-50 border-brand-sky-200"
+                    ? "bg-rose-50 border-rose-200"
                     : "bg-gray-50 border-gray-200"
                 }`}
               >
@@ -245,7 +254,7 @@ export function MedicineRow({
                       e.stopPropagation();
                       onChangeQty(med.id, -1);
                     }}
-                    className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-brand-sky-600 hover:bg-brand-sky-50 rounded-md cursor-pointer"
+                    className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-md cursor-pointer"
                   >
                     <Minus className="w-3.5 h-3.5" />
                   </button>
@@ -258,7 +267,7 @@ export function MedicineRow({
                       e.stopPropagation();
                       onChangeQty(med.id, 1);
                     }}
-                    className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-brand-sky-600 hover:bg-brand-sky-50 rounded-md cursor-pointer"
+                    className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-rose-600 hover:bg-rose-50 rounded-md cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
@@ -321,6 +330,31 @@ export default function MedicinePledge() {
     });
     return totals;
   }, [pledges]);
+
+  // Dynamic Overall Aggregate Goals for Top Minimalist Card
+  const generalGoalStats = useMemo(() => {
+    const totalPatients = medicines.reduce((sum, m) => sum + (m.patientsHelped || 0), 0) || 200;
+    const totalMonthlyBudget = medicines.reduce(
+      (sum, m) => sum + (m.totalMonthly || (m.monthlyQty * m.unitPrice) || 0),
+      0
+    );
+    const totalTargetUnits = medicines.reduce((sum, m) => sum + (m.monthlyQty || 0), 0);
+    const totalPledgedFromDb = Object.values(pledgedTotals).reduce((sum, qty) => sum + qty, 0);
+    const totalCurrentlySelected = Object.values(quantities).reduce((sum, q) => sum + q, 0);
+    const totalPledgedUnits = totalPledgedFromDb + totalCurrentlySelected;
+    const overallPercent =
+      totalTargetUnits > 0
+        ? Math.min(100, Math.round((totalPledgedUnits / totalTargetUnits) * 100))
+        : 0;
+
+    return {
+      totalPatients,
+      totalMonthlyBudget,
+      totalTargetUnits,
+      totalPledgedUnits,
+      overallPercent,
+    };
+  }, [medicines, pledgedTotals, quantities]);
 
   const changeQty = (id: string, delta: number) =>
     setQuantities((p) => ({ ...p, [id]: Math.max(0, (p[id] || 0) + delta) }));
@@ -427,10 +461,10 @@ export default function MedicinePledge() {
         animate={{ opacity: 1, scale: 1 }}
         className="text-center py-12 space-y-4 max-w-lg mx-auto"
       >
-        <div className="w-16 h-16 bg-brand-sky-100 text-brand-sky-500 rounded-full flex items-center justify-center mx-auto">
+        <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-10 h-10 stroke-[2]" />
         </div>
-        <span className="font-mono text-xs font-bold text-brand-sky-600 bg-brand-sky-50 border border-brand-sky-200 px-3 py-1 rounded-lg block w-fit mx-auto">
+        <span className="font-mono text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 px-3 py-1 rounded-lg block w-fit mx-auto">
           {submitted.id}
         </span>
         <h3 className="font-serif text-2xl font-bold text-brand-sky-950">
@@ -454,7 +488,7 @@ export default function MedicinePledge() {
             setEstimatedDeliveryDate("");
             setNotes("");
           }}
-          className="px-6 py-2.5 bg-brand-sky-400 text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-brand-sky-500 transition-colors cursor-pointer"
+          className="px-6 py-2.5 bg-rose-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-rose-600 transition-colors cursor-pointer shadow-md"
         >
           {language === "am" ? "ሌላ ቃልኪዳን" : "Make Another Pledge"}
         </button>
@@ -464,9 +498,125 @@ export default function MedicinePledge() {
 
   return (
     <div className="space-y-6">
+      {/* ── Minimalistic General Goal Overview Card (Top Section) ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-linear-to-r from-rose-50/70 via-white to-brand-sky-50/70 border-2 border-rose-100 rounded-3xl p-5 sm:p-6 shadow-xs space-y-4"
+      >
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-rose-500 text-white flex items-center justify-center shadow-xs shrink-0">
+              <Target className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-serif font-extrabold text-base sm:text-lg text-brand-sky-950 leading-tight">
+                {language === "am"
+                  ? "ወርሃዊ የመድሃኒትና የህክምና ግብ"
+                  : "Monthly Need & Healthcare Goal"}
+              </h4>
+              <p className="text-xs text-gray-500">
+                {language === "am"
+                  ? `ለ${generalGoalStats.totalPatients}+ የአዕምሮ ህሙማን ቀጣይነት ያለው የመድሃኒትና የህክምና ድጋፍ ማሟያ`
+                  : `Sustaining vital psychiatric medications & clinical support for ${generalGoalStats.totalPatients}+ beneficiaries`}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-100/80 border border-rose-200 rounded-xl text-xs font-black text-rose-800 shrink-0">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>{generalGoalStats.overallPercent}% {language === "am" ? "ተሟልቷል" : "Overall Funded"}</span>
+          </div>
+        </div>
+
+        {/* Overall Slim Progress Bar */}
+        <div className="space-y-1.5">
+          <div className="w-full bg-gray-100 border border-gray-200/80 h-2.5 rounded-full overflow-hidden p-0.5 shadow-inner">
+            <div
+              className="bg-linear-to-r from-rose-400 via-amber-400 to-emerald-500 h-full rounded-full transition-all duration-500"
+              style={{ width: `${generalGoalStats.overallPercent}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-[11px] text-gray-500 font-medium">
+            <span>
+              {language === "am" ? "የተሰበሰበ ቃልኪዳን:" : "Pledged so far:"}{" "}
+              <strong className="text-brand-sky-950 font-bold">
+                {generalGoalStats.totalPledgedUnits.toLocaleString()}
+              </strong>{" "}
+              / {generalGoalStats.totalTargetUnits.toLocaleString()}{" "}
+              <span className="text-gray-400 font-normal">
+                {language === "am" ? "ክኒኖች" : "units"}
+              </span>
+            </span>
+            <span>
+              {generalGoalStats.totalTargetUnits > generalGoalStats.totalPledgedUnits ? (
+                <span className="text-amber-700 font-semibold">
+                  {language === "am"
+                    ? `የሚቀረው: ${(generalGoalStats.totalTargetUnits - generalGoalStats.totalPledgedUnits).toLocaleString()} ክኒን`
+                    : `Remaining: ${(generalGoalStats.totalTargetUnits - generalGoalStats.totalPledgedUnits).toLocaleString()} units`}
+                </span>
+              ) : (
+                <span className="text-emerald-700 font-bold">
+                  {language === "am" ? "🎉 ግቡ ተሳክቷል!" : "🎉 Target Reached!"}
+                </span>
+              )}
+            </span>
+          </div>
+        </div>
+
+        {/* 4 Minimalist Metric Tiles */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+          <div className="bg-white/90 border border-rose-100 rounded-2xl p-3 text-center shadow-2xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">
+              {language === "am" ? "ታካሚዎች" : "Patients"}
+            </span>
+            <span className="font-serif font-black text-base text-brand-sky-950">
+              {generalGoalStats.totalPatients}+
+            </span>
+            <span className="text-[10px] text-gray-400 block">
+              {language === "am" ? "በወር የሚረዱ" : "Supported/mo"}
+            </span>
+          </div>
+
+          <div className="bg-white/90 border border-rose-100 rounded-2xl p-3 text-center shadow-2xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">
+              {language === "am" ? "ወርሃዊ ፍላጎት" : "Monthly Target"}
+            </span>
+            <span className="font-serif font-black text-base text-brand-sky-950">
+              {generalGoalStats.totalTargetUnits.toLocaleString()}
+            </span>
+            <span className="text-[10px] text-gray-400 block">
+              {language === "am" ? "ክኒኖች" : "Doses/units"}
+            </span>
+          </div>
+
+          <div className="bg-white/90 border border-rose-100 rounded-2xl p-3 text-center shadow-2xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">
+              {language === "am" ? "ወርሃዊ ዋጋ" : "Monthly Budget"}
+            </span>
+            <span className="font-serif font-black text-base text-rose-700">
+              {(generalGoalStats.totalMonthlyBudget / 1000).toFixed(0)}K
+            </span>
+            <span className="text-[10px] text-gray-400 block">ETB / Month</span>
+          </div>
+
+          <div className="bg-white/90 border border-rose-100 rounded-2xl p-3 text-center shadow-2xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">
+              {language === "am" ? "ተሟልቷል" : "Fulfillment"}
+            </span>
+            <span className="font-serif font-black text-base text-emerald-700">
+              {generalGoalStats.overallPercent}%
+            </span>
+            <span className="text-[10px] text-gray-400 block">
+              {language === "am" ? "የተሸፈነ" : "Achieved"}
+            </span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── Medicine Selection & Contact Form Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <div className="space-y-4">
-          {/* Search */}
+          {/* Search & Custom Medicine button */}
           <div className="flex flex-col sm:flex-row gap-3 items-stretch">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
@@ -477,14 +627,14 @@ export default function MedicinePledge() {
                 placeholder={
                   language === "am" ? "መድሃኒት ይፈልጉ..." : "Search medicines..."
                 }
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-brand-sky-200 rounded-xl text-xs focus:border-brand-sky-400 outline-none font-medium"
+                className="w-full pl-9 pr-4 py-2.5 bg-white border border-rose-200 rounded-xl text-xs focus:border-rose-400 outline-none font-medium"
               />
             </div>
             {!showCustomMedicine ? (
               <button
                 type="button"
                 onClick={() => setShowCustomMedicine(true)}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-brand-sky-300 text-brand-sky-600 hover:bg-brand-sky-50 transition-colors text-xs font-bold shrink-0 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-rose-300 text-rose-700 hover:bg-rose-50 transition-colors text-xs font-bold shrink-0 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 {language === "am" ? "ሌላ መድሃኒት" : "Custom medicine"}
@@ -497,12 +647,12 @@ export default function MedicinePledge() {
                   onChange={(e) => setCustomName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCustomMedicine())}
                   placeholder={language === "am" ? "የመድሃኒት ስም" : "Medicine name"}
-                  className="w-36 px-3 py-2.5 bg-white border border-brand-sky-300 rounded-xl text-xs outline-none focus:border-brand-sky-500"
+                  className="w-36 px-3 py-2.5 bg-white border border-rose-300 rounded-xl text-xs outline-none focus:border-rose-500"
                 />
                 <button
                   type="button"
                   onClick={addCustomMedicine}
-                  className="px-3 rounded-xl bg-brand-sky-400 text-white text-xs font-bold hover:bg-brand-sky-500 cursor-pointer"
+                  className="px-3 rounded-xl bg-rose-500 text-white text-xs font-bold hover:bg-rose-600 cursor-pointer"
                 >
                   Add
                 </button>
@@ -525,7 +675,7 @@ export default function MedicinePledge() {
               {customMedicines.map((item) => (
                 <span
                   key={item.id}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-brand-sky-50 border border-brand-sky-200 px-2.5 py-1.5 text-[11px] font-semibold text-brand-sky-800"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-rose-50 border border-rose-200 px-2.5 py-1.5 text-[11px] font-semibold text-rose-800"
                 >
                   {item.name}
                   <button
@@ -533,7 +683,7 @@ export default function MedicinePledge() {
                     onClick={() =>
                       setCustomMedicines((items) => items.filter((entry) => entry.id !== item.id))
                     }
-                    className="text-brand-sky-500 hover:text-red-500 cursor-pointer"
+                    className="text-rose-500 hover:text-red-500 cursor-pointer"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -544,7 +694,7 @@ export default function MedicinePledge() {
 
           {/* Medicine list */}
           {loading ? (
-            <div className="flex items-center justify-center h-80 gap-2 text-brand-sky-400">
+            <div className="flex items-center justify-center h-80 gap-2 text-rose-400">
               <LoadingDots />
               <span className="text-sm font-medium">
                 {language === "am" ? "በመጫን ላይ..." : "Loading medicines..."}
@@ -580,7 +730,7 @@ export default function MedicinePledge() {
         </div>
 
         {/* Contact form & Estimated Date */}
-        <div className="bg-white border-2 border-brand-sky-200 rounded-3xl p-6 shadow-xl space-y-4">
+        <div className="bg-white border-2 border-rose-200 rounded-3xl p-6 shadow-xl space-y-4">
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <h3 className="font-serif font-bold text-base text-brand-sky-950">
               {language === "am" ? "የእርስዎ መረጃና የማስረከቢያ ቀን" : "Contact & Delivery Date"}
@@ -603,7 +753,7 @@ export default function MedicinePledge() {
                 value={donorName}
                 onChange={(e) => setDonorName(e.target.value)}
                 placeholder={language === "am" ? "ስምዎን ያስገቡ" : "Enter your full name"}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:border-brand-sky-400 outline-none font-medium"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:border-rose-400 outline-none font-medium"
               />
             </div>
 
@@ -617,7 +767,7 @@ export default function MedicinePledge() {
                   value={donorPhone}
                   onChange={(e) => setDonorPhone(e.target.value)}
                   placeholder="09..."
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:border-brand-sky-400 outline-none font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:border-rose-400 outline-none font-medium"
                 />
               </div>
 
@@ -630,15 +780,15 @@ export default function MedicinePledge() {
                   value={donorEmail}
                   onChange={(e) => setDonorEmail(e.target.value)}
                   placeholder="name@domain.com"
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:border-brand-sky-400 outline-none font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:border-rose-400 outline-none font-medium"
                 />
               </div>
             </div>
 
             {/* Estimated Delivery Date Input */}
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-brand-sky-900 mb-1">
-                <Calendar className="w-3.5 h-3.5 inline mr-1 text-brand-sky-500" />
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-rose-900 mb-1">
+                <Calendar className="w-3.5 h-3.5 inline mr-1 text-rose-500" />
                 {language === "am" ? "የሚያስረክቡበት ግምታዊ ቀን *" : "Estimated Delivery Date *"}
               </label>
               <input
@@ -647,7 +797,7 @@ export default function MedicinePledge() {
                 min={new Date().toISOString().split("T")[0]}
                 value={estimatedDeliveryDate}
                 onChange={(e) => setEstimatedDeliveryDate(e.target.value)}
-                className="w-full px-4 py-2.5 bg-brand-sky-50/50 border border-brand-sky-200 rounded-xl text-xs focus:border-brand-sky-400 outline-none font-bold text-brand-sky-950 cursor-pointer"
+                className="w-full px-4 py-2.5 bg-rose-50/50 border border-rose-200 rounded-xl text-xs focus:border-rose-400 outline-none font-bold text-brand-sky-950 cursor-pointer"
               />
               <span className="text-[10px] text-gray-400 block mt-1">
                 {language === "am"
@@ -667,12 +817,12 @@ export default function MedicinePledge() {
                 placeholder={
                   language === "am" ? "ተጨማሪ መልእክት ወይም መረጃ..." : "Additional notes or instructions..."
                 }
-                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:border-brand-sky-400 outline-none resize-none font-medium"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:border-rose-400 outline-none resize-none font-medium"
               />
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-              <span className="text-xs font-bold text-brand-sky-700 bg-brand-sky-50 border border-brand-sky-200 rounded-xl px-3.5 py-3 text-center sm:text-left">
+              <span className="text-xs font-bold text-rose-800 bg-rose-50 border border-rose-200 rounded-xl px-3.5 py-3 text-center sm:text-left">
                 {language === "am" ? "ግምታዊ ዋጋ" : "Est. Value"}:{" "}
                 <strong className="text-brand-sky-950 font-black">{totalCost.toLocaleString()} ETB</strong>
               </span>
@@ -680,14 +830,14 @@ export default function MedicinePledge() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 py-3.5 bg-brand-sky-400 hover:bg-brand-sky-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl cursor-pointer shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="flex-1 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl cursor-pointer shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {submitting ? (
                   <LoadingDots label={language === "am" ? "በመላክ..." : "Submitting..."} className="justify-center" />
                 ) : (
                   <>
                     <Pill className="w-4 h-4" />
-                    <span>{language === "am" ? "የመድሃኒት ቃልኪዳን ላክ" : "Submit Medicine Pledge"}</span>
+                    <span>{language === "am" ? "ቃልኪዳን ላክ" : "Submit Pledge"}</span>
                   </>
                 )}
               </button>

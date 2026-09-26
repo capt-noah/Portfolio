@@ -134,7 +134,7 @@ export default function DonateSection({
               }`}
             >
               <Package className="w-5 h-5 shrink-0 text-brand-sky-500" />
-              <span>{language === "am" ? "የዓይነት እቃዎች" : "In-Kind Pledges"}</span>
+              <span>{language === "am" ? "የዓይነት ድጋፍ" : "In-Kind Pledges"}</span>
             </button>
           </div>
 

@@ -567,7 +567,7 @@ export default function AdminAnalyticsDashboard({ language }: AdminAnalyticsDash
     const areas: Record<string, number> = {
       kitchen: 0,
       medical: 0,
-      psychology: 0,
+      psychiatry: 0,
       education: 0,
       general: 0
     };

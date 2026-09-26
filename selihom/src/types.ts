@@ -108,7 +108,7 @@ export interface VolunteerApplication {
   email: string;
   phone: string;
   availability: "weekdays" | "weekends" | "flexible";
-  interestArea: "kitchen" | "medical" | "education" | "psychology" | "general";
+  interestArea: "kitchen" | "medical" | "education" | "psychiatry" | "general";
   experience?: string;
   status: "new" | "reviewed" | "accepted" | "declined";
   submittedAt: string;
