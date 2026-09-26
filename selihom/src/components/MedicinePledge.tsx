@@ -69,82 +69,96 @@ export function MedicineRow({
           : "border-gray-100 bg-white hover:border-rose-200"
       }`}
     >
-      {/* ── Collapsed row — Clean with integrated progress bar ── */}
+      {/* ── Collapsed row — 2 Rows Minimalistic ── */}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 px-4 py-3.5 text-left cursor-pointer"
+        className="w-full p-3.5 text-left cursor-pointer hover:bg-rose-50/20 transition-colors space-y-2.5 block"
       >
-        {/* Urgency dot */}
-        <span
-          className={`w-2 h-2 rounded-full shrink-0 ${
-            med.urgency === "High"
-              ? "bg-red-500"
-              : med.urgency === "Medium"
-                ? "bg-amber-400"
-                : "bg-brand-sky-400"
-          }`}
-        />
-
-        {/* Name & Progress Bar */}
-        <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 pr-1">
-          <span className="font-semibold text-sm text-brand-sky-950 leading-snug truncate">
-            {med.name}
-          </span>
-
-          {/* Inline Progress Bar & Percentage */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="w-20 sm:w-28 bg-gray-100 h-2 rounded-full overflow-hidden border border-gray-200/60 shrink-0">
-              <div
-                className="bg-linear-to-r from-rose-400 via-amber-400 to-emerald-500 h-full rounded-full transition-all duration-300"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
+        {/* Row 1: Name on Left, People Icon + Number & Priority Pill & Qty & Chevron on Right */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
             <span
-              className={`text-[10px] font-black px-1.5 py-0.5 rounded-md border shrink-0 ${
-                progressPercent >= 100
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                  : progressPercent >= 50
-                    ? "bg-amber-50 text-amber-700 border-amber-200"
-                    : "bg-rose-50 text-rose-700 border-rose-200"
+              className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                med.urgency === "High"
+                  ? "bg-red-500 ring-2 ring-red-200"
+                  : med.urgency === "Medium"
+                    ? "bg-amber-400 ring-2 ring-amber-200"
+                    : "bg-brand-sky-400 ring-2 ring-brand-sky-200"
               }`}
+            />
+            <span className="font-serif font-bold text-sm sm:text-base text-brand-sky-950 truncate">
+              {med.name}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* People Helped: Icon + Number ONLY */}
+            <div className="flex items-center gap-1 text-[11px] text-rose-700 font-bold bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100">
+              <Users className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+              <span>{med.patientsHelped}</span>
+            </div>
+
+            {/* Priority Pill: Urgency level ONLY (no "priority" text) */}
+            <span
+              className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0 ${URGENCY_COLORS[med.urgency]}`}
             >
-              {progressPercent}%
+              {language === "am"
+                ? med.urgency === "High"
+                  ? "ከፍተኛ"
+                  : med.urgency === "Medium"
+                    ? "መካከለኛ"
+                    : "ዝቅተኛ"
+                : med.urgency}
+            </span>
+
+            {/* Selected Qty Badge */}
+            {selected && (
+              <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 shadow-xs">
+                ×{qty}
+              </span>
+            )}
+
+            {/* Expand chevron */}
+            <span className="text-gray-400 shrink-0 ml-0.5 hover:text-brand-sky-950 transition-colors">
+              {open ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
             </span>
           </div>
         </div>
 
-        {/* Patients helped — compact */}
-        <div className="hidden sm:flex items-center gap-1 text-[11px] text-rose-700 font-bold shrink-0 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-100">
-          <Users className="w-3.5 h-3.5" />
-          <span>{med.patientsHelped}</span>
-          <span className="text-gray-400 font-normal text-[10px]">
-            {language === "am" ? "ታካሚ" : "pts"}
-          </span>
+        {/* Row 2: Progress Bar & Status */}
+        <div className="space-y-1">
+          <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden border border-gray-200/60 shadow-inner">
+            <div
+              className="bg-linear-to-r from-rose-400 via-amber-400 to-emerald-500 h-full rounded-full transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-gray-500 font-medium">
+            <span>
+              {language === "am" ? "የተሰበሰበ:" : "Progress:"}{" "}
+              <strong className="text-brand-sky-950 font-bold">
+                {totalWithSelected.toLocaleString()}
+              </strong>{" "}
+              / {targetGoal.toLocaleString()} {language === "am" ? "ክኒኖች" : "units"}
+            </span>
+            <span
+              className={`font-black ${
+                progressPercent >= 100
+                  ? "text-emerald-700"
+                  : progressPercent >= 50
+                    ? "text-amber-700"
+                    : "text-rose-600"
+              }`}
+            >
+              {progressPercent}% {language === "am" ? "ተሟልቷል" : "funded"}
+            </span>
+          </div>
         </div>
-
-        {/* Urgency badge */}
-        <span
-          className={`hidden md:inline text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0 ${URGENCY_COLORS[med.urgency]}`}
-        >
-          {med.urgency}
-        </span>
-
-        {/* Qty badge if selected */}
-        {selected && (
-          <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 shadow-xs">
-            ×{qty}
-          </span>
-        )}
-
-        {/* Expand chevron */}
-        <span className="text-gray-400 shrink-0 ml-1">
-          {open ? (
-            <ChevronUp className="w-4 h-4" />
-          ) : (
-            <ChevronDown className="w-4 h-4" />
-          )}
-        </span>
       </button>
 
       {/* ── Expanded detail — Rich motivational scale ── */}
@@ -157,12 +171,7 @@ export function MedicineRow({
             transition={{ duration: 0.22, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 pt-1 border-t border-gray-100 space-y-3.5">
-              {/* Description */}
-              <p className="text-xs text-gray-500 leading-relaxed">
-                {language === "am" ? med.description.am : med.description.en}
-              </p>
-
+            <div className="px-4 pb-4 pt-3 border-t border-gray-100 space-y-3.5">
               {/* Motivational Goal Scale Box */}
               <div className="bg-linear-to-r from-emerald-50/80 to-rose-50/80 border border-emerald-200/70 rounded-2xl p-3.5 space-y-2">
                 <div className="flex items-center justify-between text-xs">
