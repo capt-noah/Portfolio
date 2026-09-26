@@ -14,7 +14,7 @@ import path      from "path";
 import fs        from "fs";
 import { fileURLToPath } from "url";
 import dotenv    from "dotenv";
-import pool      from "./server/db.js";
+import pool      from "./database/db.js";
 
 // Load .env
 const __filename = fileURLToPath(import.meta.url);

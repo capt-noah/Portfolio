@@ -41,6 +41,75 @@ const EVENT_TYPES        = ["birthday","wedding","anniversary","other"];
 const EVENT_STATUSES     = ["pending","confirmed","completed","cancelled"];
 const NEWS_CATEGORIES    = ["Health","Community","Events","Announcements","Stories"];
 
+const DEFAULT_SETTINGS = {
+  bankAccounts: [
+    {
+      id: "bank_1",
+      bank: { am: "የኢትዮጵያ ንግድ ባንክ", en: "Commercial Bank of Ethiopia (CBE)" },
+      bankName: { am: "የኢትዮጵያ ንግድ ባንክ", en: "Commercial Bank of Ethiopia (CBE)" },
+      accountNumber: "1000275107518",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
+      sortOrder: 0,
+      isActive: true,
+    },
+    {
+      id: "bank_2",
+      bank: { am: "አቢሲንያ ባንክ", en: "Bank of Abyssinia" },
+      bankName: { am: "አቢሲንያ ባንክ", en: "Bank of Abyssinia" },
+      accountNumber: "77984852",
+      accountName: "Selihom Support Association",
+      sortOrder: 1,
+      isActive: true,
+    },
+    {
+      id: "bank_3",
+      bank: { am: "አዋሽ ባንክ", en: "Awash Bank" },
+      bankName: { am: "አዋሽ ባንክ", en: "Awash Bank" },
+      accountNumber: "01303572131300",
+      accountName: "Selihom Support Association",
+      sortOrder: 2,
+      isActive: true,
+    },
+    {
+      id: "bank_4",
+      bank: { am: "ቴሌብር (ሞባይል ገንዘብ)", en: "Telebirr (Mobile Money)" },
+      bankName: { am: "ቴሌብር (ሞባይል ገንዘብ)", en: "Telebirr (Mobile Money)" },
+      accountNumber: "0911004903",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር (ሚኪያስ ለገሰ)",
+      sortOrder: 3,
+      isActive: true,
+    },
+  ],
+  social: {
+    telegram: "https://t.me/Selihommentallyill",
+    facebook: "https://facebook.com/SelihomSupport",
+    tiktok: "https://tiktok.com/@selihomcharity",
+    youtube: "https://youtube.com/@selihomcharity",
+    instagram: "",
+    linkedin: "",
+  },
+  contact: {
+    phones: ["+251911004903", "+251953905050", "0118195444"],
+    email: "selihome@gmail.com",
+    address: {
+      am: "ከእንጦጦ ቅዱስ ራጉኤል ወኤልያስ ቤተክርስትያን ወደ ፍተሻ በሚወስደው መንገድ፣ አዲስ አበባ",
+      en: "Near Entoto St. Raguel and Elias Church, on the road leading toward Fetesha, Addis Ababa, Ethiopia",
+    },
+  },
+  registration: {
+    number: "1113/2019",
+    date: "Feb 03, 2020",
+    agency: {
+      am: "የኢትዮጵያ ፌደራላዊ ዲሞክራሲያዊ ሪፐብሊክ የሲቪል ማህበረሰብ ድርጅቶች ኤጀንሲ",
+      en: "Federal Democratic Republic of Ethiopia Agency for Civil Society Organizations",
+    },
+  },
+  motto: {
+    am: "ደግ ልቦች ከውብ ፊቶች ይበልጣሉ!",
+    en: "Kind hearts excel beautiful faces!",
+  },
+};
+
 async function q(sql, params = []) {
   const [rows] = await pool.execute(sql, params);
   return rows;
@@ -50,19 +119,67 @@ async function q1(sql, params = []) {
   return rows[0] || null;
 }
 
-// Ensure estimated_delivery_date migration
-async function ensureEstimatedDateColumns() {
+// Ensure database tables and columns exist
+async function ensureTables() {
   try {
+    // 1. Ensure bank_accounts table exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS bank_accounts (
+        id             VARCHAR(40)  NOT NULL PRIMARY KEY,
+        bank_name_en   VARCHAR(120) NOT NULL,
+        bank_name_am   VARCHAR(120) NOT NULL DEFAULT '',
+        account_number VARCHAR(80)  NOT NULL,
+        account_name   VARCHAR(200) NOT NULL DEFAULT '',
+        logo           VARCHAR(255) NOT NULL DEFAULT '',
+        sort_order     INT          NOT NULL DEFAULT 0,
+        is_active      TINYINT(1)   NOT NULL DEFAULT 1,
+        created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // 2. Ensure site_settings table exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS site_settings (
+        id                     INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        setting_key            VARCHAR(60)  NOT NULL UNIQUE DEFAULT 'global',
+        org_name_en            VARCHAR(200) NOT NULL DEFAULT 'Selihom Mentally Ill People Support Association',
+        org_name_am            VARCHAR(200) NOT NULL DEFAULT 'ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር',
+        motto_en               VARCHAR(255) NOT NULL DEFAULT 'Kind hearts excel beautiful faces!',
+        motto_am               VARCHAR(255) NOT NULL DEFAULT 'ደግ ልቦች ከውብ ፊቶች ይበልጣሉ!',
+        phones                 TEXT         NOT NULL,
+        email                  VARCHAR(120) NOT NULL DEFAULT 'selihome@gmail.com',
+        address_en             TEXT         NOT NULL,
+        address_am             TEXT         NOT NULL,
+        registration_number    VARCHAR(80)  NOT NULL DEFAULT '1113/2019',
+        registration_date      VARCHAR(80)  NOT NULL DEFAULT 'Feb 03, 2020',
+        registration_agency_en VARCHAR(255) NOT NULL DEFAULT 'Federal Democratic Republic of Ethiopia Agency for Civil Society Organizations',
+        registration_agency_am VARCHAR(255) NOT NULL DEFAULT 'የኢትዮጵያ ፌደራላዊ ዲሞክራሲያዊ ሪፐብሊክ የሲቪል ማህበረሰብ ድርጅቶች ኤጀንሲ',
+        telegram_url           VARCHAR(255) NOT NULL DEFAULT 'https://t.me/Selihommentallyill',
+        facebook_url           VARCHAR(255) NOT NULL DEFAULT 'https://facebook.com/SelihomSupport',
+        tiktok_url             VARCHAR(255) NOT NULL DEFAULT 'https://tiktok.com/@selihomcharity',
+        youtube_url            VARCHAR(255) NOT NULL DEFAULT 'https://youtube.com/@selihomcharity',
+        instagram_url          VARCHAR(255) NOT NULL DEFAULT '',
+        linkedin_url           VARCHAR(255) NOT NULL DEFAULT '',
+        updated_at             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // 3. Ensure estimated_delivery_date columns exist
     const tables = ["pledges", "supplies_pledges", "medicine_pledges"];
     for (const table of tables) {
-      const cols = await q(`SHOW COLUMNS FROM ${table} LIKE 'estimated_delivery_date'`);
-      if (cols.length === 0) {
-        await pool.query(`ALTER TABLE ${table} ADD COLUMN estimated_delivery_date VARCHAR(80) NOT NULL DEFAULT ''`);
-      }
+      try {
+        const cols = await q(`SHOW COLUMNS FROM ${table} LIKE 'estimated_delivery_date'`);
+        if (cols.length === 0) {
+          await pool.query(`ALTER TABLE ${table} ADD COLUMN estimated_delivery_date VARCHAR(80) NOT NULL DEFAULT ''`);
+        }
+      } catch (_) {}
     }
-  } catch (_) {}
+  } catch (err) {
+    console.warn("Table auto-migration notice:", err.message);
+  }
 }
-setTimeout(ensureEstimatedDateColumns, 1000);
+setTimeout(ensureTables, 500);
 
 function rowToBooking(r) {
   if (!r) return null;
@@ -182,14 +299,16 @@ function rowToNews(r) {
 
 function rowToBankAccount(r) {
   if (!r) return null;
+  const bankObj = { en: r.bank_name_en || "", am: r.bank_name_am || "" };
   return {
     id:            r.id,
-    bankName:      { en: r.bank_name_en || "", am: r.bank_name_am || "" },
+    bank:          bankObj,
+    bankName:      bankObj,
     accountNumber: r.account_number || "",
     accountName:   r.account_name || "",
     logo:          r.logo || "",
     sortOrder:     r.sort_order || 0,
-    isActive:      !!r.is_active,
+    isActive:      r.is_active !== false && r.is_active !== 0,
   };
 }
 
@@ -1025,27 +1144,42 @@ selihomRouter.delete("/news/:id", async (req, res) => {
 });
 
 // Bank Accounts
-selihomRouter.get("/bank_accounts", async (_req, res) => {
+selihomRouter.get(["/bank_accounts", "/bank-accounts"], async (_req, res) => {
   try {
-    const rows = await q("SELECT * FROM bank_accounts ORDER BY sort_order ASC, created_at ASC");
+    let rows = await q("SELECT * FROM bank_accounts WHERE is_active = 1 ORDER BY sort_order ASC, created_at ASC");
+    if (rows.length === 0) {
+      for (let i = 0; i < DEFAULT_SETTINGS.bankAccounts.length; i++) {
+        const b = DEFAULT_SETTINGS.bankAccounts[i];
+        const bid = `bank_${i + 1}`;
+        await q(
+          `INSERT IGNORE INTO bank_accounts (id, bank_name_en, bank_name_am, account_number, account_name, sort_order, is_active)
+           VALUES (?, ?, ?, ?, ?, ?, 1)`,
+          [bid, b.bank.en, b.bank.am, b.accountNumber, b.accountName, i]
+        );
+      }
+      rows = await q("SELECT * FROM bank_accounts WHERE is_active = 1 ORDER BY sort_order ASC, created_at ASC");
+    }
     res.json(rows.map(rowToBankAccount).filter(Boolean));
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) {
+    // Graceful fallback to default bank accounts if table not ready
+    res.json(DEFAULT_SETTINGS.bankAccounts);
+  }
 });
 
 selihomRouter.post("/bank_accounts", async (req, res) => {
   try {
-    const b = req.body;
-    const bankNameEn = sanitize(b.bankName?.en || b.bankName, 120);
-    const accNum = sanitize(b.accountNumber, 80);
+    const b = req.body || {};
+    const bankNameEn = sanitize(b.bank?.en || b.bankName?.en || b.bankName || b.bank_name_en, 120);
+    const accNum = sanitize(b.accountNumber || b.account_number, 80);
     if (!bankNameEn) return res.status(400).json({ error: "bankName (en) is required" });
     if (!accNum)     return res.status(400).json({ error: "accountNumber is required" });
 
     const id = sanitize(b.id, 40) || `bank-${Date.now()}`;
-    const bankNameAm = sanitize(b.bankName?.am, 120);
-    const accName    = sanitize(b.accountName, 200);
+    const bankNameAm = sanitize(b.bank?.am || b.bankName?.am || b.bank_name_am, 120);
+    const accName    = sanitize(b.accountName || b.account_name, 200);
     const logo       = sanitize(b.logo, 255);
-    const sortOrder  = parseInt(b.sortOrder, 10) || 0;
-    const isActive   = b.isActive !== false ? 1 : 0;
+    const sortOrder  = parseInt(b.sortOrder ?? b.sort_order, 10) || 0;
+    const isActive   = b.isActive !== false && b.is_active !== 0 ? 1 : 0;
 
     await pool.execute(`
       INSERT INTO bank_accounts (id, bank_name_en, bank_name_am, account_number, account_name, logo, sort_order, is_active)
@@ -1056,7 +1190,7 @@ selihomRouter.post("/bank_accounts", async (req, res) => {
         logo=VALUES(logo), sort_order=VALUES(sort_order), is_active=VALUES(is_active)
     `, [id, bankNameEn, bankNameAm, accNum, accName, logo, sortOrder, isActive]);
 
-    const rows = await q("SELECT * FROM bank_accounts ORDER BY sort_order ASC, created_at ASC");
+    const rows = await q("SELECT * FROM bank_accounts WHERE is_active = 1 ORDER BY sort_order ASC, created_at ASC");
     res.json(rows.map(rowToBankAccount).filter(Boolean));
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -1064,18 +1198,20 @@ selihomRouter.post("/bank_accounts", async (req, res) => {
 selihomRouter.delete("/bank_accounts/:id", async (req, res) => {
   try {
     await pool.execute("DELETE FROM bank_accounts WHERE id=?", [req.params.id]);
-    const rows = await q("SELECT * FROM bank_accounts ORDER BY sort_order ASC, created_at ASC");
+    const rows = await q("SELECT * FROM bank_accounts WHERE is_active = 1 ORDER BY sort_order ASC, created_at ASC");
     res.json(rows.map(rowToBankAccount).filter(Boolean));
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 // Site Settings
-selihomRouter.get("/site_settings", async (_req, res) => {
+selihomRouter.get(["/settings", "/site_settings"], async (_req, res) => {
   try {
-    const settingRow = await q1("SELECT * FROM site_settings WHERE setting_key = 'global' LIMIT 1");
-    const bankRows   = await q("SELECT * FROM bank_accounts WHERE is_active = 1 ORDER BY sort_order ASC, created_at ASC");
+    let settingRow = await q1("SELECT * FROM site_settings WHERE setting_key = 'global' LIMIT 1");
+    let bankRows   = await q("SELECT * FROM bank_accounts WHERE is_active = 1 ORDER BY sort_order ASC, created_at ASC");
     res.json(rowToSiteSettings(settingRow, bankRows));
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) {
+    res.json(DEFAULT_SETTINGS);
+  }
 });
 
 selihomRouter.post("/site_settings", async (req, res) => {
