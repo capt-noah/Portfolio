@@ -179,7 +179,10 @@ async function ensureTables() {
     console.warn("Table auto-migration notice:", err.message);
   }
 }
-setTimeout(ensureTables, 500);
+const ensureTablesTimer = setTimeout(ensureTables, 500);
+if (ensureTablesTimer && typeof ensureTablesTimer.unref === "function") {
+  ensureTablesTimer.unref();
+}
 
 function rowToBooking(r) {
   if (!r) return null;
