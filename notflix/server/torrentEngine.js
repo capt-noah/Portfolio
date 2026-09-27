@@ -46,7 +46,7 @@ async function getTorrentClient() {
                 console.warn('[TorrentEngine] WebTorrent global warning:', err.message);
             });
         } catch (err) {
-            console.warn('[TorrentEngine] WebTorrent initialization warning:', err.message);
+            console.warn('[TorrentEngine] Failed to initialize WebTorrent:', err.message);
             return null;
         }
     }
@@ -116,8 +116,12 @@ export async function getOrAddTorrent(torrentSource) {
 
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(() => {
-                resolve(existing);
-            }, 8000);
+                if (existing.ready) {
+                    resolve(existing);
+                } else {
+                    reject(new Error('Torrent metadata resolve timeout (25s)'));
+                }
+            }, 25000);
 
             existing.once('ready', () => {
                 clearTimeout(timeout);
@@ -138,18 +142,18 @@ export async function getOrAddTorrent(torrentSource) {
     // Build magnet URI if raw 40-char infoHash was passed
     let magnetOrHash = sourceStr;
     if (/^[a-fA-F0-9]{40}$/.test(sourceStr) || /^[a-zA-Z2-7]{32}$/.test(sourceStr)) {
-        magnetOrHash = `magnet:?xt=urn:btih:${sourceStr}&tr=${encodeURIComponent('udp://tracker.opentrackr.org:1337/announce')}&tr=${encodeURIComponent('udp://open.demonii.com:1337/announce')}&tr=${encodeURIComponent('udp://tracker.coppersurfer.tk:6969/announce')}&tr=${encodeURIComponent('udp://glotorrents.pw:6969/announce')}&tr=${encodeURIComponent('udp://tracker.openbittorrent.com:80/announce')}`;
+        magnetOrHash = `magnet:?xt=urn:btih:${sourceStr}&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&tr=http%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=http%3A%2F%2Ftracker.renfei.net%3A8080%2Fannounce&tr=http%3A%2F%2Ftracker2.dler.org%3A80%2Fannounce&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=wss%3A%2F%2Ftracker.btorrent.xyz`;
     }
 
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
             const addedTorrent = client.get(magnetOrHash);
-            if (addedTorrent) {
+            if (addedTorrent && addedTorrent.ready) {
                 resolve(addedTorrent);
             } else {
-                reject(new Error('Torrent metadata resolve timeout (10s)'));
+                reject(new Error('Torrent metadata resolve timeout (25s)'));
             }
-        }, 10000);
+        }, 25000);
 
         try {
             const torrent = client.add(magnetOrHash, {
@@ -227,6 +231,10 @@ export async function handleTorrentStreamRequest(req, res) {
             return res.status(404).json({ error: 'No playable video file found in torrent' });
         }
 
+        if (typeof file.select === 'function') {
+            file.select();
+        }
+
         // Update access timestamp
         activeTorrents.set(torrent.infoHash, {
             torrent,
@@ -235,7 +243,7 @@ export async function handleTorrentStreamRequest(req, res) {
 
         const totalSize = file.length;
         const range = req.headers.range;
-        const mimeType = getMimeType(file.name);
+        const mimeType = file.name.endsWith('.webm') ? 'video/webm' : 'video/mp4';
 
         if (range) {
             const parts = range.replace(/bytes=/, '').split('-');
@@ -260,6 +268,12 @@ export async function handleTorrentStreamRequest(req, res) {
             });
 
             const stream = file.createReadStream({ start, end });
+            stream.on('error', (err) => {
+                if (err.code === 'ERR_STREAM_PREMATURE_CLOSE' || err.code === 'PREMATURE_CLOSE' || err.message.includes('closed')) {
+                    return; // Client disconnected, safely ignore
+                }
+                console.error('[TorrentEngine] read stream error:', err.message);
+            });
 
             req.on('close', () => {
                 if (stream && typeof stream.destroy === 'function') {
@@ -278,6 +292,12 @@ export async function handleTorrentStreamRequest(req, res) {
             });
 
             const stream = file.createReadStream();
+            stream.on('error', (err) => {
+                if (err.code === 'ERR_STREAM_PREMATURE_CLOSE' || err.code === 'PREMATURE_CLOSE' || err.message.includes('closed')) {
+                    return;
+                }
+                console.error('[TorrentEngine] read stream error:', err.message);
+            });
 
             req.on('close', () => {
                 if (stream && typeof stream.destroy === 'function') {
@@ -290,8 +310,7 @@ export async function handleTorrentStreamRequest(req, res) {
     } catch (err) {
         console.warn('[TorrentEngine] Streaming fallback triggered:', err.message);
         if (!res.headersSent) {
-            // Redirect to high-bandwidth demo stream so player doesn't crash
-            return res.redirect('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
+            return res.status(503).json({ error: 'Stream temporarily unavailable' });
         }
     }
 }

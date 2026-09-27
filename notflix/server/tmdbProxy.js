@@ -179,6 +179,21 @@ export const TMDBService = {
         return results.map(item => mapTMDBToNotFlix(item, 'tv')).filter(i => i.backdrop && i.poster);
     },
 
+    getAnimeTrending: async () => {
+        const results = await fetchTMDB('/discover/tv?with_genres=16&with_original_language=ja&sort_by=popularity.desc');
+        return results.map(item => mapTMDBToNotFlix(item, 'tv')).filter(i => i.backdrop || i.poster);
+    },
+
+    getAnimeTopRated: async () => {
+        const results = await fetchTMDB('/discover/tv?with_genres=16&with_original_language=ja&sort_by=vote_average.desc&vote_count.gte=100');
+        return results.map(item => mapTMDBToNotFlix(item, 'tv')).filter(i => i.backdrop || i.poster);
+    },
+
+    getAnimeAction: async () => {
+        const results = await fetchTMDB('/discover/tv?with_genres=16,10759&with_original_language=ja&sort_by=popularity.desc');
+        return results.map(item => mapTMDBToNotFlix(item, 'tv')).filter(i => i.backdrop || i.poster);
+    },
+
     getMediaDetails: async (id, type = 'movie') => {
         const data = await fetchTMDBItem(`/${type}/${id}`);
         const mapped = mapTMDBToNotFlix(data, type);

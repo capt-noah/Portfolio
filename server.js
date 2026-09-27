@@ -464,9 +464,10 @@ if (selihomRouter) {
   app.use('/api', selihomRouter);
 }
 
-// Mount NotFlix API router at /notflix/api
+// Mount NotFlix API router at /notflix/api and /api fallback
 if (notflixRouter) {
   app.use('/notflix/api', notflixRouter);
+  app.use('/api', notflixRouter);
 } else {
   app.use('/notflix/api', (req, res) => {
     res.status(503).json({ error: 'NotFlix API router is not installed on this server instance.' });
