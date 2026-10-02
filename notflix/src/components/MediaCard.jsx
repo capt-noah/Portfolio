@@ -30,7 +30,7 @@ export const getMediaRoute = (item, play = false) => {
   return `${path}?play=true&season=${s}&episode=${ep}`;
 };
 
-export default function MediaCard({ item, progress, onSelect, onPlay, onToggleWatchlist, isInWatchlist }) {
+function MediaCard({ item, progress, onSelect, onPlay, onToggleWatchlist, isInWatchlist }) {
   const { navigateTo, openDetails } = useApp();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -88,6 +88,8 @@ export default function MediaCard({ item, progress, onSelect, onPlay, onToggleWa
         <img
           src={posterUrl}
           alt={displayTitle}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => {
             e.target.src = '/notflix-logo.png';
@@ -252,4 +254,6 @@ export default function MediaCard({ item, progress, onSelect, onPlay, onToggleWa
   );
 }
 
-export { MediaCard };
+const MemoizedMediaCard = React.memo(MediaCard);
+export default MemoizedMediaCard;
+export { MemoizedMediaCard as MediaCard };

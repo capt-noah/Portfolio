@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import MediaCard from './MediaCard';
 import { useApp } from '../context/AppContext';
 
@@ -7,6 +7,8 @@ export default function MediaRow({ title, items = [], progressMap = {}, onSelect
   const rowRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const watchlistIdSet = useMemo(() => new Set((watchlist || []).map((w) => String(w.id))), [watchlist]);
 
   if (!Array.isArray(items) || items.length === 0) return null;
 
@@ -26,7 +28,7 @@ export default function MediaRow({ title, items = [], progressMap = {}, onSelect
   };
 
   return (
-    <section className="relative my-8 sm:my-10 select-none group/row">
+    <section className="relative my-8 sm:my-10 select-none group/row media-row-section">
       {/* Row Header */}
       <div className="flex items-center gap-2 px-6 sm:px-14 mb-4">
         <h2 className="text-lg sm:text-2xl font-bold text-white tracking-tight">
@@ -53,12 +55,12 @@ export default function MediaRow({ title, items = [], progressMap = {}, onSelect
         <div
           ref={rowRef}
           onScroll={checkScrollability}
-          className="flex items-start gap-4 sm:gap-5 overflow-x-auto overflow-y-hidden px-6 sm:px-14 py-2 scroll-smooth no-scrollbar"
+          className="flex items-start gap-4 sm:gap-5 overflow-x-auto overflow-y-hidden px-6 sm:px-14 py-2 scroll-smooth no-scrollbar media-row-track"
         >
           {items.map((item) => {
             const itemId = String(item.id);
             const progress = progressMap[itemId] || item.watchProgress || (item.percent !== undefined || item.currentTime !== undefined ? item : null);
-            const isSaved = watchlist.some((w) => String(w.id) === itemId);
+            const isSaved = watchlistIdSet.has(itemId);
 
             return (
               <MediaCard
