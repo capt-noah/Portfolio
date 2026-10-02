@@ -26,37 +26,79 @@ function decryptMegaPlayEnc(enc) {
 }
 
 const ANIME_SHOW_MAP = {
-    // Jujutsu Kaisen
+    // Jujutsu Kaisen (TMDB: 95479, AniList S1: 113415, S2: 145064, Movie: 131573)
     '113415:1': { slug: 'jujutsu-kaisen-tv-8ssye', showId: '1103' },
     '113415:2': { slug: 'jujutsu-kaisen-2nd-season-hk2c9', showId: '6542' },
-    '145064:1': { slug: 'jujutsu-kaisen-tv-8ssye', showId: '1103' },
+    '145064:1': { slug: 'jujutsu-kaisen-2nd-season-hk2c9', showId: '6542' },
     '145064:2': { slug: 'jujutsu-kaisen-2nd-season-hk2c9', showId: '6542' },
     '131573:1': { slug: 'jujutsu-kaisen-0-movie-lmsg3', showId: '4182' },
     '95479:1': { slug: 'jujutsu-kaisen-tv-8ssye', showId: '1103' },
     '95479:2': { slug: 'jujutsu-kaisen-2nd-season-hk2c9', showId: '6542' },
 
-    // Demon Slayer
+    // Demon Slayer: Kimetsu no Yaiba (TMDB: 85937, S1: 101922, S2: 129874, S3: 145139, S4: 166240)
     '85937:1': { slug: 'demon-slayer-kimetsu-no-yaiba-rzepv', showId: '1279' },
+    '85937:2': { slug: 'demon-slayer-kimetsu-no-yaiba-entertainment-district-arc-x80w9', showId: '3819' },
+    '85937:3': { slug: 'demon-slayer-kimetsu-no-yaiba-swordsmith-village-arc-m2jqp', showId: '5482' },
+    '85937:4': { slug: 'demon-slayer-kimetsu-no-yaiba-hashira-training-arc-zpj5q', showId: '7612' },
     '101922:1': { slug: 'demon-slayer-kimetsu-no-yaiba-rzepv', showId: '1279' },
+    '129874:1': { slug: 'demon-slayer-kimetsu-no-yaiba-entertainment-district-arc-x80w9', showId: '3819' },
     '129874:2': { slug: 'demon-slayer-kimetsu-no-yaiba-entertainment-district-arc-x80w9', showId: '3819' },
+    '145139:1': { slug: 'demon-slayer-kimetsu-no-yaiba-swordsmith-village-arc-m2jqp', showId: '5482' },
     '145139:3': { slug: 'demon-slayer-kimetsu-no-yaiba-swordsmith-village-arc-m2jqp', showId: '5482' },
+    '166240:1': { slug: 'demon-slayer-kimetsu-no-yaiba-hashira-training-arc-zpj5q', showId: '7612' },
     '166240:4': { slug: 'demon-slayer-kimetsu-no-yaiba-hashira-training-arc-zpj5q', showId: '7612' },
 
-    // Attack on Titan
-    '16498:1': { slug: 'attack-on-titan-002rq', showId: '809' },
-    '20958:2': { slug: 'attack-on-titan-season-2-005jq', showId: '810' },
-    '99147:3': { slug: 'attack-on-titan-season-3-007qq', showId: '811' },
-    '110277:4': { slug: 'attack-on-titan-final-season-008mq', showId: '812' },
+    // Attack on Titan (TMDB: 1429, S1: 16498, S2: 20958, S3: 99147, S4: 110277)
     '1429:1': { slug: 'attack-on-titan-002rq', showId: '809' },
+    '1429:2': { slug: 'attack-on-titan-season-2-005jq', showId: '810' },
+    '1429:3': { slug: 'attack-on-titan-season-3-007qq', showId: '811' },
+    '1429:4': { slug: 'attack-on-titan-final-season-008mq', showId: '812' },
+    '16498:1': { slug: 'attack-on-titan-002rq', showId: '809' },
+    '20958:1': { slug: 'attack-on-titan-season-2-005jq', showId: '810' },
+    '20958:2': { slug: 'attack-on-titan-season-2-005jq', showId: '810' },
+    '99147:1': { slug: 'attack-on-titan-season-3-007qq', showId: '811' },
+    '99147:3': { slug: 'attack-on-titan-season-3-007qq', showId: '811' },
+    '110277:1': { slug: 'attack-on-titan-final-season-008mq', showId: '812' },
+    '110277:4': { slug: 'attack-on-titan-final-season-008mq', showId: '812' },
+
+    // Solo Leveling (TMDB: 127532, S1: 151807, S2: 173778)
+    '127532:1': { slug: 'solo-leveling-82928', showId: '6892' },
+    '127532:2': { slug: 'solo-leveling-season-2-arise-from-the-shadow-3eukp', showId: '8910' },
+    '151807:1': { slug: 'solo-leveling-82928', showId: '6892' },
+    '173778:1': { slug: 'solo-leveling-season-2-arise-from-the-shadow-3eukp', showId: '8910' },
+    '173778:2': { slug: 'solo-leveling-season-2-arise-from-the-shadow-3eukp', showId: '8910' },
+
+    // Vinland Saga (AniList S1: 101348, S2: 136430)
+    '101348:1': { slug: 'vinland-saga-1134', showId: '1134' },
+    '101348:2': { slug: 'vinland-saga-2nd-season-rfjqz', showId: '6517' },
+    '136430:1': { slug: 'vinland-saga-2nd-season-rfjqz', showId: '6517' },
+    '136430:2': { slug: 'vinland-saga-2nd-season-rfjqz', showId: '6517' },
+
+    // My Hero Academia (TMDB: 65930, S1: 21459, S2: 21856, S3: 100166, S4: 104276, S5: 114443, S6: 138060, S7: 163139)
+    '65930:1': { slug: 'my-hero-academia-kuzfp', showId: '6' },
+    '65930:2': { slug: 'my-hero-academia-2-l3eyd', showId: '1331' },
+    '65930:3': { slug: 'my-hero-academia-3-iojeg', showId: '1420' },
+    '65930:4': { slug: 'my-hero-academia-4-mt2j9', showId: '1488' },
+    '65930:5': { slug: 'my-hero-academia-5th-season-4lw3i', showId: '5798' },
+    '65930:6': { slug: 'my-hero-academia-season-6-thlwp', showId: '7163' },
+    '65930:7': { slug: 'my-hero-academia-season-7-wgpee', showId: '6088' },
+    '21459:1': { slug: 'my-hero-academia-kuzfp', showId: '6' },
+    '21856:1': { slug: 'my-hero-academia-2-l3eyd', showId: '1331' },
+    '21856:2': { slug: 'my-hero-academia-2-l3eyd', showId: '1331' },
+    '100166:1': { slug: 'my-hero-academia-3-iojeg', showId: '1420' },
+    '100166:3': { slug: 'my-hero-academia-3-iojeg', showId: '1420' },
+    '104276:1': { slug: 'my-hero-academia-4-mt2j9', showId: '1488' },
+    '104276:4': { slug: 'my-hero-academia-4-mt2j9', showId: '1488' },
+    '114443:1': { slug: 'my-hero-academia-5th-season-4lw3i', showId: '5798' },
+    '114443:5': { slug: 'my-hero-academia-5th-season-4lw3i', showId: '5798' },
+    '138060:1': { slug: 'my-hero-academia-season-6-thlwp', showId: '7163' },
+    '138060:6': { slug: 'my-hero-academia-season-6-thlwp', showId: '7163' },
+    '163139:1': { slug: 'my-hero-academia-season-7-wgpee', showId: '6088' },
+    '163139:7': { slug: 'my-hero-academia-season-7-wgpee', showId: '6088' },
 
     // One Piece
     '21:1': { slug: 'one-piece-351', showId: '351' },
     '37854:1': { slug: 'one-piece-351', showId: '351' },
-
-    // Solo Leveling
-    '151807:1': { slug: 'solo-leveling-82928', showId: '6892' },
-    '173778:2': { slug: 'solo-leveling-season-2-arise-from-the-shadow-3eukp', showId: '8910' },
-    '127532:1': { slug: 'solo-leveling-82928', showId: '6892' },
 
     // Chainsaw Man
     '127230:1': { slug: 'chainsaw-man-tv', showId: '4720' },
@@ -75,6 +117,9 @@ const ANIME_SHOW_MAP = {
     // Bleach
     '269:1': { slug: 'bleach-tv-348', showId: '348' },
     '30984:1': { slug: 'bleach-tv-348', showId: '348' },
+    '30984:17': { slug: 'bleach-thousand-year-blood-war-arc-2izxu', showId: '5799' },
+    '114446:1': { slug: 'bleach-thousand-year-blood-war-arc-2izxu', showId: '5799' },
+    '114446:17': { slug: 'bleach-thousand-year-blood-war-arc-2izxu', showId: '5799' },
 
     // Frieren
     '154587:1': { slug: 'frieren-beyond-journey-s-end-c6fbj', showId: '6351' },
@@ -83,6 +128,7 @@ const ANIME_SHOW_MAP = {
     // Dandadan
     '171018:1': { slug: 'dandadan-lzcmw', showId: '4' },
     '251504:1': { slug: 'dandadan-lzcmw', showId: '4' },
+    '240411:1': { slug: 'dandadan-lzcmw', showId: '4' },
 
     // Kaiju No. 8
     '146065:1': { slug: 'kaiju-no-8-season-2-rhi38', showId: '7983' },
@@ -90,10 +136,15 @@ const ANIME_SHOW_MAP = {
 
     // Blue Lock
     '137822:1': { slug: 'blue-lock-x89w5', showId: '4638' },
+    '137822:2': { slug: 'blue-lock-vs-u-20-japan-0ompr', showId: '7548' },
+    '163146:1': { slug: 'blue-lock-vs-u-20-japan-0ompr', showId: '7548' },
     '163146:2': { slug: 'blue-lock-vs-u-20-japan-0ompr', showId: '7548' },
 
     // Spy x Family
+    '120089:1': { slug: 'spy-x-family-643', showId: '4452' },
+    '120089:2': { slug: 'spy-x-family-season-2-58137', showId: '6368' },
     '140960:1': { slug: 'spy-x-family-643', showId: '4452' },
+    '158871:1': { slug: 'spy-x-family-season-2-58137', showId: '6368' },
     '158871:2': { slug: 'spy-x-family-season-2-58137', showId: '6368' }
 };
 
@@ -101,7 +152,7 @@ async function resolveShowForAnime(animeId, seasonNum = 1, animeTitle = '') {
     const key = `${animeId}:${seasonNum}`;
     if (ANIME_SHOW_MAP[key]) return ANIME_SHOW_MAP[key];
 
-    const searchTerms = [animeTitle].filter(Boolean);
+    const baseTitles = [animeTitle].filter(Boolean);
 
     if (!animeTitle && /^\d+$/.test(animeId)) {
         try {
@@ -117,12 +168,25 @@ async function resolveShowForAnime(animeId, seasonNum = 1, animeTitle = '') {
             if (aniRes.ok) {
                 const aniData = await aniRes.json();
                 const t = aniData?.data?.Media?.title;
-                if (t?.english) searchTerms.push(t.english);
-                if (t?.romaji) searchTerms.push(t.romaji);
+                if (t?.english) baseTitles.push(t.english);
+                if (t?.romaji) baseTitles.push(t.romaji);
             }
         } catch (e) {}
     } else if (typeof animeId === 'string' && !/^\d+$/.test(animeId)) {
-        searchTerms.push(animeId);
+        baseTitles.push(animeId);
+    }
+
+    // Build targeted season search queries
+    const searchTerms = [];
+    for (const base of baseTitles) {
+        if (seasonNum > 1) {
+            searchTerms.push(`${base} Season ${seasonNum}`);
+            searchTerms.push(`${base} ${seasonNum}nd Season`);
+            searchTerms.push(`${base} ${seasonNum}rd Season`);
+            searchTerms.push(`${base} ${seasonNum}th Season`);
+            searchTerms.push(`${base} ${seasonNum}`);
+        }
+        searchTerms.push(base);
     }
 
     for (const term of searchTerms) {
@@ -143,14 +207,35 @@ async function resolveShowForAnime(animeId, seasonNum = 1, animeTitle = '') {
                 candidates.push({ slug: m[1], name: m[3].replace(/<[^>]*>/g, '').trim(), dataJp: m[2] });
             }
             if (candidates.length > 0) {
+                let chosen = null;
                 const normTerm = clean.toLowerCase().replace(/[^a-z0-9]/g, '');
-                const exact = candidates.find(c => {
-                    const normName = c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    const normJp = (c.dataJp || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-                    return normName === normTerm || normJp === normTerm || normName.startsWith(normTerm);
-                });
-                const nonSpecial = candidates.filter(c => !c.name.toLowerCase().includes('mini anime') && !c.name.toLowerCase().includes('ova'));
-                const chosen = exact || nonSpecial[0] || candidates[0];
+
+                if (seasonNum > 1) {
+                    // Match candidates with season indicator
+                    const seasonKeywords = [`season ${seasonNum}`, `${seasonNum}nd season`, `${seasonNum}rd season`, `${seasonNum}th season`, ` ${seasonNum}`, `-${seasonNum}`];
+                    chosen = candidates.find(c => {
+                        const nameLower = c.name.toLowerCase();
+                        const slugLower = c.slug.toLowerCase();
+                        return seasonKeywords.some(kw => nameLower.includes(kw) || slugLower.includes(kw.replace(/\s+/g, '-')));
+                    });
+                } else {
+                    // Avoid candidates matching higher seasons when looking for season 1
+                    const nonSequel = candidates.filter(c => {
+                        const nameLower = c.name.toLowerCase();
+                        return !nameLower.includes('season 2') && !nameLower.includes('season 3') && !nameLower.includes('season 4') && !nameLower.includes('2nd season') && !nameLower.includes('3rd season') && !nameLower.includes('4th season');
+                    });
+                    chosen = nonSequel[0];
+                }
+
+                if (!chosen) {
+                    const exact = candidates.find(c => {
+                        const normName = c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        const normJp = (c.dataJp || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                        return normName === normTerm || normJp === normTerm || normName.startsWith(normTerm);
+                    });
+                    const nonSpecial = candidates.filter(c => !c.name.toLowerCase().includes('mini anime') && !c.name.toLowerCase().includes('ova'));
+                    chosen = exact || nonSpecial[0] || candidates[0];
+                }
 
                 const watchRes = await fetch(`https://anikototv.to/watch/${chosen.slug}`, {
                     headers: { "User-Agent": "Mozilla/5.0", "Referer": "https://anikototv.to/" },
@@ -169,63 +254,101 @@ async function resolveShowForAnime(animeId, seasonNum = 1, animeTitle = '') {
     return null;
 }
 
-// Top Anime TMDB Mapping & Season configurations
-const ANIME_TMDB_MAP = {
+// Top Anime TMDB Mapping & Season Arc configurations
+export const ANIME_TMDB_MAP = {
     // Jujutsu Kaisen
-    '113415': { tmdbId: 95479, season: 1, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 24, id: '113415' }, { seasonNumber: 2, name: 'Season 2: Shibuya Incident', episodeCount: 23, id: '145064' }] },
-    '145064': { tmdbId: 95479, season: 2, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 24, id: '113415' }, { seasonNumber: 2, name: 'Season 2: Shibuya Incident', episodeCount: 23, id: '145064' }] },
-    '131573': { tmdbId: 810693, isMovie: true, seasons: [{ seasonNumber: 1, name: 'Movie: JUJUTSU KAISEN 0', episodeCount: 1, id: '131573' }] },
+    '113415': { tmdbId: 95479, season: 1, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1 - Cursed Womb & Kyoto Goodwill Arc', arcName: 'Cursed Womb & Kyoto Goodwill Arc', episodeCount: 24, id: '113415' }, { seasonNumber: 2, name: 'Season 2 - Hidden Inventory & Shibuya Incident Arc', arcName: 'Hidden Inventory & Shibuya Incident Arc', episodeCount: 23, id: '145064' }] },
+    '145064': { tmdbId: 95479, season: 2, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1 - Cursed Womb & Kyoto Goodwill Arc', arcName: 'Cursed Womb & Kyoto Goodwill Arc', episodeCount: 24, id: '113415' }, { seasonNumber: 2, name: 'Season 2 - Hidden Inventory & Shibuya Incident Arc', arcName: 'Hidden Inventory & Shibuya Incident Arc', episodeCount: 23, id: '145064' }] },
+    '131573': { tmdbId: 810693, isMovie: true, seasons: [{ seasonNumber: 1, name: 'Movie - JUJUTSU KAISEN 0', arcName: 'Cursed Child Arc', episodeCount: 1, id: '131573' }] },
+    '95479': { tmdbId: 95479, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1 - Cursed Womb & Kyoto Goodwill Arc', arcName: 'Cursed Womb & Kyoto Goodwill Arc', episodeCount: 24, id: '113415' }, { seasonNumber: 2, name: 'Season 2 - Hidden Inventory & Shibuya Incident Arc', arcName: 'Hidden Inventory & Shibuya Incident Arc', episodeCount: 23, id: '145064' }] },
 
     // Demon Slayer
-    '85937': { tmdbId: 85937, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1: Unwavering Resolve', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2: Entertainment District', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3: Swordsmith Village', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4: Hashira Training', episodeCount: 8, id: '166240' }] },
-    '101922': { tmdbId: 85937, season: 1, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1: Unwavering Resolve', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2: Entertainment District', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3: Swordsmith Village', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4: Hashira Training', episodeCount: 8, id: '166240' }] },
-    '129874': { tmdbId: 85937, season: 2, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4', episodeCount: 8, id: '166240' }] },
-    '145139': { tmdbId: 85937, season: 3, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4', episodeCount: 8, id: '166240' }] },
-    '166240': { tmdbId: 85937, season: 4, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4', episodeCount: 8, id: '166240' }] },
+    '85937': { tmdbId: 85937, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Unwavering Resolve Arc', arcName: 'Unwavering Resolve Arc', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2 - Mugen Train & Entertainment District Arc', arcName: 'Entertainment District Arc', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3 - Swordsmith Village Arc', arcName: 'Swordsmith Village Arc', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4 - Hashira Training Arc', arcName: 'Hashira Training Arc', episodeCount: 8, id: '166240' }] },
+    '101922': { tmdbId: 85937, season: 1, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Unwavering Resolve Arc', arcName: 'Unwavering Resolve Arc', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2 - Mugen Train & Entertainment District Arc', arcName: 'Entertainment District Arc', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3 - Swordsmith Village Arc', arcName: 'Swordsmith Village Arc', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4 - Hashira Training Arc', arcName: 'Hashira Training Arc', episodeCount: 8, id: '166240' }] },
+    '129874': { tmdbId: 85937, season: 2, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Unwavering Resolve Arc', arcName: 'Unwavering Resolve Arc', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2 - Mugen Train & Entertainment District Arc', arcName: 'Entertainment District Arc', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3 - Swordsmith Village Arc', arcName: 'Swordsmith Village Arc', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4 - Hashira Training Arc', arcName: 'Hashira Training Arc', episodeCount: 8, id: '166240' }] },
+    '145139': { tmdbId: 85937, season: 3, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Unwavering Resolve Arc', arcName: 'Unwavering Resolve Arc', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2 - Mugen Train & Entertainment District Arc', arcName: 'Entertainment District Arc', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3 - Swordsmith Village Arc', arcName: 'Swordsmith Village Arc', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4 - Hashira Training Arc', arcName: 'Hashira Training Arc', episodeCount: 8, id: '166240' }] },
+    '166240': { tmdbId: 85937, season: 4, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Unwavering Resolve Arc', arcName: 'Unwavering Resolve Arc', episodeCount: 26, id: '101922' }, { seasonNumber: 2, name: 'Season 2 - Mugen Train & Entertainment District Arc', arcName: 'Entertainment District Arc', episodeCount: 18, id: '129874' }, { seasonNumber: 3, name: 'Season 3 - Swordsmith Village Arc', arcName: 'Swordsmith Village Arc', episodeCount: 11, id: '145139' }, { seasonNumber: 4, name: 'Season 4 - Hashira Training Arc', arcName: 'Hashira Training Arc', episodeCount: 8, id: '166240' }] },
 
     // Attack on Titan
-    '16498': { tmdbId: 1429, season: 1, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 25, id: '16498' }, { seasonNumber: 2, name: 'Season 2', episodeCount: 12, id: '20958' }, { seasonNumber: 3, name: 'Season 3', episodeCount: 22, id: '99147' }, { seasonNumber: 4, name: 'Season 4: Final Season', episodeCount: 28, id: '110277' }] },
-    '20958': { tmdbId: 1429, season: 2, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 25, id: '16498' }, { seasonNumber: 2, name: 'Season 2', episodeCount: 12, id: '20958' }, { seasonNumber: 3, name: 'Season 3', episodeCount: 22, id: '99147' }, { seasonNumber: 4, name: 'Season 4: Final Season', episodeCount: 28, id: '110277' }] },
-    '99147': { tmdbId: 1429, season: 3, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 25, id: '16498' }, { seasonNumber: 2, name: 'Season 2', episodeCount: 12, id: '20958' }, { seasonNumber: 3, name: 'Season 3', episodeCount: 22, id: '99147' }, { seasonNumber: 4, name: 'Season 4: Final Season', episodeCount: 28, id: '110277' }] },
-    '110277': { tmdbId: 1429, season: 4, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 25, id: '16498' }, { seasonNumber: 2, name: 'Season 2', episodeCount: 12, id: '20958' }, { seasonNumber: 3, name: 'Season 3', episodeCount: 22, id: '99147' }, { seasonNumber: 4, name: 'Season 4: Final Season', episodeCount: 28, id: '110277' }] },
+    '16498': { tmdbId: 1429, season: 1, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Fall of Shiganshina Arc', arcName: 'Fall of Shiganshina Arc', episodeCount: 25, id: '16498' }, { seasonNumber: 2, name: 'Season 2 - Clash of the Titans Arc', arcName: 'Clash of the Titans Arc', episodeCount: 12, id: '20958' }, { seasonNumber: 3, name: 'Season 3 - Return to Shiganshina Arc', arcName: 'Return to Shiganshina Arc', episodeCount: 22, id: '99147' }, { seasonNumber: 4, name: 'Season 4 - The Final Season', arcName: 'The Final Season', episodeCount: 28, id: '110277' }] },
+    '20958': { tmdbId: 1429, season: 2, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Fall of Shiganshina Arc', arcName: 'Fall of Shiganshina Arc', episodeCount: 25, id: '16498' }, { seasonNumber: 2, name: 'Season 2 - Clash of the Titans Arc', arcName: 'Clash of the Titans Arc', episodeCount: 12, id: '20958' }, { seasonNumber: 3, name: 'Season 3 - Return to Shiganshina Arc', arcName: 'Return to Shiganshina Arc', episodeCount: 22, id: '99147' }, { seasonNumber: 4, name: 'Season 4 - The Final Season', arcName: 'The Final Season', episodeCount: 28, id: '110277' }] },
+    '99147': { tmdbId: 1429, season: 3, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Fall of Shiganshina Arc', arcName: 'Fall of Shiganshina Arc', episodeCount: 25, id: '16498' }, { seasonNumber: 2, name: 'Season 2 - Clash of the Titans Arc', arcName: 'Clash of the Titans Arc', episodeCount: 12, id: '20958' }, { seasonNumber: 3, name: 'Season 3 - Return to Shiganshina Arc', arcName: 'Return to Shiganshina Arc', episodeCount: 22, id: '99147' }, { seasonNumber: 4, name: 'Season 4 - The Final Season', arcName: 'The Final Season', episodeCount: 28, id: '110277' }] },
+    '110277': { tmdbId: 1429, season: 4, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Fall of Shiganshina Arc', arcName: 'Fall of Shiganshina Arc', episodeCount: 25, id: '16498' }, { seasonNumber: 2, name: 'Season 2 - Clash of the Titans Arc', arcName: 'Clash of the Titans Arc', episodeCount: 12, id: '20958' }, { seasonNumber: 3, name: 'Season 3 - Return to Shiganshina Arc', arcName: 'Return to Shiganshina Arc', episodeCount: 22, id: '99147' }, { seasonNumber: 4, name: 'Season 4 - The Final Season', arcName: 'The Final Season', episodeCount: 28, id: '110277' }] },
+    '1429': { tmdbId: 1429, totalSeasons: 4, seasons: [{ seasonNumber: 1, name: 'Season 1 - Fall of Shiganshina Arc', arcName: 'Fall of Shiganshina Arc', episodeCount: 25, id: '16498' }, { seasonNumber: 2, name: 'Season 2 - Clash of the Titans Arc', arcName: 'Clash of the Titans Arc', episodeCount: 12, id: '20958' }, { seasonNumber: 3, name: 'Season 3 - Return to Shiganshina Arc', arcName: 'Return to Shiganshina Arc', episodeCount: 22, id: '99147' }, { seasonNumber: 4, name: 'Season 4 - The Final Season', arcName: 'The Final Season', episodeCount: 28, id: '110277' }] },
 
     // One Piece
-    '21': { tmdbId: 37854, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'All Episodes', episodeCount: 1120, id: '21' }] },
+    '21': { tmdbId: 37854, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1 - All Arcs & Episodes', arcName: 'All Arcs', episodeCount: 1120, id: '21' }] },
+    '37854': { tmdbId: 37854, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1 - All Arcs & Episodes', arcName: 'All Arcs', episodeCount: 1120, id: '21' }] },
 
     // Solo Leveling
-    '151807': { tmdbId: 127532, season: 1, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 12, id: '151807' }, { seasonNumber: 2, name: 'Season 2: Arise from the Shadow', episodeCount: 12, id: '173778' }] },
-    '173778': { tmdbId: 127532, season: 2, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 12, id: '151807' }, { seasonNumber: 2, name: 'Season 2: Arise from the Shadow', episodeCount: 12, id: '173778' }] },
+    '151807': { tmdbId: 127532, season: 1, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1 - D-Rank Hunter Arc', arcName: 'D-Rank Hunter Arc', episodeCount: 12, id: '151807' }, { seasonNumber: 2, name: 'Season 2 - Arise from the Shadow Arc', arcName: 'Arise from the Shadow Arc', episodeCount: 12, id: '173778' }] },
+    '173778': { tmdbId: 127532, season: 2, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1 - D-Rank Hunter Arc', arcName: 'D-Rank Hunter Arc', episodeCount: 12, id: '151807' }, { seasonNumber: 2, name: 'Season 2 - Arise from the Shadow Arc', arcName: 'Arise from the Shadow Arc', episodeCount: 12, id: '173778' }] },
+    '127532': { tmdbId: 127532, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1 - D-Rank Hunter Arc', arcName: 'D-Rank Hunter Arc', episodeCount: 12, id: '151807' }, { seasonNumber: 2, name: 'Season 2 - Arise from the Shadow Arc', arcName: 'Arise from the Shadow Arc', episodeCount: 12, id: '173778' }] },
 
     // Chainsaw Man
-    '127230': { tmdbId: 114410, season: 1, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 12, id: '127230' }] },
+    '127230': { tmdbId: 114410, season: 1, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1 - Public Safety Arc', arcName: 'Public Safety Arc', episodeCount: 12, id: '127230' }] },
+    '114410': { tmdbId: 114410, season: 1, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1 - Public Safety Arc', arcName: 'Public Safety Arc', episodeCount: 12, id: '127230' }] },
 
     // Naruto & Naruto Shippuden
-    '20': { tmdbId: 46260, totalSeasons: 5, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 52 }, { seasonNumber: 2, name: 'Season 2', episodeCount: 52 }, { seasonNumber: 3, name: 'Season 3', episodeCount: 52 }, { seasonNumber: 4, name: 'Season 4', episodeCount: 52 }, { seasonNumber: 5, name: 'Season 5', episodeCount: 12 }] },
-    '1735': { tmdbId: 31910, totalSeasons: 21, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 32 }, { seasonNumber: 2, name: 'Season 2', episodeCount: 21 }, { seasonNumber: 3, name: 'Season 3', episodeCount: 18 }, { seasonNumber: 4, name: 'Season 4', episodeCount: 17 }] },
+    '20': { tmdbId: 46260, totalSeasons: 5, seasons: [{ seasonNumber: 1, name: 'Season 1 - Land of Waves Arc', arcName: 'Land of Waves Arc', episodeCount: 52 }, { seasonNumber: 2, name: 'Season 2 - Chunin Exams Arc', arcName: 'Chunin Exams Arc', episodeCount: 52 }, { seasonNumber: 3, name: 'Season 3 - Konoha Crush Arc', arcName: 'Konoha Crush Arc', episodeCount: 52 }, { seasonNumber: 4, name: 'Season 4 - Sasuke Recovery Arc', arcName: 'Sasuke Recovery Arc', episodeCount: 52 }, { seasonNumber: 5, name: 'Season 5 - Final Pre-Shippuden Arc', arcName: 'Pre-Shippuden Arc', episodeCount: 12 }] },
+    '1735': { tmdbId: 31910, totalSeasons: 21, seasons: [{ seasonNumber: 1, name: 'Season 1 - Kazekage Rescue Mission', arcName: 'Kazekage Rescue Mission', episodeCount: 32 }, { seasonNumber: 2, name: 'Season 2 - Tenchi Bridge Arc', arcName: 'Tenchi Bridge Arc', episodeCount: 21 }, { seasonNumber: 3, name: 'Season 3 - Twelve Guardian Ninja', arcName: 'Twelve Guardian Ninja', episodeCount: 18 }, { seasonNumber: 4, name: 'Season 4 - Immortal Devastators', arcName: 'Immortal Devastators', episodeCount: 17 }] },
 
     // Bleach
-    '269': { tmdbId: 30984, totalSeasons: 16, seasons: [{ seasonNumber: 1, name: 'Season 1: Agent of the Shinigami', episodeCount: 20 }, { seasonNumber: 2, name: 'Season 2: Soul Society', episodeCount: 21 }, { seasonNumber: 3, name: 'Season 3: The Rescue', episodeCount: 22 }] },
+    '269': { tmdbId: 30984, totalSeasons: 17, seasons: [{ seasonNumber: 1, name: 'Season 1 - Agent of the Shinigami Arc', arcName: 'Agent of the Shinigami Arc', episodeCount: 20 }, { seasonNumber: 2, name: 'Season 2 - Soul Society: The Sneak Entry Arc', arcName: 'Soul Society Sneak Entry', episodeCount: 21 }, { seasonNumber: 3, name: 'Season 3 - Soul Society: The Rescue Arc', arcName: 'Soul Society Rescue', episodeCount: 22 }, { seasonNumber: 17, name: 'Season 17 - Thousand-Year Blood War Arc', arcName: 'Thousand-Year Blood War Arc', episodeCount: 26 }] },
 
     // Death Note
-    '1535': { tmdbId: 13916, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 37, id: '1535' }] },
+    '1535': { tmdbId: 13916, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1 - Kira vs. L Arc', arcName: 'Kira vs. L Arc', episodeCount: 37, id: '1535' }] },
 
     // Spy x Family
-    '140960': { tmdbId: 120089, season: 1, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 25, id: '140960' }, { seasonNumber: 2, name: 'Season 2', episodeCount: 12, id: '158871' }] },
+    '140960': { tmdbId: 120089, season: 1, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1 - Operation Strix Arc', arcName: 'Operation Strix Arc', episodeCount: 25, id: '140960' }, { seasonNumber: 2, name: 'Season 2 - Cruise Adventure Arc', arcName: 'Cruise Adventure Arc', episodeCount: 12, id: '158871' }] },
 
     // My Hero Academia
-    '21459': { tmdbId: 65930, season: 1, totalSeasons: 7, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 13 }, { seasonNumber: 2, name: 'Season 2', episodeCount: 25 }, { seasonNumber: 3, name: 'Season 3', episodeCount: 25 }, { seasonNumber: 4, name: 'Season 4', episodeCount: 25 }, { seasonNumber: 5, name: 'Season 5', episodeCount: 25 }, { seasonNumber: 6, name: 'Season 6', episodeCount: 25 }, { seasonNumber: 7, name: 'Season 7', episodeCount: 21 }] },
+    '21459': { tmdbId: 65930, season: 1, totalSeasons: 7, seasons: [{ seasonNumber: 1, name: 'Season 1 - U.A. Entrance Exam Arc', arcName: 'U.A. Entrance Exam Arc', episodeCount: 13 }, { seasonNumber: 2, name: 'Season 2 - U.A. Sports Festival Arc', arcName: 'U.A. Sports Festival Arc', episodeCount: 25 }, { seasonNumber: 3, name: 'Season 3 - Forest Training & Hideout Raid Arc', arcName: 'Forest Training Arc', episodeCount: 25 }, { seasonNumber: 4, name: 'Season 4 - Shie Hassaikai Arc', arcName: 'Shie Hassaikai Arc', episodeCount: 25 }, { seasonNumber: 5, name: 'Season 5 - Joint Training Arc', arcName: 'Joint Training Arc', episodeCount: 25 }, { seasonNumber: 6, name: 'Season 6 - Paranormal Liberation War Arc', arcName: 'Paranormal Liberation War Arc', episodeCount: 25 }, { seasonNumber: 7, name: 'Season 7 - Final War Arc', arcName: 'Final War Arc', episodeCount: 21 }] },
 
     // Dandadan
-    '171018': { tmdbId: 251504, season: 1, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 12, id: '171018' }] },
+    '171018': { tmdbId: 251504, season: 1, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1 - Turbo Granny & Alien Arc', arcName: 'Turbo Granny Arc', episodeCount: 12, id: '171018' }] },
 
     // Frieren
-    '154587': { tmdbId: 209867, season: 1, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 28, id: '154587' }] },
+    '154587': { tmdbId: 209867, season: 1, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: "Season 1 - First-Class Mage Exam Arc", arcName: "First-Class Mage Exam Arc", episodeCount: 28, id: '154587' }] },
 
     // Kaiju No. 8
-    '146065': { tmdbId: 138502, season: 1, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 12, id: '146065' }] },
+    '146065': { tmdbId: 138502, season: 1, totalSeasons: 1, seasons: [{ seasonNumber: 1, name: 'Season 1 - Defense Force Arc', arcName: 'Defense Force Arc', episodeCount: 12, id: '146065' }] },
 
     // Blue Lock
-    '137822': { tmdbId: 137822, season: 1, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1', episodeCount: 24, id: '137822' }, { seasonNumber: 2, name: 'Season 2: vs. U-20 Japan', episodeCount: 14, id: '163146' }] }
+    '137822': { tmdbId: 137822, season: 1, totalSeasons: 2, seasons: [{ seasonNumber: 1, name: 'Season 1 - First & Second Selection Arc', arcName: 'Selection Arc', episodeCount: 24, id: '137822' }, { seasonNumber: 2, name: 'Season 2 - vs. U-20 Japan Arc', arcName: 'vs. U-20 Japan Arc', episodeCount: 14, id: '163146' }] }
+};
+
+// AniSkip API Integration Helper (Exact millisecond opening and ending intervals)
+const fetchAniSkipTimes = async (malId, episodeNumber) => {
+    if (!malId || !episodeNumber) return null;
+    const cacheKey = `aniskip:${malId}:${episodeNumber}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+    try {
+        const url = `https://api.aniskip.com/v2/skip-times/${malId}/${episodeNumber}?types[]=op&types[]=ed&types[]=mixed-op&types[]=mixed-ed&types[]=recap&episodeLength=0`;
+        const res = await fetchJsonWithTimeout(url, {}, 3000);
+        if (res?.found && Array.isArray(res.results)) {
+            let intro = null;
+            let outro = null;
+            for (const item of res.results) {
+                if (item.skipType === 'op' || item.skipType === 'recap') {
+                    if (item.interval?.startTime !== undefined && item.interval?.endTime !== undefined) {
+                        intro = { start: Math.floor(item.interval.startTime), end: Math.ceil(item.interval.endTime) };
+                    }
+                } else if (item.skipType === 'ed') {
+                    if (item.interval?.startTime !== undefined && item.interval?.endTime !== undefined) {
+                        outro = { start: Math.floor(item.interval.startTime), end: Math.ceil(item.interval.endTime) };
+                    }
+                }
+            }
+            const skipData = { intro, outro };
+            setCached(cacheKey, skipData, 86400 * 7); // 7 days cache
+            return skipData;
+        }
+    } catch (e) {
+        // Silently continue
+    }
+    return null;
 };
 
 // Normalize AniList media object into standard Notflix media schema
@@ -274,6 +397,48 @@ const normalizeAniListMedia = (media) => {
         }
     }
 
+    // Extract Next Airing Episode details if available
+    const nextAiring = media.nextAiringEpisode ? {
+        id: media.nextAiringEpisode.id,
+        episode: media.nextAiringEpisode.episode,
+        airingAt: media.nextAiringEpisode.airingAt,
+        timeUntilAiring: media.nextAiringEpisode.timeUntilAiring
+    } : null;
+
+    // Calculate Sub episode count
+    let subCount = null;
+    if (nextAiring?.episode) {
+        // Airing ongoing anime: latest released sub episode is (next episode - 1)
+        subCount = Math.max(1, nextAiring.episode - 1);
+    } else if (media.episodes) {
+        subCount = media.episodes;
+    } else if (media.format === 'MOVIE') {
+        subCount = 1;
+    } else {
+        subCount = 12;
+    }
+
+    // Determine Dub availability (Mainstream & popular franchises, or anime with verified dubs)
+    const titleLower = title.toLowerCase();
+    const isPopularOrDubbed = 
+        Boolean(extra.tmdbId) ||
+        (media.averageScore && media.averageScore >= 68) ||
+        (media.popularity && media.popularity > 8000) ||
+        media.format === 'MOVIE' ||
+        ['jujutsu', 'demon slayer', 'one piece', 'naruto', 'bleach', 'titan', 'solo leveling', 'chainsaw', 'frieren', 'dandadan', 'spy x family', 'blue lock', 'hero academia', 'death note', 'kaiju', 'dragon ball', 'hunter', 'fullmetal', 'sword art'].some(k => titleLower.includes(k));
+
+    let dubCount = null;
+    if (isPopularOrDubbed && subCount > 0) {
+        if (nextAiring?.episode) {
+            // SimulDub ongoing: dub usually trails sub by 2 to 3 episodes
+            const estimatedDub = subCount - 2;
+            dubCount = estimatedDub > 0 ? estimatedDub : null;
+        } else {
+            // Completed dubbed series
+            dubCount = subCount;
+        }
+    }
+
     return {
         id: mediaIdStr,
         malId: malIdStr,
@@ -292,11 +457,14 @@ const normalizeAniListMedia = (media) => {
         status: media.status || 'COMPLETED',
         totalSeasons: totalSeasons || 1,
         seasons,
-        episodesCount: media.episodes || null,
+        episodesCount: media.episodes || subCount,
+        subCount,
+        dubCount,
+        nextAiringEpisode: nextAiring,
         episodes: {
-            sub: media.episodes || 12,
-            dub: media.episodes ? Math.floor(media.episodes * 0.8) : null,
-            eps: media.episodes || 12
+            sub: subCount,
+            dub: dubCount,
+            eps: media.episodes || subCount
         },
         overview: media.description ? media.description.replace(/<[^>]*>/g, '').trim() : '',
         synopsis: media.description ? media.description.replace(/<[^>]*>/g, '').trim() : '',
@@ -326,7 +494,8 @@ const normalizeAniListMedia = (media) => {
                 format: m.format
             };
         }).filter(Boolean) || [],
-        relations
+        relations,
+        streamingEpisodes: media.streamingEpisodes || []
     };
 };
 
@@ -473,26 +642,31 @@ export const AnimeProxyService = {
           trending: Page(page: 1, perPage: 12) {
             media(type: ANIME, sort: TRENDING_DESC) {
               id idMal title { romaji english native } coverImage { extraLarge large } bannerImage averageScore episodes genres status seasonYear description(asHtml: false)
+              nextAiringEpisode { id airingAt timeUntilAiring episode }
             }
           }
           popular: Page(page: 1, perPage: 12) {
             media(type: ANIME, sort: POPULARITY_DESC) {
               id idMal title { romaji english native } coverImage { extraLarge large } bannerImage averageScore episodes genres status seasonYear description(asHtml: false)
+              nextAiringEpisode { id airingAt timeUntilAiring episode }
             }
           }
           topAiring: Page(page: 1, perPage: 12) {
             media(type: ANIME, sort: SCORE_DESC, status: RELEASING) {
               id idMal title { romaji english native } coverImage { extraLarge large } bannerImage averageScore episodes genres status seasonYear description(asHtml: false)
+              nextAiringEpisode { id airingAt timeUntilAiring episode }
             }
           }
           topRated: Page(page: 1, perPage: 12) {
             media(type: ANIME, sort: SCORE_DESC) {
               id idMal title { romaji english native } coverImage { extraLarge large } bannerImage averageScore episodes genres status seasonYear description(asHtml: false)
+              nextAiringEpisode { id airingAt timeUntilAiring episode }
             }
           }
           upcoming: Page(page: 1, perPage: 12) {
             media(type: ANIME, sort: POPULARITY_DESC, status: NOT_YET_RELEASED) {
               id idMal title { romaji english native } coverImage { extraLarge large } bannerImage averageScore episodes genres status seasonYear description(asHtml: false)
+              nextAiringEpisode { id airingAt timeUntilAiring episode }
             }
           }
         }
@@ -577,6 +751,7 @@ export const AnimeProxyService = {
             pageInfo { total currentPage hasNextPage lastPage }
             media(type: ANIME, sort: $sort, status: $status) {
               id idMal title { romaji english native } coverImage { extraLarge large } bannerImage averageScore episodes genres status seasonYear description(asHtml: false) format
+              nextAiringEpisode { id airingAt timeUntilAiring episode }
             }
           }
         }
@@ -649,6 +824,7 @@ export const AnimeProxyService = {
           Page(page: $page, perPage: 24) {
             media(type: ANIME, search: $search, genre: $genre, sort: POPULARITY_DESC) {
               id idMal title { romaji english native } coverImage { extraLarge large } bannerImage averageScore episodes genres status seasonYear description(asHtml: false) format
+              nextAiringEpisode { id airingAt timeUntilAiring episode }
             }
           }
         }
@@ -733,8 +909,10 @@ export const AnimeProxyService = {
                 id idMal title { romaji english native } coverImage { extraLarge large } bannerImage
                 startDate { year month day } endDate { year month day } description(asHtml: false)
                 season seasonYear type format status episodes duration genres synonyms averageScore meanScore
+                nextAiringEpisode { id airingAt timeUntilAiring episode }
                 studios(isMain: true) { nodes { id name } }
                 trailer { id site thumbnail }
+                streamingEpisodes { title thumbnail url site }
                 characters(sort: ROLE, perPage: 12) {
                   edges {
                     role
@@ -764,8 +942,10 @@ export const AnimeProxyService = {
                 id idMal title { romaji english native } coverImage { extraLarge large } bannerImage
                 startDate { year month day } endDate { year month day } description(asHtml: false)
                 season seasonYear type format status episodes duration genres synonyms averageScore meanScore
+                nextAiringEpisode { id airingAt timeUntilAiring episode }
                 studios(isMain: true) { nodes { id name } }
                 trailer { id site thumbnail }
+                streamingEpisodes { title thumbnail url site }
                 characters(sort: ROLE, perPage: 12) {
                   edges {
                     role
@@ -826,15 +1006,134 @@ export const AnimeProxyService = {
         return result;
     },
 
-    // 5. ANIME EPISODES LIST (Season-Aware)
+    // 5. ANIME EPISODES LIST (Season-Aware with Full Rich Metadata)
     getEpisodes: async (id, season = 1) => {
         const seasonNum = parseInt(season, 10) || 1;
         const cacheKey = `anime:episodes:${id}:s${seasonNum}`;
         const cached = getCached(cacheKey);
         if (cached) return cached;
 
+        // 1. Resolve Anime details to check for TMDB ID, MAL ID, backdrop stills, streamingEpisodes, and season info
+        const details = await AnimeProxyService.getDetails(id);
+        const tmdbId = details?.tmdbId || ANIME_TMDB_MAP[id]?.tmdbId;
+        const malId = details?.malId || details?.idMal || null;
+        const maxDub = details?.dubCount || details?.episodes?.dub || 0;
+        const streamingEps = Array.isArray(details?.streamingEpisodes) ? details.streamingEpisodes : [];
+
+        // Match Crunchyroll streaming episode by number (e.g., "Episode 1 - Ryomen Sukuna")
+        const matchStreamingEp = (num) => {
+            if (!streamingEps.length) return null;
+            return streamingEps.find(se => {
+                if (!se?.title) return false;
+                const m = se.title.match(/(?:Episode|Ep\.?)\s*(\d+)/i) || se.title.match(/^(\d+)\./);
+                return m && parseInt(m[1], 10) === num;
+            });
+        };
+
+        // Helper to fetch Jikan (MyAnimeList) episodes for filler & Romanized titles
+        const fetchJikanEpisodes = async (mId) => {
+            if (!mId) return null;
+            const jikanCacheKey = `jikan:episodes:${mId}`;
+            const jikanCached = getCached(jikanCacheKey);
+            if (jikanCached) return jikanCached;
+            try {
+                const url = `https://api.jikan.moe/v4/anime/${mId}/episodes`;
+                const res = await fetchJsonWithTimeout(url, {}, 3000);
+                if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+                    setCached(jikanCacheKey, res.data, 86400); // 24hr cache
+                    return res.data;
+                }
+            } catch (e) {
+                // Silently ignore
+            }
+            return null;
+        };
+
+        const [jikanEpisodes, tmdbSeason] = await Promise.all([
+            malId ? fetchJikanEpisodes(malId) : Promise.resolve(null),
+            tmdbId ? TMDBService.getSeasonDetails(tmdbId, seasonNum) : Promise.resolve(null)
+        ]);
+
+        // A. If TMDB season has episodes, merge with Jikan & streaming metadata for ultra-rich cards
+        if (tmdbSeason && Array.isArray(tmdbSeason.episodes) && tmdbSeason.episodes.length > 0) {
+            const episodes = tmdbSeason.episodes.map((ep, idx) => {
+                const epNum = ep.episodeNumber || idx + 1;
+                const jikanEp = jikanEpisodes?.find(j => j.mal_id === epNum);
+                const streamEp = matchStreamingEp(epNum);
+                const isFiller = Boolean(jikanEp?.filler);
+                const isRecap = Boolean(jikanEp?.recap);
+                const fillerType = isFiller ? 'filler' : (isRecap ? 'recap' : 'canon');
+                const altTitle = jikanEp?.title_romanji || jikanEp?.title_japanese || '';
+                const hasDub = (maxDub > 0 && epNum <= maxDub) || Boolean(details?.dubCount && epNum <= details.dubCount);
+                
+                let displayTitle = ep.name || `Episode ${epNum}`;
+                if (!displayTitle.toLowerCase().startsWith('episode') && !displayTitle.startsWith(`${epNum}.`)) {
+                    displayTitle = `${epNum}. ${displayTitle}`;
+                } else if (displayTitle.toLowerCase() === `episode ${epNum}`) {
+                    if (jikanEp?.title) {
+                        displayTitle = `${epNum}. ${jikanEp.title}`;
+                    } else if (streamEp?.title) {
+                        displayTitle = streamEp.title;
+                    }
+                }
+
+                return {
+                    id: `${id}::s=${seasonNum}::ep=${epNum}`,
+                    episodeNumber: epNum,
+                    seasonNumber: seasonNum,
+                    title: displayTitle,
+                    alternativeTitle: altTitle,
+                    overview: ep.overview || jikanEp?.synopsis || details?.overview || details?.description || '',
+                    still: ep.still || streamEp?.thumbnail || details?.backdrop || details?.cover || null,
+                    airDate: ep.airDate || (jikanEp?.aired ? jikanEp.aired.split('T')[0] : null) || null,
+                    runtime: ep.runtime ? `${ep.runtime}m` : (details?.duration ? `${details.duration}m` : '24m'),
+                    isFiller: isFiller,
+                    fillerType: fillerType,
+                    hasSub: true,
+                    hasDub: hasDub,
+                    voteAverage: ep.voteAverage || null
+                };
+            });
+
+            setCached(cacheKey, episodes, 3600);
+            return episodes;
+        }
+
+        // B. If Jikan has episodes and season is 1 (or standalone anime)
+        if (seasonNum === 1 && jikanEpisodes && Array.isArray(jikanEpisodes) && jikanEpisodes.length > 0) {
+            const episodes = jikanEpisodes.map((jep, idx) => {
+                const epNum = jep.mal_id || idx + 1;
+                const streamEp = matchStreamingEp(epNum);
+                const isFiller = Boolean(jep.filler);
+                const isRecap = Boolean(jep.recap);
+                const fillerType = isFiller ? 'filler' : (isRecap ? 'recap' : 'canon');
+                const displayTitle = jep.title ? `${epNum}. ${jep.title}` : (streamEp?.title || `Episode ${epNum}`);
+                const hasDub = (maxDub > 0 && epNum <= maxDub) || Boolean(details?.dubCount && epNum <= details.dubCount);
+
+                return {
+                    id: `${id}::s=${seasonNum}::ep=${epNum}`,
+                    episodeNumber: epNum,
+                    seasonNumber: seasonNum,
+                    title: displayTitle,
+                    alternativeTitle: jep.title_romanji || jep.title_japanese || '',
+                    overview: jep.synopsis || details?.overview || details?.description || '',
+                    still: streamEp?.thumbnail || details?.backdrop || details?.cover || null,
+                    airDate: jep.aired ? jep.aired.split('T')[0] : null,
+                    runtime: details?.duration ? `${details.duration}m` : '24m',
+                    isFiller: isFiller,
+                    fillerType: fillerType,
+                    hasSub: true,
+                    hasDub: hasDub,
+                    voteAverage: null
+                };
+            });
+
+            setCached(cacheKey, episodes, 3600);
+            return episodes;
+        }
+
+        // C. Try HiAnime API if season is 1
         const hiAnimeUrl = getHiAnimeBaseUrl();
-        // 1. Try HiAnime API if season is 1
         if (seasonNum === 1) {
             try {
                 let hianimeData = await fetchJsonWithTimeout(`${hiAnimeUrl}/api/v1/episodes/${id}`, {}, 3500);
@@ -843,92 +1142,61 @@ export const AnimeProxyService = {
                 }
 
                 if (hianimeData?.success && Array.isArray(hianimeData.data) && hianimeData.data.length > 0) {
-                    const episodes = hianimeData.data.map((ep, i) => ({
-                        episodeNumber: ep.episodeNumber || i + 1,
-                        title: ep.title || `Episode ${ep.episodeNumber || i + 1}`,
-                        alternativeTitle: ep.alternativeTitle || '',
-                        id: String(ep.id || `${id}?ep=${ep.episodeNumber || i + 1}`),
-                        isFiller: Boolean(ep.isFiller)
-                    }));
+                    const episodes = hianimeData.data.map((ep, i) => {
+                        const epNum = ep.episodeNumber || i + 1;
+                        const streamEp = matchStreamingEp(epNum);
+                        const hasDub = (maxDub > 0 && epNum <= maxDub) || Boolean(details?.dubCount && epNum <= details.dubCount);
+                        return {
+                            id: String(ep.id || `${id}?ep=${epNum}`),
+                            episodeNumber: epNum,
+                            seasonNumber: seasonNum,
+                            title: ep.title || streamEp?.title || `Episode ${epNum}`,
+                            alternativeTitle: ep.alternativeTitle || '',
+                            overview: ep.overview || details?.overview || '',
+                            still: ep.still || streamEp?.thumbnail || details?.backdrop || details?.cover || null,
+                            airDate: ep.airDate || null,
+                            runtime: details?.duration ? `${details.duration}m` : '24m',
+                            isFiller: Boolean(ep.isFiller),
+                            fillerType: ep.isFiller ? 'filler' : 'canon',
+                            hasSub: true,
+                            hasDub: hasDub,
+                            voteAverage: null
+                        };
+                    });
                     setCached(cacheKey, episodes, 1800);
                     return episodes;
                 }
             } catch (e) {
-                // HiAnime not reachable, synthesize episodes
+                // Fall through to synthesis
             }
         }
 
-        // 2. Resolve Anime details to check for TMDB or specific series mappings
-        const details = await AnimeProxyService.getDetails(id);
-        const tmdbId = details?.tmdbId || ANIME_TMDB_MAP[id]?.tmdbId;
-
-        // Special curated handling for Jujutsu Kaisen
-        if (String(id) === '113415' || String(tmdbId) === '95479' || details?.title?.toLowerCase().includes('jujutsu kaisen')) {
-            const jjkS1Titles = [
-                'Ryomen Sukuna', 'For Myself', 'Girl of Steel', 'Curse Womb Must Die',
-                'Curse Womb Must Die -II-', 'After Rain', 'Assault', 'Boredom',
-                'Small Fry and Reverse Retribution', 'Idle Transfiguration', 'Narrow-minded',
-                'To You, Someday', 'Tomorrow', 'Kyoto Sister School Exchange Event - Group Battle 0 -',
-                'Kyoto Sister School Exchange Event - Group Battle 1 -', 'Kyoto Sister School Exchange Event - Group Battle 2 -',
-                'Kyoto Sister School Exchange Event - Group Battle 3 -', 'Sage', 'Black Flash',
-                'Nonstandard', 'Jujutsu Koshien', 'The Origin of Blind Obedience',
-                'The Origin of Blind Obedience - 2 -', 'Accomplices'
-            ];
-            const jjkS2Titles = [
-                'Hidden Inventory', 'Hidden Inventory 2', 'Hidden Inventory 3', 'Hidden Inventory 4',
-                'Premature Death', "It's Like That", 'Evening Festival', 'The Shibuya Incident',
-                'The Shibuya Incident - Gate, Open', 'Pandemonium', 'Seance', 'Dull Knife',
-                'Red Scale', 'Fluctuations', 'Fluctuations, Part 2', 'Thunderclap',
-                'Thunderclap, Part 2', 'Right and Wrong', 'Right and Wrong, Part 2', 'Right and Wrong, Part 3',
-                'Metamorphosis', 'Metamorphosis, Part 2', 'Shibuya Incident - Gate, Close'
-            ];
-
-            const activeTitles = seasonNum === 2 ? jjkS2Titles : jjkS1Titles;
-            const episodes = activeTitles.map((title, i) => ({
-                episodeNumber: i + 1,
-                title: `${i + 1}. ${title}`,
-                alternativeTitle: '',
-                id: `${id}::s=${seasonNum}::ep=${i + 1}`,
-                isFiller: false
-            }));
-            setCached(cacheKey, episodes, 1800);
-            return episodes;
-        }
-
-        // 3. Try TMDB season details if tmdbId is present
-        if (tmdbId) {
-            try {
-                const tmdbSeason = await TMDBService.getSeasonDetails(tmdbId, seasonNum);
-                if (tmdbSeason && Array.isArray(tmdbSeason.episodes) && tmdbSeason.episodes.length > 0) {
-                    const episodes = tmdbSeason.episodes.map(ep => ({
-                        episodeNumber: ep.episodeNumber,
-                        title: ep.name ? `${ep.episodeNumber}. ${ep.name}` : `Episode ${ep.episodeNumber}`,
-                        alternativeTitle: '',
-                        overview: ep.overview || '',
-                        still: ep.still || null,
-                        id: `${id}::s=${seasonNum}::ep=${ep.episodeNumber}`,
-                        isFiller: false
-                    }));
-                    setCached(cacheKey, episodes, 1800);
-                    return episodes;
-                }
-            } catch (e) {
-                // Fall through to count-based synthesis
-            }
-        }
-
-        // 4. Fallback: Synthesize episodes list from details
+        // D. Fallback: Synthesize rich episodes list from details and streamingEpisodes
         const seasonInfo = (details?.seasons || []).find(s => s.seasonNumber === seasonNum);
         const count = seasonInfo?.episodeCount || (seasonNum === 1 ? (details?.episodesCount || details?.episodes?.eps || 12) : 12);
         const total = Math.min(Math.max(count, 1), 2000);
 
-        const episodes = Array.from({ length: total }, (_, i) => ({
-            episodeNumber: i + 1,
-            title: `Episode ${i + 1}`,
-            alternativeTitle: '',
-            id: `${id}::s=${seasonNum}::ep=${i + 1}`,
-            isFiller: false
-        }));
+        const episodes = Array.from({ length: total }, (_, i) => {
+            const epNum = i + 1;
+            const streamEp = matchStreamingEp(epNum);
+            const hasDub = (maxDub > 0 && epNum <= maxDub) || Boolean(details?.dubCount && epNum <= details.dubCount);
+            return {
+                id: `${id}::s=${seasonNum}::ep=${epNum}`,
+                episodeNumber: epNum,
+                seasonNumber: seasonNum,
+                title: streamEp?.title || `Episode ${epNum}`,
+                alternativeTitle: '',
+                overview: details?.overview || details?.description || '',
+                still: streamEp?.thumbnail || details?.backdrop || details?.cover || null,
+                airDate: details?.year ? `${details.year}` : null,
+                runtime: details?.duration ? `${details.duration}m` : '24m',
+                isFiller: false,
+                fillerType: 'canon',
+                hasSub: true,
+                hasDub: hasDub,
+                voteAverage: null
+            };
+        });
 
         setCached(cacheKey, episodes, 1800);
         return episodes;
@@ -1012,16 +1280,39 @@ export const AnimeProxyService = {
                 });
                 if (listRes.ok) {
                     const listJson = await listRes.json();
+                    const allEps = [];
                     const epRe = /<a\s+[^>]*data-id="([^"]*)"[^>]*>/g;
-                    let targetEp = null;
                     let epM;
                     while ((epM = epRe.exec(listJson.result || '')) !== null) {
                         const tag = epM[0];
-                        const num = tag.match(/data-num="([^"]*)"/)?.[1];
-                        if (parseInt(num, 10) === episodeNum) {
-                            targetEp = { ids: tag.match(/data-ids="([^"]*)"/)?.[1] };
-                            break;
+                        const num = parseInt(tag.match(/data-num="([^"]*)"/)?.[1] || '0', 10);
+                        const ids = tag.match(/data-ids="([^"]*)"/)?.[1];
+                        if (ids) {
+                            allEps.push({ num, ids, tag });
                         }
+                    }
+
+                    if (allEps.length === 0) return null;
+
+                    // 1. Exact match
+                    let targetEp = allEps.find(e => e.num === episodeNum);
+
+                    // 2. Relative index match (e.g. Ep 1..24 in season)
+                    if (!targetEp && episodeNum >= 1 && episodeNum <= allEps.length) {
+                        targetEp = allEps[episodeNum - 1];
+                    }
+
+                    // 3. Offset match if continuous
+                    if (!targetEp && allEps.length > 0) {
+                        const minNum = allEps[0].num;
+                        if (episodeNum >= minNum && (episodeNum - minNum) < allEps.length) {
+                            targetEp = allEps[episodeNum - minNum];
+                        }
+                    }
+
+                    // 4. Fallback: closest in range
+                    if (!targetEp) {
+                        targetEp = episodeNum > allEps.length ? allEps[allEps.length - 1] : allEps[0];
                     }
 
                     if (targetEp?.ids) {
@@ -1091,7 +1382,29 @@ export const AnimeProxyService = {
                                                 default: Boolean(t.default)
                                             }));
 
+                                            let intro = (skipData?.intro?.length === 2 && (skipData.intro[0] || skipData.intro[1]))
+                                                ? { start: Number(skipData.intro[0]) || 0, end: Number(skipData.intro[1]) || 0 }
+                                                : sourcesData.intro;
+                                            let outro = (skipData?.outro?.length === 2 && (skipData.outro[0] || skipData.outro[1]))
+                                                ? { start: Number(skipData.outro[0]) || 0, end: Number(skipData.outro[1]) || 0 }
+                                                : sourcesData.outro;
+
+                                            if (!intro || !outro) {
+                                                try {
+                                                    const details = await AnimeProxyService.getDetails(animeId);
+                                                    const malId = details?.malId || details?.idMal;
+                                                    if (malId) {
+                                                        const aniSkip = await fetchAniSkipTimes(malId, episodeNum);
+                                                        if (aniSkip) {
+                                                            if (!intro && aniSkip.intro) intro = aniSkip.intro;
+                                                            if (!outro && aniSkip.outro) outro = aniSkip.outro;
+                                                        }
+                                                    }
+                                                } catch (e) {}
+                                            }
+
                                             const result = {
+                                                embedUrl,
                                                 sources: [
                                                     {
                                                         url: proxiedUrl,
@@ -1101,12 +1414,8 @@ export const AnimeProxyService = {
                                                     }
                                                 ],
                                                 subtitles: tracks,
-                                                intro: (skipData?.intro?.length === 2 && (skipData.intro[0] || skipData.intro[1]))
-                                                    ? { start: Number(skipData.intro[0]) || 0, end: Number(skipData.intro[1]) || 0 }
-                                                    : (sourcesData.intro || { start: 90, end: 180 }),
-                                                outro: (skipData?.outro?.length === 2 && (skipData.outro[0] || skipData.outro[1]))
-                                                    ? { start: Number(skipData.outro[0]) || 0, end: Number(skipData.outro[1]) || 0 }
-                                                    : (sourcesData.outro || { start: 1350, end: 1440 }),
+                                                intro: intro || { start: 90, end: 180 },
+                                                outro: outro || { start: 1350, end: 1440 },
                                                 serverUsed: server,
                                                 typeUsed: type,
                                                 hasHls: true
@@ -1116,6 +1425,24 @@ export const AnimeProxyService = {
                                             return result;
                                         }
                                     }
+
+                                    // Standalone embed player fallback
+                                    const standaloneResult = {
+                                        embedUrl,
+                                        sources: [],
+                                        subtitles: [],
+                                        intro: (skipData?.intro?.length === 2 && (skipData.intro[0] || skipData.intro[1]))
+                                            ? { start: Number(skipData.intro[0]) || 0, end: Number(skipData.intro[1]) || 0 }
+                                            : { start: 90, end: 180 },
+                                        outro: (skipData?.outro?.length === 2 && (skipData.outro[0] || skipData.outro[1]))
+                                            ? { start: Number(skipData.outro[0]) || 0, end: Number(skipData.outro[1]) || 0 }
+                                            : { start: 1350, end: 1440 },
+                                        serverUsed: server,
+                                        typeUsed: type,
+                                        hasHls: false
+                                    };
+                                    setCached(cacheKey, standaloneResult, 1800);
+                                    return standaloneResult;
                                 }
                             }
                         }
@@ -1197,5 +1524,107 @@ export const AnimeProxyService = {
 
         setCached(cacheKey, result, 30);
         return result;
+    },
+
+    // 8. RESOLVE MEGAPLAY / MEGACLOUD EMBED URL (Direct Standalone Player)
+    resolveMegaCloudEmbed: async (animeId, seasonNum = 1, episodeNum = 1, type = 'sub', animeTitle = '') => {
+        const cacheKey = `megacloud:embed:${animeId}:${seasonNum}:${episodeNum}:${type}`;
+        const cached = getCached(cacheKey);
+        if (cached) return cached;
+
+        const isDub = String(type).toLowerCase().includes('dub');
+        const audioKey = isDub ? 'dub' : 'sub';
+
+        try {
+            const show = await resolveShowForAnime(animeId, seasonNum, animeTitle);
+            if (!show || !show.showId) return null;
+
+            const listRes = await fetch(`https://anikototv.to/ajax/episode/list/${show.showId}`, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Referer': `https://anikototv.to/watch/${show.slug}`
+                },
+                signal: AbortSignal.timeout(5000)
+            });
+            if (!listRes.ok) return null;
+            const listJson = await listRes.json();
+            const allEps = [];
+            const epRe = /<a\s+[^>]*data-id="([^"]*)"[^>]*>/g;
+            let epM;
+            while ((epM = epRe.exec(listJson.result || '')) !== null) {
+                const tag = epM[0];
+                const num = parseInt(tag.match(/data-num="([^"]*)"/)?.[1] || '0', 10);
+                const ids = tag.match(/data-ids="([^"]*)"/)?.[1];
+                if (ids) {
+                    allEps.push({ num, ids, tag });
+                }
+            }
+
+            if (allEps.length === 0) return null;
+
+            // 1. Exact match
+            let targetEp = allEps.find(e => e.num === episodeNum);
+
+            // 2. Relative index match (e.g. Ep 1..24 in season)
+            if (!targetEp && episodeNum >= 1 && episodeNum <= allEps.length) {
+                targetEp = allEps[episodeNum - 1];
+            }
+
+            // 3. Offset match if continuous
+            if (!targetEp && allEps.length > 0) {
+                const minNum = allEps[0].num;
+                if (episodeNum >= minNum && (episodeNum - minNum) < allEps.length) {
+                    targetEp = allEps[episodeNum - minNum];
+                }
+            }
+
+            // 4. Fallback: closest in range
+            if (!targetEp) {
+                targetEp = episodeNum > allEps.length ? allEps[allEps.length - 1] : allEps[0];
+            }
+
+            if (!targetEp?.ids) return null;
+
+            const srvListRes = await fetch(`https://anikototv.to/ajax/server/list?servers=${encodeURIComponent(targetEp.ids)}`, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Referer': 'https://anikototv.to/'
+                },
+                signal: AbortSignal.timeout(5000)
+            });
+            if (!srvListRes.ok) return null;
+            const srvListJson = await srvListRes.json();
+            const srvHtml = srvListJson.result || '';
+
+            let typeMatch = srvHtml.match(new RegExp(`<div class="type" data-type="${audioKey}">([\\s\\S]*?)<\\/ul>`, 'i'));
+            if (!typeMatch && isDub) {
+                typeMatch = srvHtml.match(/<div class="type" data-type="sub">([\s\S]*?)<\/ul>/i);
+            }
+            if (!typeMatch) return null;
+
+            const linkIds = [...typeMatch[1].matchAll(/data-link-id="([^"]+)"/g)].map(m => m[1]);
+            const selectedLinkId = linkIds[0];
+            if (!selectedLinkId) return null;
+
+            const srvGetRes = await fetch(`https://anikototv.to/ajax/server?get=${encodeURIComponent(selectedLinkId)}`, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Referer': 'https://anikototv.to/'
+                },
+                signal: AbortSignal.timeout(5000)
+            });
+            if (!srvGetRes.ok) return null;
+            const srvGetJson = await srvGetRes.json();
+            const embedUrl = srvGetJson?.result?.url || null;
+            if (embedUrl) {
+                setCached(cacheKey, embedUrl, 3600);
+            }
+            return embedUrl;
+        } catch (e) {
+            return null;
+        }
     }
 };

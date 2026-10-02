@@ -6,7 +6,7 @@
 
 import express from 'express';
 import { TMDBService } from './tmdbProxy.js';
-import { AnimeProxyService } from './animeProxy.js';
+import { AnimeProxyService, ANIME_TMDB_MAP } from './animeProxy.js';
 import { resolveStream, handleStreamProxy, handleSubtitleProxy } from './streamResolver.js';
 import { handleTorrentStreamRequest } from './torrentEngine.js';
 
@@ -359,6 +359,26 @@ router.get('/tmdb/anime/trending', async (req, res) => {
     }
 });
 
+router.get('/tmdb/anime/airing', async (req, res) => {
+    try {
+        const data = await TMDBService.getAnimeAiring();
+        res.json(data);
+    } catch (error) {
+        console.error('TMDB anime airing error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch top airing anime' });
+    }
+});
+
+router.get('/tmdb/anime/popular', async (req, res) => {
+    try {
+        const data = await TMDBService.getAnimePopular();
+        res.json(data);
+    } catch (error) {
+        console.error('TMDB anime popular error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch popular anime' });
+    }
+});
+
 router.get('/tmdb/anime/top-rated', async (req, res) => {
     try {
         const data = await TMDBService.getAnimeTopRated();
@@ -369,6 +389,16 @@ router.get('/tmdb/anime/top-rated', async (req, res) => {
     }
 });
 
+router.get('/tmdb/anime/upcoming', async (req, res) => {
+    try {
+        const data = await TMDBService.getAnimeUpcoming();
+        res.json(data);
+    } catch (error) {
+        console.error('TMDB anime upcoming error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch upcoming anime' });
+    }
+});
+
 router.get('/tmdb/anime/action', async (req, res) => {
     try {
         const data = await TMDBService.getAnimeAction();
@@ -376,6 +406,19 @@ router.get('/tmdb/anime/action', async (req, res) => {
     } catch (error) {
         console.error('TMDB anime action error:', error.message);
         res.status(500).json({ error: 'Failed to fetch action anime' });
+    }
+});
+
+router.get('/tmdb/anime/genre/:genre', async (req, res) => {
+    const genre = sanitizeString(req.params.genre);
+    if (!genre) return res.status(400).json({ error: 'Invalid genre' });
+
+    try {
+        const data = await TMDBService.getAnimeByGenre(genre);
+        res.json(data);
+    } catch (error) {
+        console.error('TMDB anime genre error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch anime by genre' });
     }
 });
 
@@ -518,6 +561,45 @@ router.get('/anime/stream', async (req, res) => {
     } catch (error) {
         console.error('Anime stream error:', error.message);
         res.status(500).json({ error: 'Failed to fetch anime stream' });
+    }
+});
+
+router.get('/anime/player', async (req, res) => {
+    const rawId = sanitizeString(req.query.id || req.query.episodeId || '');
+    const season = parseInt(req.query.s || req.query.season || '1', 10) || 1;
+    const episode = parseInt(req.query.ep || req.query.episode || '1', 10) || 1;
+    const type = sanitizeString(req.query.type || req.query.audioMode || 'sub').toLowerCase();
+    const title = sanitizeString(req.query.title || '');
+    const server = sanitizeString(req.query.server || 'HD-1');
+
+    if (!rawId) {
+        return res.status(400).send('<html><body style="background:#08080a;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><h3>Anime ID is required</h3></body></html>');
+    }
+
+    try {
+        const embedUrl = await AnimeProxyService.resolveMegaCloudEmbed(rawId, season, episode, type, title);
+        if (embedUrl) {
+            return res.redirect(embedUrl);
+        }
+    } catch (err) {
+        console.warn('[AnimePlayer] MegaCloud resolution error, using fallback:', err.message);
+    }
+
+    // Direct fallback to standalone embed players (Never show error or initializing box)
+    let tmdbId = ANIME_TMDB_MAP[rawId]?.tmdbId;
+    if (!tmdbId && title) {
+        try {
+            const tmdbRes = await TMDBService.searchMedia(title);
+            if (tmdbRes?.[0]?.id) {
+                tmdbId = tmdbRes[0].id;
+            }
+        } catch (e) {}
+    }
+    const finalId = tmdbId || rawId;
+    if (type === 'dub') {
+        return res.redirect(`https://primesrc.me/embed/tv?tmdb=${finalId}&season=${season}&episode=${episode}&dub=1`);
+    } else {
+        return res.redirect(`https://vidsrc.pm/embed/tv/${finalId}/${season}/${episode}`);
     }
 });
 
