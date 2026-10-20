@@ -292,20 +292,14 @@ export default function Hero() {
             </h1>
           </div>
 
-          {/* Title & Description under name */}
-          <div className="max-w-2xl py-2 my-2 space-y-2">
+          {/* Description under name */}
+          <div className="max-w-2xl py-2 my-2">
             <div className="overflow-hidden">
               <div ref={valueProp1Ref} className="will-change-transform">
-                <h2 className="font-display font-bold text-lg sm:text-2xl text-accent uppercase tracking-wide">
-                  Full-Stack Software Engineer
-                </h2>
-              </div>
-            </div>
-
-            <div className="overflow-hidden">
-              <div ref={valueProp2Ref} className="will-change-transform">
-                <p className="font-body text-base sm:text-lg text-fg/80 font-normal leading-relaxed">
-                  Building responsive web and mobile applications, scalable backend APIs, and clean digital experiences.
+                <p className="font-body text-base sm:text-xl text-fg/80 font-normal leading-relaxed">
+                  Crafting high-performance web and mobile applications with scalable backend systems.
+                  Focused on clean software architecture, intuitive user experiences, and delivering
+                  resilient digital solutions from concept to deployment.
                 </p>
               </div>
             </div>
