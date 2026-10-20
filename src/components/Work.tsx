@@ -45,7 +45,7 @@ export default function Work({ data, onSelectProject }: WorkProps) {
         );
       }
 
-      // 2. Project Cards Lenis Staggered Cascading Assembly
+      // 2. Project Cards Lenis Staggered Cascading Assembly (Distinct & Paced Sequence)
       cardRefs.current.forEach((card) => {
         if (!card) return;
         const tl = gsap.timeline({
@@ -56,86 +56,86 @@ export default function Work({ data, onSelectProject }: WorkProps) {
           }
         });
 
-        // 1. Card chassis enters
+        // 1. Card chassis enters and settles
         tl.fromTo(
           card,
           {
-            y: 45,
+            y: 50,
             opacity: 0,
-            scale: 0.97
+            scale: 0.96
           },
           {
             y: 0,
             opacity: 1,
             scale: 1,
-            duration: 0.6,
+            duration: 0.65,
             ease: 'power3.out'
           }
         );
 
-        // 2. Top Header Callout Strip
+        // 2. Top Header Callout Strip (distinct entrance)
         const header = card.querySelectorAll('.project-header');
         if (header.length > 0) {
           tl.fromTo(
             header,
-            { y: 14, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
-            '-=0.35'
+            { y: 22, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' },
+            '-=0.15'
           );
         }
 
-        // 3. Project Title & Large Number Counter
+        // 3. Project Title & Large Number Counter (deliberate entrance)
         const titles = card.querySelectorAll('.project-title');
         if (titles.length > 0) {
           tl.fromTo(
             titles,
-            { y: 18, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.4, ease: 'power4.out' },
-            '-=0.25'
+            { y: 26, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.5, ease: 'power4.out' },
+            '+=0.06'
           );
         }
 
-        // 4. Metadata Pill
+        // 4. Metadata Pill (deliberate entrance)
         const meta = card.querySelectorAll('.project-meta');
         if (meta.length > 0) {
           tl.fromTo(
             meta,
-            { y: 12, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.3, ease: 'power3.out' },
-            '-=0.25'
+            { y: 18, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' },
+            '+=0.06'
           );
         }
 
-        // 5. Narrative Description Paragraph
+        // 5. Narrative Description Paragraph (deliberate entrance)
         const desc = card.querySelectorAll('.project-desc');
         if (desc.length > 0) {
           tl.fromTo(
             desc,
-            { y: 15, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.4, ease: 'power3.out' },
-            '-=0.25'
+            { y: 22, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' },
+            '+=0.08'
           );
         }
 
-        // 6. Technology Pills Staggered Assembly
+        // 6. Technology Pills Staggered Wave (one-by-one pop)
         const techPills = card.querySelectorAll('.project-tech-pill');
         if (techPills.length > 0) {
           tl.fromTo(
             techPills,
-            { y: 10, opacity: 0, scale: 0.88 },
-            { y: 0, opacity: 1, scale: 1, stagger: 0.035, duration: 0.28, ease: 'back.out(1.4)' },
-            '-=0.25'
+            { y: 16, opacity: 0, scale: 0.8 },
+            { y: 0, opacity: 1, scale: 1, stagger: 0.08, duration: 0.38, ease: 'back.out(1.6)' },
+            '+=0.08'
           );
         }
 
-        // 7. Footer Action Buttons
+        // 7. Footer Action Buttons (tactile click into place)
         const footer = card.querySelectorAll('.project-footer');
         if (footer.length > 0) {
           tl.fromTo(
             footer,
-            { y: 15, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
-            '-=0.2'
+            { y: 22, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' },
+            '+=0.08'
           );
         }
       });

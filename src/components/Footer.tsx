@@ -119,7 +119,7 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
         );
       }
 
-      // 4. Dispatcher Console Form Sequential Assembly Reveal
+      // 4. Dispatcher Console Form Sequential Assembly Reveal (Distinct & Paced Sequence)
       if (formRef.current) {
         const formTl = gsap.timeline({
           scrollTrigger: {
@@ -129,54 +129,54 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
           }
         });
 
-        // Form chassis enters
+        // Form chassis enters and frames the column
         formTl.fromTo(
           formRef.current,
-          { y: 45, opacity: 0, scale: 0.98 },
-          { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: 'power3.out' }
+          { y: 50, opacity: 0, scale: 0.98 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.65, ease: 'power3.out' }
         );
 
-        // Form header
+        // Form header strip lights up
         const header = formRef.current.querySelectorAll('.form-header');
         if (header.length > 0) {
           formTl.fromTo(
             header,
-            { y: 12, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
-            '-=0.35'
+            { y: 18, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' },
+            '-=0.15'
           );
         }
 
-        // Email field
+        // Email address field slides in
         const emailField = formRef.current.querySelectorAll('.form-field-email');
         if (emailField.length > 0) {
           formTl.fromTo(
             emailField,
-            { y: 15, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
-            '-=0.2'
+            { y: 22, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' },
+            '+=0.1'
           );
         }
 
-        // Message field
+        // Message payload field slides in
         const msgField = formRef.current.querySelectorAll('.form-field-message');
         if (msgField.length > 0) {
           formTl.fromTo(
             msgField,
-            { y: 15, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
-            '-=0.2'
+            { y: 22, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' },
+            '+=0.1'
           );
         }
 
-        // Submit button
+        // Dispatch submit button pops and clicks into place
         const submitBtn = formRef.current.querySelectorAll('.form-submit-btn');
         if (submitBtn.length > 0) {
           formTl.fromTo(
             submitBtn,
-            { y: 15, opacity: 0, scale: 0.96 },
-            { y: 0, opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.4)' },
-            '-=0.15'
+            { y: 18, opacity: 0, scale: 0.92 },
+            { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.6)' },
+            '+=0.12'
           );
         }
       }

@@ -49,7 +49,7 @@ export default function Stack({ data }: { data: StackItem[] }) {
         );
       }
 
-      // 2. Telemetry Console Sequential Assembly Reveal
+      // 2. Telemetry Console Sequential Assembly Reveal (Distinct & Paced Sequence)
       if (consoleRef.current) {
         const consoleTl = gsap.timeline({
           scrollTrigger: {
@@ -62,8 +62,8 @@ export default function Stack({ data }: { data: StackItem[] }) {
         // Console container enters
         consoleTl.fromTo(
           consoleRef.current,
-          { y: 40, opacity: 0, scale: 0.98 },
-          { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: 'power3.out' }
+          { y: 45, opacity: 0, scale: 0.98 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.65, ease: 'power3.out' }
         );
 
         // Header strip
@@ -71,48 +71,48 @@ export default function Stack({ data }: { data: StackItem[] }) {
         if (header.length > 0) {
           consoleTl.fromTo(
             header,
-            { y: 12, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
-            '-=0.35'
+            { y: 18, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' },
+            '-=0.15'
           );
         }
 
-        // CLI history log lines stream in sequentially
+        // CLI history log lines stream in sequentially with typewriter-like cadence
         const cliLines = consoleRef.current.querySelectorAll('.cli-log-line');
         if (cliLines.length > 0) {
           consoleTl.fromTo(
             cliLines,
-            { x: -14, opacity: 0 },
-            { x: 0, opacity: 1, stagger: 0.07, duration: 0.35, ease: 'power2.out' },
-            '-=0.2'
+            { x: -20, opacity: 0 },
+            { x: 0, opacity: 1, stagger: 0.14, duration: 0.45, ease: 'power2.out' },
+            '+=0.06'
           );
         }
 
-        // Diagnostic metric rows
+        // Diagnostic metric rows reveal with clear cadence
         const diagRows = consoleRef.current.querySelectorAll('.diagnostic-row');
         if (diagRows.length > 0) {
           consoleTl.fromTo(
             diagRows,
-            { y: 10, opacity: 0 },
-            { y: 0, opacity: 1, stagger: 0.06, duration: 0.3, ease: 'power3.out' },
-            '-=0.15'
+            { y: 15, opacity: 0 },
+            { y: 0, opacity: 1, stagger: 0.12, duration: 0.4, ease: 'power3.out' },
+            '+=0.1'
           );
         }
       }
 
-      // 3. Tech Module Chips Staggered Unmasking
+      // 3. Tech Module Chips Staggered Wave (Pop Scale)
       const chips = chipsContainerRef.current?.querySelectorAll('.tech-module-chip');
       if (chips && chips.length > 0) {
         gsap.fromTo(
           chips,
-          { y: 25, opacity: 0, scale: 0.88 },
+          { y: 25, opacity: 0, scale: 0.82 },
           {
             y: 0,
             opacity: 1,
             scale: 1,
-            duration: 0.45,
-            stagger: 0.03,
-            ease: 'back.out(1.4)',
+            duration: 0.5,
+            stagger: 0.055,
+            ease: 'back.out(1.5)',
             scrollTrigger: {
               trigger: chipsContainerRef.current,
               start: 'top 85%',
