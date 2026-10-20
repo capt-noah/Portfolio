@@ -49,23 +49,55 @@ export default function Stack({ data }: { data: StackItem[] }) {
         );
       }
 
-      // 2. Telemetry Console Reveal
+      // 2. Telemetry Console Sequential Assembly Reveal
       if (consoleRef.current) {
-        gsap.fromTo(
-          consoleRef.current,
-          { y: 50, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: 'power4.out',
-            scrollTrigger: {
-              trigger: consoleRef.current,
-              start: 'top 85%',
-              toggleActions: 'play none none reverse'
-            }
+        const consoleTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: consoleRef.current,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
           }
+        });
+
+        // Console container enters
+        consoleTl.fromTo(
+          consoleRef.current,
+          { y: 40, opacity: 0, scale: 0.98 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: 'power3.out' }
         );
+
+        // Header strip
+        const header = consoleRef.current.querySelectorAll('.console-header');
+        if (header.length > 0) {
+          consoleTl.fromTo(
+            header,
+            { y: 12, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
+            '-=0.35'
+          );
+        }
+
+        // CLI history log lines stream in sequentially
+        const cliLines = consoleRef.current.querySelectorAll('.cli-log-line');
+        if (cliLines.length > 0) {
+          consoleTl.fromTo(
+            cliLines,
+            { x: -14, opacity: 0 },
+            { x: 0, opacity: 1, stagger: 0.07, duration: 0.35, ease: 'power2.out' },
+            '-=0.2'
+          );
+        }
+
+        // Diagnostic metric rows
+        const diagRows = consoleRef.current.querySelectorAll('.diagnostic-row');
+        if (diagRows.length > 0) {
+          consoleTl.fromTo(
+            diagRows,
+            { y: 10, opacity: 0 },
+            { y: 0, opacity: 1, stagger: 0.06, duration: 0.3, ease: 'power3.out' },
+            '-=0.15'
+          );
+        }
       }
 
       // 3. Tech Module Chips Staggered Unmasking
@@ -73,14 +105,14 @@ export default function Stack({ data }: { data: StackItem[] }) {
       if (chips && chips.length > 0) {
         gsap.fromTo(
           chips,
-          { y: 30, opacity: 0, scale: 0.92 },
+          { y: 25, opacity: 0, scale: 0.88 },
           {
             y: 0,
             opacity: 1,
             scale: 1,
-            duration: 0.5,
-            stagger: 0.025,
-            ease: 'power3.out',
+            duration: 0.45,
+            stagger: 0.03,
+            ease: 'back.out(1.4)',
             scrollTrigger: {
               trigger: chipsContainerRef.current,
               start: 'top 85%',
@@ -179,7 +211,7 @@ export default function Stack({ data }: { data: StackItem[] }) {
             className="lg:col-span-4 bg-surface/90 border border-fg/20 p-6 sm:p-8 flex flex-col justify-between relative hud-plate-a will-change-transform"
           >
             <div>
-              <div className="flex items-center justify-between border-b border-fg/10 pb-4 mb-6">
+              <div className="console-header flex items-center justify-between border-b border-fg/10 pb-4 mb-6 will-change-transform">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-accent inline-block" />
                   <span className="font-mono text-[10px] text-fg uppercase tracking-widest font-bold">
@@ -196,14 +228,14 @@ export default function Stack({ data }: { data: StackItem[] }) {
                 {cliHistory.map((log, index) => (
                   <div 
                     key={index} 
-                    className={log.startsWith("QUERY") ? "text-accent font-bold" : "text-fg/70"}
+                    className={`cli-log-line will-change-transform ${log.startsWith("QUERY") ? "text-accent font-bold" : "text-fg/70"}`}
                   >
                     <span className="text-accent mr-1.5">&gt;&gt;</span>
                     <span>{log}</span>
                   </div>
                 ))}
                 
-                <div className="flex items-center gap-1.5 text-fg font-bold pt-2 border-t border-fg/10">
+                <div className="cli-log-line flex items-center gap-1.5 text-fg font-bold pt-2 border-t border-fg/10 will-change-transform">
                   <span className="text-accent">&gt;&gt;</span>
                   <span>FOCUS: {selectedTech?.toUpperCase() || "IDLE"}</span>
                   <span className="w-1.5 h-3.5 bg-accent animate-blink inline-block" />
@@ -213,13 +245,13 @@ export default function Stack({ data }: { data: StackItem[] }) {
 
             {/* Diagnostic Metrics Box */}
             <div className="border-t border-fg/10 pt-4 font-mono text-[9.5px] text-fg/60 space-y-2 uppercase bg-fg/[0.015] p-3.5 border border-fg/10">
-              <div className="flex justify-between items-center">
+              <div className="diagnostic-row flex justify-between items-center will-change-transform">
                 <span>Selected:</span>
                 <span className="text-accent font-bold px-2 py-0.5 bg-accent/10 border border-accent/20">
                   {selectedTech || "NONE"}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="diagnostic-row flex justify-between items-center will-change-transform">
                 <span>Status:</span>
                 <span className="text-fg font-bold flex items-center gap-1">
                   <CheckCircle2 size={12} className="text-accent" /> Active Stack

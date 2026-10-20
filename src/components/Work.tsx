@@ -45,30 +45,99 @@ export default function Work({ data, onSelectProject }: WorkProps) {
         );
       }
 
-      // 2. Project Cards Lenis Staggered Unmasking
-      cardRefs.current.forEach((card, idx) => {
+      // 2. Project Cards Lenis Staggered Cascading Assembly
+      cardRefs.current.forEach((card) => {
         if (!card) return;
-        gsap.fromTo(
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 88%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+
+        // 1. Card chassis enters
+        tl.fromTo(
           card,
           {
-            y: 60,
+            y: 45,
             opacity: 0,
-            scale: 0.96
+            scale: 0.97
           },
           {
             y: 0,
             opacity: 1,
             scale: 1,
-            duration: 0.85,
-            delay: (idx % 3) * 0.1,
-            ease: 'power4.out',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 88%',
-              toggleActions: 'play none none reverse'
-            }
+            duration: 0.6,
+            ease: 'power3.out'
           }
         );
+
+        // 2. Top Header Callout Strip
+        const header = card.querySelectorAll('.project-header');
+        if (header.length > 0) {
+          tl.fromTo(
+            header,
+            { y: 14, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
+            '-=0.35'
+          );
+        }
+
+        // 3. Project Title & Large Number Counter
+        const titles = card.querySelectorAll('.project-title');
+        if (titles.length > 0) {
+          tl.fromTo(
+            titles,
+            { y: 18, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.4, ease: 'power4.out' },
+            '-=0.25'
+          );
+        }
+
+        // 4. Metadata Pill
+        const meta = card.querySelectorAll('.project-meta');
+        if (meta.length > 0) {
+          tl.fromTo(
+            meta,
+            { y: 12, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.3, ease: 'power3.out' },
+            '-=0.25'
+          );
+        }
+
+        // 5. Narrative Description Paragraph
+        const desc = card.querySelectorAll('.project-desc');
+        if (desc.length > 0) {
+          tl.fromTo(
+            desc,
+            { y: 15, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.4, ease: 'power3.out' },
+            '-=0.25'
+          );
+        }
+
+        // 6. Technology Pills Staggered Assembly
+        const techPills = card.querySelectorAll('.project-tech-pill');
+        if (techPills.length > 0) {
+          tl.fromTo(
+            techPills,
+            { y: 10, opacity: 0, scale: 0.88 },
+            { y: 0, opacity: 1, scale: 1, stagger: 0.035, duration: 0.28, ease: 'back.out(1.4)' },
+            '-=0.25'
+          );
+        }
+
+        // 7. Footer Action Buttons
+        const footer = card.querySelectorAll('.project-footer');
+        if (footer.length > 0) {
+          tl.fromTo(
+            footer,
+            { y: 15, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
+            '-=0.2'
+          );
+        }
       });
     }, sectionRef);
 
@@ -159,7 +228,7 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   className="xl:col-span-2 bg-accent text-white p-6 sm:p-10 flex flex-col justify-between min-h-[460px] relative shadow-[0_20px_50px_rgba(255,85,0,0.3)] group cursor-none transition-transform duration-200 hud-plate-b will-change-transform"
                 >
                   {/* Top Header Strip */}
-                  <div className="flex items-center justify-between border-b border-white/25 pb-4 mb-6">
+                  <div className="project-header flex items-center justify-between border-b border-white/25 pb-4 mb-6 will-change-transform">
                     <div className="font-mono text-[10.5px] font-bold uppercase tracking-widest text-white">
                       <span>FEATURED PROJECT</span>
                     </div>
@@ -172,7 +241,7 @@ export default function Work({ data, onSelectProject }: WorkProps) {
 
                   {/* Main Content */}
                   <div>
-                    <div className="flex items-baseline justify-between mb-4">
+                    <div className="project-title flex items-baseline justify-between mb-4 will-change-transform">
                       <h3 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-white leading-tight">
                         {project.title}
                       </h3>
@@ -181,12 +250,12 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                       </span>
                     </div>
 
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 border border-white/20 font-mono text-[10px] uppercase tracking-wider text-white mb-6">
+                    <div className="project-meta inline-flex items-center gap-2 px-3 py-1 bg-white/10 border border-white/20 font-mono text-[10px] uppercase tracking-wider text-white mb-6 will-change-transform">
                       <Terminal size={11} />
                       <span>{project.meta}</span>
                     </div>
 
-                    <p className="font-body text-base text-white/95 font-medium leading-relaxed max-w-2xl mb-6">
+                    <p className="project-desc font-body text-base text-white/95 font-medium leading-relaxed max-w-2xl mb-6 will-change-transform">
                       {project.desc}
                     </p>
 
@@ -194,7 +263,7 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                     {project.technologies && (
                       <div className="flex flex-wrap gap-2 mb-6">
                         {project.technologies.map((t, idx) => (
-                          <span key={idx} className="font-mono text-[9px] uppercase px-2.5 py-1 bg-white/15 text-white border border-white/20 font-semibold">
+                          <span key={idx} className="project-tech-pill font-mono text-[9px] uppercase px-2.5 py-1 bg-white/15 text-white border border-white/20 font-semibold will-change-transform">
                             {t}
                           </span>
                         ))}
@@ -203,7 +272,7 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   </div>
 
                   {/* Footer Actions */}
-                  <div className="border-t border-white/25 pt-4 flex items-center justify-between flex-wrap gap-3">
+                  <div className="project-footer border-t border-white/25 pt-4 flex items-center justify-between flex-wrap gap-3 will-change-transform">
                     <div className="flex items-center gap-2 font-mono text-[10px] text-white/90">
                       <ShieldCheck size={14} />
                       <span>LIVE SYSTEM</span>
@@ -252,7 +321,7 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                 className="bg-surface/90 border border-fg/20 p-6 sm:p-8 flex flex-col justify-between min-h-[460px] relative transition-transform duration-200 hover:border-accent hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] group cursor-none hud-plate-a will-change-transform"
               >
                 {/* Top Corner Badge */}
-                <div className="flex items-center justify-between border-b border-fg/10 pb-4 mb-6">
+                <div className="project-header flex items-center justify-between border-b border-fg/10 pb-4 mb-6 will-change-transform">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 bg-accent inline-block" />
                     <span className="font-mono text-[9px] text-fg/50 uppercase font-semibold">
@@ -266,22 +335,22 @@ export default function Work({ data, onSelectProject }: WorkProps) {
 
                 {/* Header Information */}
                 <div>
-                  <div className="flex justify-between items-baseline mb-4">
+                  <div className="project-title flex justify-between items-baseline mb-4 will-change-transform">
                     <span className="font-mono text-4xl sm:text-5xl font-black text-fg/15 group-hover:text-accent/30 tracking-tighter leading-none select-none transition-colors">
                       {project.id}
                     </span>
                   </div>
 
-                  <h3 className="font-display font-black text-2xl uppercase tracking-tight text-fg group-hover:text-accent mb-3 transition-colors">
+                  <h3 className="project-title font-display font-black text-2xl uppercase tracking-tight text-fg group-hover:text-accent mb-3 transition-colors will-change-transform">
                     {project.title}
                   </h3>
 
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-fg/10 bg-fg/[0.03] font-mono text-[9px] uppercase tracking-wider text-fg/60 mb-5">
+                  <div className="project-meta inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-fg/10 bg-fg/[0.03] font-mono text-[9px] uppercase tracking-wider text-fg/60 mb-5 will-change-transform">
                     <Terminal size={10} className="text-accent" />
                     <span>{project.meta}</span>
                   </div>
 
-                  <p className="font-body text-sm text-muted font-medium leading-relaxed mb-6">
+                  <p className="project-desc font-body text-sm text-muted font-medium leading-relaxed mb-6 will-change-transform">
                     {project.desc}
                   </p>
                 </div>
@@ -291,19 +360,19 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   {project.technologies && (
                     <div className="flex flex-wrap gap-1.5 mb-6 pt-4 border-t border-fg/10">
                       {project.technologies.slice(0, 3).map((t, idx) => (
-                        <span key={idx} className="font-mono text-[8.5px] uppercase px-2 py-0.5 border border-fg/10 text-fg/70 bg-fg/[0.02]">
+                        <span key={idx} className="project-tech-pill font-mono text-[8.5px] uppercase px-2 py-0.5 border border-fg/10 text-fg/70 bg-fg/[0.02] will-change-transform">
                           {t}
                         </span>
                       ))}
                       {project.technologies.length > 3 && (
-                        <span className="font-mono text-[8.5px] text-accent font-bold px-1.5 py-0.5">
+                        <span className="project-tech-pill font-mono text-[8.5px] text-accent font-bold px-1.5 py-0.5 will-change-transform">
                           +{project.technologies.length - 3}
                         </span>
                       )}
                     </div>
                   )}
 
-                  <div className="pt-4 border-t border-fg/10 flex items-center justify-between">
+                  <div className="project-footer pt-4 border-t border-fg/10 flex items-center justify-between will-change-transform">
                     <span className="font-mono text-[9px] text-fg/50 uppercase font-semibold">
                       VIEW DETAILS
                     </span>

@@ -119,24 +119,66 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
         );
       }
 
-      // 4. Dispatcher Console Form Reveal
+      // 4. Dispatcher Console Form Sequential Assembly Reveal
       if (formRef.current) {
-        gsap.fromTo(
-          formRef.current,
-          { y: 50, opacity: 0, scale: 0.98 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.85,
-            ease: 'power4.out',
-            scrollTrigger: {
-              trigger: formRef.current,
-              start: 'top 85%',
-              toggleActions: 'play none none reverse'
-            }
+        const formTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: formRef.current,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
           }
+        });
+
+        // Form chassis enters
+        formTl.fromTo(
+          formRef.current,
+          { y: 45, opacity: 0, scale: 0.98 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: 'power3.out' }
         );
+
+        // Form header
+        const header = formRef.current.querySelectorAll('.form-header');
+        if (header.length > 0) {
+          formTl.fromTo(
+            header,
+            { y: 12, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
+            '-=0.35'
+          );
+        }
+
+        // Email field
+        const emailField = formRef.current.querySelectorAll('.form-field-email');
+        if (emailField.length > 0) {
+          formTl.fromTo(
+            emailField,
+            { y: 15, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
+            '-=0.2'
+          );
+        }
+
+        // Message field
+        const msgField = formRef.current.querySelectorAll('.form-field-message');
+        if (msgField.length > 0) {
+          formTl.fromTo(
+            msgField,
+            { y: 15, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
+            '-=0.2'
+          );
+        }
+
+        // Submit button
+        const submitBtn = formRef.current.querySelectorAll('.form-submit-btn');
+        if (submitBtn.length > 0) {
+          formTl.fromTo(
+            submitBtn,
+            { y: 15, opacity: 0, scale: 0.96 },
+            { y: 0, opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.4)' },
+            '-=0.15'
+          );
+        }
       }
     }, sectionRef);
 
@@ -262,7 +304,7 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
             className="lg:col-span-6 bg-white/[0.04] border border-white/15 p-6 sm:p-10 relative hud-plate-b will-change-transform"
           >
             {/* Form Top Bar */}
-            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+            <div className="form-header flex items-center justify-between border-b border-white/10 pb-4 mb-6 will-change-transform">
               <div className="flex items-center gap-2">
                 <Terminal size={14} className="text-accent" />
                 <span className="font-mono text-[10px] uppercase tracking-wider font-bold text-white">
@@ -286,7 +328,7 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
               </div>
             ) : (
               <form onSubmit={handleTransmit} className="space-y-6">
-                <div className="space-y-2">
+                <div className="form-field-email space-y-2 will-change-transform">
                   <label className="block font-mono text-[9px] uppercase tracking-widest text-accent font-bold">
                     [ SENDER_FREQUENCY_ADDRESS ]
                   </label>
@@ -303,7 +345,7 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="form-field-message space-y-2 will-change-transform">
                   <label className="block font-mono text-[9px] uppercase tracking-widest text-accent font-bold">
                     [ MESSAGE_PAYLOAD_BODY ]
                   </label>
@@ -323,7 +365,7 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
                 <button
                   type="submit"
                   disabled={isTransmitting}
-                  className="cursor-none w-full bg-accent hover:bg-accent-hover text-white p-4 font-mono text-xs uppercase tracking-[0.2em] font-bold transition-all flex items-center justify-center gap-2.5 shadow-[0_4px_24px_rgba(255,85,0,0.35)] relative overflow-hidden"
+                  className="form-submit-btn cursor-none w-full bg-accent hover:bg-accent-hover text-white p-4 font-mono text-xs uppercase tracking-[0.2em] font-bold transition-all flex items-center justify-center gap-2.5 shadow-[0_4px_24px_rgba(255,85,0,0.35)] relative overflow-hidden will-change-transform"
                 >
                   {isTransmitting ? (
                     <>

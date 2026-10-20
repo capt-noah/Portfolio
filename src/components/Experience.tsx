@@ -63,28 +63,92 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         );
       }
 
-      // 3. Smooth Milestone Card Entrance (No clipping, visible immediately upon scroll)
-      cardRefs.current.forEach((card, idx) => {
-        if (!card) return;
-        gsap.fromTo(
-          card,
-          {
-            y: 35,
-            opacity: 0
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            delay: (idx % 2) * 0.08,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 92%',
-              once: true
-            }
+      // 3. Smooth Milestone Sequential Assembly Timeline
+      cardRefs.current.forEach((item) => {
+        if (!item) return;
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: 'top 88%',
+            toggleActions: 'play none none reverse'
           }
-        );
+        });
+
+        // 1. Pip node on rail pops in with bounce
+        const node = item.querySelector('.exp-node');
+        if (node) {
+          tl.fromTo(
+            node,
+            { scale: 0, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.45, ease: 'back.out(2)' }
+          );
+        }
+
+        // 2. Connector trace line draws outward
+        const connector = item.querySelector('.exp-connector');
+        if (connector) {
+          tl.fromTo(
+            connector,
+            { scaleX: 0, opacity: 0, transformOrigin: 'left center' },
+            { scaleX: 1, opacity: 1, duration: 0.3, ease: 'power2.out' },
+            '-=0.25'
+          );
+        }
+
+        // 3. Milestone card plate slides in
+        const card = item.querySelector('.exp-card');
+        if (card) {
+          tl.fromTo(
+            card,
+            { x: 30, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.55, ease: 'power3.out' },
+            '-=0.25'
+          );
+        }
+
+        // 4. Milestone header (Number & Period badge)
+        const header = item.querySelectorAll('.exp-header');
+        if (header.length > 0) {
+          tl.fromTo(
+            header,
+            { y: 12, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' },
+            '-=0.35'
+          );
+        }
+
+        // 5. Role Title
+        const title = item.querySelectorAll('.exp-title');
+        if (title.length > 0) {
+          tl.fromTo(
+            title,
+            { y: 16, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.4, ease: 'power4.out' },
+            '-=0.25'
+          );
+        }
+
+        // 6. Narrative Description
+        const desc = item.querySelectorAll('.exp-desc');
+        if (desc.length > 0) {
+          tl.fromTo(
+            desc,
+            { y: 14, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.4, ease: 'power3.out' },
+            '-=0.25'
+          );
+        }
+
+        // 7. Certificate Action Button (if present)
+        const certBtn = item.querySelectorAll('.exp-cert-btn');
+        if (certBtn.length > 0) {
+          tl.fromTo(
+            certBtn,
+            { y: 12, opacity: 0, scale: 0.94 },
+            { y: 0, opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.5)' },
+            '-=0.2'
+          );
+        }
       });
     }, sectionRef);
 
@@ -174,7 +238,7 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                   className="relative flex items-start gap-4 sm:gap-8 group cursor-none will-change-transform"
                 >
                   {/* Timeline Pip / Node on the Rail */}
-                  <div className="relative flex-shrink-0 z-20 mt-1">
+                  <div className="exp-node relative flex-shrink-0 z-20 mt-1 will-change-transform">
                     {isCurrent ? (
                       <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-accent text-white flex items-center justify-center font-mono text-[11px] font-bold shadow-[0_0_20px_rgba(255,85,0,0.5)] ring-4 ring-accent/20">
                         <Activity size={14} className="animate-spin" />
@@ -187,12 +251,12 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                   </div>
 
                   {/* Horizontal Branching Trace Connector */}
-                  <div className="hidden sm:block absolute left-[35px] top-5 w-6 h-[2px] bg-fg/20 group-hover:bg-accent transition-colors" />
+                  <div className="exp-connector hidden sm:block absolute left-[35px] top-5 w-6 h-[2px] bg-fg/20 group-hover:bg-accent transition-colors will-change-transform origin-left" />
 
                   {/* Milestone Card Plate */}
-                  <div className="flex-1 bg-surface/90 border border-fg/20 hover:border-accent transition-all duration-300 p-6 sm:p-7 hud-plate-a hover:shadow-[0_16px_36px_rgba(255,85,0,0.12)] relative overflow-hidden">
+                  <div className="exp-card flex-1 bg-surface/90 border border-fg/20 hover:border-accent transition-all duration-300 p-6 sm:p-7 hud-plate-a hover:shadow-[0_16px_36px_rgba(255,85,0,0.12)] relative overflow-hidden will-change-transform">
                     {/* Top Callout Header Strip */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-fg/10 pb-3.5 mb-4">
+                    <div className="exp-header flex flex-wrap items-center justify-between gap-3 border-b border-fg/10 pb-3.5 mb-4 will-change-transform">
                       <div className="flex items-center gap-2.5">
                         <span className="font-mono text-[9px] uppercase tracking-wider text-fg/60 font-bold">
                           0{i + 1}
@@ -213,18 +277,18 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                     </div>
 
                     {/* Role Title */}
-                    <h3 className="font-display font-black text-xl sm:text-2xl text-fg uppercase tracking-tight mb-3 group-hover:text-accent transition-colors leading-tight">
+                    <h3 className="exp-title font-display font-black text-xl sm:text-2xl text-fg uppercase tracking-tight mb-3 group-hover:text-accent transition-colors leading-tight will-change-transform">
                       {exp.role}
                     </h3>
                     
                     {/* Narrative Description */}
-                    <p className="font-body text-sm sm:text-base text-muted font-medium leading-relaxed mb-4">
+                    <p className="exp-desc font-body text-sm sm:text-base text-muted font-medium leading-relaxed mb-4 will-change-transform">
                       {exp.desc}
                     </p>
 
                     {/* Certificate Action Button (if ALX or certificates attached) */}
                     {((exp.certificates && exp.certificates.length > 0) || exp.role.toLowerCase().includes('alx')) && (
-                      <div className="pt-2">
+                      <div className="exp-cert-btn pt-2 will-change-transform">
                         <button
                           onClick={() => {
                             setSelectedCerts(exp.certificates || undefined);
