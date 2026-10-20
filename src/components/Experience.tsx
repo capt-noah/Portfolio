@@ -63,7 +63,7 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         );
       }
 
-      // 3. Smooth Milestone Sequential Assembly Timeline (Distinct & Paced Sequence)
+      // 3. Smooth Milestone Sequential Assembly Timeline (Fast & Snappy)
       cardRefs.current.forEach((item) => {
         if (!item) return;
         const tl = gsap.timeline({
@@ -74,24 +74,24 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
           }
         });
 
-        // 1. Pip node on rail pops in with deliberate bounce
+        // 1. Pip node on rail pops in swiftly with bounce
         const node = item.querySelector('.exp-node');
         if (node) {
           tl.fromTo(
             node,
             { scale: 0, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(2.2)' }
+            { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(1.8)' }
           );
         }
 
-        // 2. Connector trace line draws outward across to card
+        // 2. Connector trace line zips across to card
         const connector = item.querySelector('.exp-connector');
         if (connector) {
           tl.fromTo(
             connector,
             { scaleX: 0, opacity: 0, transformOrigin: 'left center' },
-            { scaleX: 1, opacity: 1, duration: 0.45, ease: 'power2.out' },
-            '+=0.06'
+            { scaleX: 1, opacity: 1, duration: 0.25, ease: 'power2.out' },
+            '+=0.02'
           );
         }
 
@@ -100,9 +100,9 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         if (card) {
           tl.fromTo(
             card,
-            { x: 35, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.6, ease: 'power3.out' },
-            '+=0.06'
+            { x: 22, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.38, ease: 'power3.out' },
+            '+=0.03'
           );
         }
 
@@ -111,9 +111,9 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         if (header.length > 0) {
           tl.fromTo(
             header,
-            { y: 18, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' },
-            '+=0.1'
+            { y: 12, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.28, ease: 'power3.out' },
+            '+=0.03'
           );
         }
 
@@ -122,9 +122,9 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         if (title.length > 0) {
           tl.fromTo(
             title,
-            { y: 22, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.5, ease: 'power4.out' },
-            '+=0.08'
+            { y: 14, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.32, ease: 'power4.out' },
+            '+=0.03'
           );
         }
 
@@ -133,20 +133,20 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         if (desc.length > 0) {
           tl.fromTo(
             desc,
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' },
-            '+=0.1'
+            { y: 12, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.32, ease: 'power3.out' },
+            '+=0.03'
           );
         }
 
-        // 7. Certificate Action Button (tactile bounce if present)
+        // 7. Certificate Action Button
         const certBtn = item.querySelectorAll('.exp-cert-btn');
         if (certBtn.length > 0) {
           tl.fromTo(
             certBtn,
-            { y: 16, opacity: 0, scale: 0.9 },
-            { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.6)' },
-            '+=0.12'
+            { y: 10, opacity: 0, scale: 0.94 },
+            { y: 0, opacity: 1, scale: 1, duration: 0.28, ease: 'back.out(1.4)' },
+            '+=0.04'
           );
         }
       });
