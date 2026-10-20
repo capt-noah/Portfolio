@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Calendar, Activity, ShieldCheck } from 'lucide-react';
-import { Experience as ExperienceType } from '../services/dataService';
+import { Calendar, Activity, ShieldCheck, Award, ArrowUpRight } from 'lucide-react';
+import { Experience as ExperienceType, CertificateItem } from '../services/dataService';
+import CertificateModal from './CertificateModal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,6 +13,9 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const timelineRailRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  const [selectedCerts, setSelectedCerts] = useState<CertificateItem[] | undefined>(undefined);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -220,9 +224,26 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                     </h3>
                     
                     {/* Narrative Description */}
-                    <p className="font-body text-sm sm:text-base text-muted font-medium leading-relaxed mb-5">
+                    <p className="font-body text-sm sm:text-base text-muted font-medium leading-relaxed mb-4">
                       {exp.desc}
                     </p>
+
+                    {/* Certificate Action Button (if ALX or certificates attached) */}
+                    {((exp.certificates && exp.certificates.length > 0) || exp.role.toLowerCase().includes('alx')) && (
+                      <div className="mb-5">
+                        <button
+                          onClick={() => {
+                            setSelectedCerts(exp.certificates || undefined);
+                            setIsCertModalOpen(true);
+                          }}
+                          className="px-4 py-2 bg-accent/15 hover:bg-accent text-accent hover:text-white border border-accent/40 font-mono text-[11px] font-bold tracking-wider uppercase flex items-center gap-2 transition-all duration-200 cursor-none shadow-sm hover:shadow-[0_4px_16px_rgba(255,85,0,0.25)] group/cert-btn chamfer-tr"
+                        >
+                          <Award size={14} className="text-accent group-hover/cert-btn:text-white transition-colors" />
+                          <span>[VIEW CERTIFICATES]</span>
+                          <ArrowUpRight size={13} className="group-hover/cert-btn:translate-x-0.5 group-hover/cert-btn:-translate-y-0.5 transition-transform" />
+                        </button>
+                      </div>
+                    )}
 
                     {/* Bottom Status Telemetry */}
                     <div className="border-t border-fg/10 pt-3 flex flex-wrap items-center justify-between gap-3 font-mono text-[9px] text-fg/50">
@@ -256,6 +277,12 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
         </div>
         <div className="hidden sm:block font-pixel text-[8px]">STATION_LIDETA // ARCHITECT_LOG</div>
       </div>
+      {/* Credential Verification Modal */}
+      <CertificateModal
+        isOpen={isCertModalOpen}
+        onClose={() => setIsCertModalOpen(false)}
+        certificates={selectedCerts}
+      />
     </section>
   );
 }

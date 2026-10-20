@@ -1,152 +1,210 @@
 {
   "experience": [
     {
-      "period": "Current / 2024 — Present",
-      "role": "Senior Systems Architect",
-      "desc": "Engineering resilient distributed systems and high-fidelity internal infrastructure for global-scale operations."
+      "id": 1,
+      "period": "Aug. 2026 — Oct. 2026",
+      "role": "Full-Stack Software Engineer // HKC Trading PLC",
+      "desc": "Engineered a custom ERP featuring an integrated finance module that automated double-entry bookkeeping and ledger reconciliations with minimal manual involvement. Automated multi-warehouse inventory valuation, sales invoicing, and financial reporting pipelines. Configured Linux server deployment, database backup automation, and storage integrations via Plesk."
     },
     {
-      "period": "Neural Path / 2022 — 2024",
-      "role": "Full Stack Engineer",
-      "desc": "Pioneered real-time data visualization engines and low-latency backend services using Rust and WASM."
+      "id": 2,
+      "period": "Aug. 2026 — Sep. 2026",
+      "role": "Web Developer // Selihom Charity Foundation",
+      "desc": "Built a responsive bilingual web portal allowing community members to browse needed items and submit donation pledges. Developed an administrative pledge-tracking system to monitor and record donation commitments in real time."
     },
     {
-      "period": "Creative Core / 2020 — 2022",
-      "role": "Lead Frontend Developer",
-      "desc": "Orchestrated sophisticated design systems and performance-critical interfaces for premium digital products."
+      "id": 3,
+      "period": "Sep. 2025 — Dec. 2025",
+      "role": "Lead Full Stack Engineer // Lideta Sub-City Administration",
+      "desc": "Architected the official public administration portal providing departmental services and community information. Built workflows for public news, events, online job vacancy applications, and formal citizen complaint submissions. Maintained high system uptime and secure records integration across municipal departments."
+    },
+    {
+      "id": 4,
+      "period": "Feb. 2025 — Aug. 2025",
+      "role": "Front-End Pro-Development & Foundations // ALX Africa",
+      "desc": "Completed intensive 7-month professional software engineering program covering modern front-end web architecture, responsive interface engineering, UI/UX implementation, asynchronous API integration, and foundational engineering principles.",
+      "certificates": [
+        {
+          "id": "alx-frontend-pro-developer",
+          "title": "Front-End Web Pro-Development",
+          "issuer": "ALX Africa",
+          "date": "August 2025",
+          "image": "/certificates/alx-frontend-pro-developer.png"
+        },
+        {
+          "id": "alx-professional-foundations",
+          "title": "Professional Foundations",
+          "issuer": "ALX Africa",
+          "date": "August 2025",
+          "image": "/certificates/alx-professional-foundations.png"
+        }
+      ]
     }
   ],
   "projects": [
     {
       "id": "01",
-      "title": "Musicly",
-      "meta": "Music Streaming / Offline Music Platform",
-      "desc": "A music app that lets users sync songs through Telegram and listen to them offline across multiple devices.",
-      "detailedDesc": "Musicly is a music platform built to make saving and listening to music easier. Users can send any song they want to the Musicly Telegram bot, and the app automatically syncs and downloads the music to their phone for offline listening. The platform also keeps users’ music libraries synced across multiple devices, making it easy to access songs anywhere. The app focuses on a smooth music experience with organized libraries, playlists, and a modern music player interface.",
+      "title": "Tone",
+      "meta": "Mobile Audio Streaming / Offline Music Platform",
+      "desc": "A cross-platform mobile audio application featuring offline playback caching, synchronized music libraries, and an automated Telegram bot service.",
+      "detailedDesc": "Tone is a cross-platform mobile audio application built to make saving and listening to music seamless and accessible offline. Users can submit audio files and tracks via a connected Telegram bot service, which automatically parses metadata, extracts audio streams, and synchronizes playlists to user devices for high-fidelity offline playback. Built with React Native, Expo, Express, and PostgreSQL.",
       "technologies": [
         "React Native",
-        "Next.js",
+        "Expo",
         "TypeScript",
-        "Tailwind CSS",
+        "Express",
+        "PostgreSQL",
         "Telegram Bot API"
       ],
       "repo": "https://github.com/capt-noah/musicly-app",
-      "link": "https://example.com"
+      "link": "https://musicly-web.vercel.app/"
     },
     {
       "id": "02",
-      "title": "Lideta Subcity Website",
-      "meta": "Government / Public Service Website",
-      "desc": "A website designed to make public information and services easier to access for residents of Lideta Subcity.",
-      "detailedDesc": "The Lideta Subcity Website is a digital platform created to help residents easily access important information and services. The website includes announcements, office information, public updates, contact details, and downloadable resources in one organized place. The project focuses on making information easier to find through a clean design and simple navigation.",
+      "title": "ParkAddis",
+      "meta": "Smart Parking / Urban Mobility Platform",
+      "desc": "A real-time smart parking reservation platform with geospatial queries to locate vacant parking stalls and integrated digital payments.",
+      "detailedDesc": "ParkAddis is a platform created to eliminate parking congestion in Addis Ababa. Users can quickly locate vacant parking stalls through interactive map queries, reserve spots in advance, pay securely using Chapa or the ParkAddis digital wallet, and receive expiration alerts via automated session tracking.",
       "technologies": [
-        "React",
+        "React Native",
         "Next.js",
-        "TypeScript",
+        "Bun",
+        "Express",
+        "PostgreSQL",
+        "PostGIS",
         "Tailwind CSS"
       ],
-      "repo": "https://github.com",
-      "link": "https://lidetasubcity.gov.et"
+      "repo": "https://github.com/capt-noah/park-addis",
+      "link": "https://park-addis.vercel.app"
     },
     {
       "id": "03",
       "title": "Typer",
       "meta": "Productivity / Typing Practice Application",
-      "desc": "A typing practice app that helps users improve speed and accuracy through interactive exercises and books.",
-      "detailedDesc": "Typer is a typing application designed to help users improve their typing skills in a more engaging way. Users can practice with speed typing exercises or choose from available books and type directly over the text as they read. The app tracks typing speed, accuracy, and mistakes in real time, creating an interactive learning experience that combines reading and typing practice.",
+      "desc": "An interactive typing practice application with real-time WPM calculation, accuracy metrics, and a book-reading speed typing mode.",
+      "detailedDesc": "Typer is a modern typing practice platform that combines speed drills with interactive literature reading. Users can type directly over classical and custom texts with real-time keystroke precision tracking, visual error distribution heatmaps, and WPM analytics.",
       "technologies": [
         "React",
         "TypeScript",
-        "Tailwind CSS"
+        "Tailwind CSS",
+        "Express"
       ],
       "repo": "https://github.com/capt-noah/Typer",
-      "link": "https://example.com"
+      "link": "https://typer-woad.vercel.app/"
     },
     {
       "id": "04",
-      "title": "ParkAddis",
-      "meta": "Smart Parking / Transportation Platform",
-      "desc": "A smart parking platform that helps drivers quickly find, reserve, and pay for parking spaces in Addis Ababa.",
-      "detailedDesc": "ParkAddis is a platform created to make parking easier and less stressful for drivers in Addis Ababa. Instead of spending time driving around searching for available parking spaces, users can quickly find nearby parking areas through the app. They can reserve parking spaces in advance, pay using integrated payment options such as Chapa or the ParkAddis wallet, and keep track of how long they have been parked. The platform helps drivers save time, reduce stress, and enjoy a smoother parking experience through a simple and convenient system.",
+      "title": "Selihom Charity",
+      "meta": "Bilingual Public Service & Community Portal",
+      "desc": "A full-stack, bilingual (English & Amharic) charity and elderly care platform featuring donor pledges, visit scheduling, transformation stories, and a centralized administrative dashboard.",
+      "detailedDesc": "Selihom Charity is a comprehensive web platform supporting elderly care and community initiatives in Addis Ababa. It features full bilingual localization (English & Amharic), allowing supporters to make monetary donations, pledge medicines or supplies, schedule on-site visits, and browse editorial news and transformation stories. An integrated administrative suite empowers staff to manage pledge fulfillments, volunteer applications, and visit bookings in real time.",
+      "technologies": [
+        "React",
+        "TypeScript",
+        "Tailwind CSS",
+        "Node.js",
+        "Express",
+        "MySQL"
+      ],
+      "repo": "https://github.com/capt-noah/selihom-charity",
+      "link": "https://noah.enginner.et/selihom"
+    },
+    {
+      "id": "05",
+      "title": "Lideta Subcity Portal",
+      "meta": "Municipal Public Administration Portal",
+      "desc": "Official digital portal for Lideta Subcity Administration providing departmental services, public announcements, and grievance submissions.",
+      "detailedDesc": "A government digital portal engineered to streamline citizen access to public administrative services in Lideta Subcity. Includes public announcements, departmental office directories, vacancy applications, downloadable civic forms, and an online citizen complaint submission system.",
       "technologies": [
         "React",
         "Next.js",
         "TypeScript",
-        "Maps APIs",
         "Tailwind CSS"
       ],
-      "repo": "https://github.com/capt-noah/park-addis",
-      "link": "https://park-addis.vercel.app"
+      "repo": "https://github.com/capt-noah",
+      "link": "https://lidetasubcity.gov.et"
     }
   ],
   "stack": [
     {
+      "id": 1,
       "name": "React",
       "color": "#61DAFB"
     },
     {
+      "id": 2,
       "name": "Next.js",
       "color": "#FFFFFF"
     },
     {
+      "id": 3,
       "name": "TypeScript",
       "color": "#3178C6"
     },
     {
+      "id": 4,
       "name": "Tailwind",
       "color": "#06B6D4"
     },
     {
-      "name": "Rust",
-      "color": "#DEA584"
-    },
-    {
-      "name": "Python",
-      "color": "#3776AB"
-    },
-    {
+      "id": 5,
       "name": "Node.js",
       "color": "#339933"
     },
     {
-      "name": "Vite",
-      "color": "#646CFF"
+      "id": 6,
+      "name": "Bun",
+      "color": "#FBF0DF"
     },
     {
-      "name": "Docker",
-      "color": "#2496ED"
+      "id": 7,
+      "name": "Python",
+      "color": "#3776AB"
     },
     {
-      "name": "Redis",
-      "color": "#D82C20"
+      "id": 8,
+      "name": "PostgreSQL",
+      "color": "#4169E1"
     },
     {
-      "name": "Firebase",
-      "color": "#FFCA28"
+      "id": 9,
+      "name": "MySQL",
+      "color": "#4479A1"
     },
     {
+      "id": 10,
       "name": "Supabase",
       "color": "#3ECF8E"
     },
     {
-      "name": "PostgreSQL",
-      "color": "#4169E1"
+      "id": 11,
+      "name": "Docker",
+      "color": "#2496ED"
+    },
+    {
+      "id": 12,
+      "name": "Vite",
+      "color": "#646CFF"
+    },
+    {
+      "id": 13,
+      "name": "Git",
+      "color": "#F05032"
     }
   ],
   "socials": [
     {
+      "id": 1,
       "name": "GitHub",
       "url": "https://github.com/capt-noah"
     },
     {
+      "id": 2,
       "name": "LinkedIn",
       "url": "https://www.linkedin.com/in/noah-tesfaye-3b2b56364"
     },
     {
-      "name": "X",
-      "url": "#"
-    },
-    {
+      "id": 3,
       "name": "Email",
       "url": "mailto:noahte2020@gmail.com"
     }

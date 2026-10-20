@@ -4,11 +4,21 @@ import defaultData from '../../data.json';
 // Types — match the DB schema and the shape the UI uses
 // ─────────────────────────────────────────────────────────────
 
+export interface CertificateItem {
+  id: string;
+  title: string;
+  issuer: string;
+  date: string;
+  image: string;
+}
+
 export interface Experience {
   id?:    number;
   period: string;
   role:   string;
   desc:   string;   // DB column: description
+  company?: string;
+  certificates?: CertificateItem[];
 }
 
 export interface Project {

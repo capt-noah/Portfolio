@@ -1,5 +1,0 @@
-{
-  "name": "portfolio-dist",
-  "type": "module",
-  "main": "server.js"
-}

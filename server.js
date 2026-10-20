@@ -60,6 +60,13 @@ async function initDatabaseSchema() {
         await pool.query("ALTER TABLE news ADD COLUMN image_paths TEXT AFTER cover_image");
       }
     } catch (_) {}
+
+    try {
+      const [rows] = await pool.query("SHOW COLUMNS FROM experiences LIKE 'certificates'");
+      if (rows && rows.length === 0) {
+        await pool.query("ALTER TABLE experiences ADD COLUMN certificates JSON NULL AFTER description");
+      }
+    } catch (_) {}
   } catch (err) {
     console.warn(`! MySQL initial connection warning: ${err.message}`);
   }
@@ -220,19 +227,27 @@ app.post('/api/login', (req, res) => {
 app.get('/api/data', async (req, res) => {
   try {
     const [[exp], [proj], [stack], [soc]] = await Promise.all([
-      pool.query('SELECT id, period, role, description FROM experiences ORDER BY id ASC'),
+      pool.query('SELECT * FROM experiences ORDER BY display_order ASC, id ASC'),
       pool.query('SELECT id, title, meta, short_desc, detailed_desc, technologies, repo_url, live_link FROM projects ORDER BY display_order ASC, id ASC'),
-      pool.query('SELECT id, name, color FROM tech_stack ORDER BY id ASC'),
-      pool.query('SELECT id, name, url FROM socials ORDER BY id ASC'),
+      pool.query('SELECT id, name, color FROM tech_stack ORDER BY display_order ASC, id ASC'),
+      pool.query('SELECT id, name, url FROM socials ORDER BY display_order ASC, id ASC'),
     ]);
 
     res.json({
-      experience: exp.map(e => ({
-        id:     e.id,
-        period: e.period,
-        role:   e.role,
-        desc:   e.description,
-      })),
+      experience: exp.map(e => {
+        let certs = e.certificates ?? null;
+        if (typeof certs === 'string') {
+          try { certs = JSON.parse(certs); } catch { certs = null; }
+        }
+        return {
+          id:           e.id,
+          period:       e.period,
+          role:         e.role,
+          desc:         e.description,
+          company:      e.company ?? undefined,
+          certificates: certs,
+        };
+      }),
       projects: proj.map(p => {
         let techs = p.technologies ?? [];
         if (typeof techs === 'string') {
@@ -510,6 +525,10 @@ const staticOptions = {
 // 1) Serve Portfolio static assets
 if (fs.existsSync(portfolioDist)) {
   app.use(express.static(portfolioDist, staticOptions));
+}
+const portfolioPublic = path.join(__dirname, 'public');
+if (fs.existsSync(portfolioPublic)) {
+  app.use(express.static(portfolioPublic, staticOptions));
 }
 
 // 2) Serve Selihom static assets at /selihom and /selihom/selihom
