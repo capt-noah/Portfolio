@@ -188,16 +188,10 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
           <path d="M 40 1010 L 40 1040 L 70 1040" fill="none" stroke="white" strokeWidth="2" opacity="0.3" />
           <path d="M 1850 1040 L 1880 1040 L 1880 1010" fill="none" stroke="white" strokeWidth="2" opacity="0.3" />
 
-          <text x="120" y="70" fontFamily="monospace" fontSize="9" fontWeight="bold" fill="#FF5500">
-            FREQUENCY_DISPATCH // PROTOCOL_05
-          </text>
-          <text x="1800" y="160" fontFamily="monospace" fontSize="12" fontWeight="bold" fill="#FF5500">
-            ☒
-          </text>
         </svg>
 
         <div className="absolute right-6 top-8 font-mono text-[9vw] font-black text-white/[0.03] leading-none pointer-events-none select-none">
-          05_CONNECT
+          CONNECT
         </div>
       </div>
 
@@ -212,8 +206,8 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
               <div className="overflow-hidden mb-3">
                 <div ref={tagRef} className="flex items-center gap-2 will-change-transform">
                   <span className="w-2 h-2 bg-accent inline-block animate-ping" />
-                  <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent font-bold">
-                    [SYSTEM.05 // DISPATCH]
+                  <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent font-bold">
+                    GET IN TOUCH
                   </span>
                 </div>
               </div>
@@ -334,20 +328,17 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
                   {isTransmitting ? (
                     <>
                       <span className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white" />
-                      <span>RELAYING PACKETS...</span>
+                      <span>SENDING MESSAGE...</span>
                     </>
                   ) : (
                     <>
                       <Send size={14} />
-                      <span>DISPATCH TRANSMISSION</span>
+                      <span>SEND MESSAGE</span>
                     </>
                   )}
-                  <div className="absolute right-0 top-0 bottom-0 w-2 hazard-hatch-white opacity-30" />
                 </button>
               </form>
             )}
-
-            <div className="absolute top-0 right-0 w-8 h-8 hazard-hatch-white opacity-15" />
           </div>
 
         </div>
@@ -357,12 +348,10 @@ export default function Footer({ data, onFooterIntersect }: FooterProps) {
       {/* Terminal Footer Info Strip */}
       <div className="w-full mt-12 border-t border-white/10 px-6 sm:px-12 py-3 flex flex-col sm:flex-row justify-between items-center gap-3 font-mono text-[9px] text-white/40 uppercase tracking-widest">
         <div className="flex items-center gap-2">
-          <span className="text-accent font-bold">☒</span>
-          <span>© {new Date().getFullYear()} NOAH TESFAYE // SYSTEMS ARCHITECT</span>
+          <span>© {new Date().getFullYear()} NOAH TESFAYE</span>
         </div>
         <div className="flex items-center gap-4">
-          <span>LAT: 9.01 // LONG: 38.74</span>
-          <span className="text-accent font-semibold">ALL_SYSTEMS_GO // 05</span>
+          <span>ADDIS ABABA, ETHIOPIA</span>
         </div>
       </div>
     </section>

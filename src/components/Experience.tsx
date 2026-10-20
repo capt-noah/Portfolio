@@ -122,16 +122,10 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
           <path d="M 40 1010 L 40 1040 L 70 1040" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
           <path d="M 1850 1040 L 1880 1040 L 1880 1010" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
 
-          <text x="120" y="70" fontFamily="monospace" fontSize="9" fontWeight="bold" className="fill-accent">
-            EPOCH_LOG // PROTOCOL_02
-          </text>
-          <text x="1800" y="160" fontFamily="monospace" fontSize="12" fontWeight="bold" className="fill-accent">
-            ☒
-          </text>
         </svg>
 
         <div className="absolute right-6 top-8 font-mono text-[9vw] font-black text-fg/[0.03] leading-none pointer-events-none select-none">
-          02_CAREER
+          CAREER
         </div>
       </div>
 
@@ -143,8 +137,8 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
             <div className="overflow-hidden mb-2">
               <div ref={tagRef} className="flex items-center gap-2 will-change-transform">
                 <span className="w-2 h-2 bg-accent inline-block animate-ping" />
-                <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent font-bold">
-                  [SYSTEM.02 // CHRONOLOGY_TIMELINE]
+                <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent font-bold">
+                  CAREER & EDUCATION
                 </span>
               </div>
             </div>
@@ -200,8 +194,8 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
                     {/* Top Callout Header Strip */}
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-fg/10 pb-3.5 mb-4">
                       <div className="flex items-center gap-2.5">
-                        <span className="font-mono text-[9px] uppercase tracking-wider text-fg/60">
-                          MILESTONE_0{i + 1} //
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-fg/60 font-bold">
+                          0{i + 1}
                         </span>
                         {isCurrent && (
                           <span className="px-2 py-0.5 bg-accent text-white font-mono text-[8.5px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
@@ -230,35 +224,20 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
 
                     {/* Certificate Action Button (if ALX or certificates attached) */}
                     {((exp.certificates && exp.certificates.length > 0) || exp.role.toLowerCase().includes('alx')) && (
-                      <div className="mb-5">
+                      <div className="pt-2">
                         <button
                           onClick={() => {
                             setSelectedCerts(exp.certificates || undefined);
                             setIsCertModalOpen(true);
                           }}
-                          className="px-4 py-2 bg-accent/15 hover:bg-accent text-accent hover:text-white border border-accent/40 font-mono text-[11px] font-bold tracking-wider uppercase flex items-center gap-2 transition-all duration-200 cursor-none shadow-sm hover:shadow-[0_4px_16px_rgba(255,85,0,0.25)] group/cert-btn chamfer-tr"
+                          className="px-4 py-2 bg-accent/15 hover:bg-accent text-accent hover:text-white border border-accent/40 font-mono text-[11px] font-bold tracking-wider uppercase flex items-center gap-2 transition-all duration-200 cursor-none shadow-sm hover:shadow-[0_4px_16px_rgba(255,85,0,0.25)] group/cert-btn"
                         >
                           <Award size={14} className="text-accent group-hover/cert-btn:text-white transition-colors" />
-                          <span>[VIEW CERTIFICATES]</span>
+                          <span>View Certificates</span>
                           <ArrowUpRight size={13} className="group-hover/cert-btn:translate-x-0.5 group-hover/cert-btn:-translate-y-0.5 transition-transform" />
                         </button>
                       </div>
                     )}
-
-                    {/* Bottom Status Telemetry */}
-                    <div className="border-t border-fg/10 pt-3 flex flex-wrap items-center justify-between gap-3 font-mono text-[9px] text-fg/50">
-                      <div className="flex items-center gap-1.5 text-accent font-semibold">
-                        <ShieldCheck size={12} />
-                        <span>VERIFIED_MILESTONE</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-fg/40 font-pixel text-[8px]">
-                        <span>HASH: 0x{((i + 1) * 38049).toString(16).toUpperCase()}</span>
-                        <span>// CHRONO_V26</span>
-                      </div>
-                    </div>
-
-                    {/* Diagonal Zebra Hatch Corner Accent */}
-                    <div className="absolute top-0 right-0 w-8 h-8 hazard-hatch-dark opacity-10 group-hover:opacity-25 transition-opacity pointer-events-none" />
                   </div>
                 </div>
               );
@@ -269,13 +248,10 @@ export default function Experience({ data }: { data: ExperienceType[] }) {
 
       </div>
 
-      {/* Timeline Footer Telemetry Strip */}
+      {/* Timeline Footer Strip */}
       <div className="w-full mt-8 border-t border-fg/10 px-6 sm:px-12 py-3 flex items-center justify-between font-mono text-[9px] text-fg/40 z-10">
-        <div className="flex items-center gap-2">
-          <span className="text-accent font-bold">☒</span>
-          <span>TIMELINE_CHRONOLOGY // CONTINUOUS_RECORD</span>
-        </div>
-        <div className="hidden sm:block font-pixel text-[8px]">STATION_LIDETA // ARCHITECT_LOG</div>
+        <div>Continuous Journey</div>
+        <div className="hidden sm:block">Noah Portfolio</div>
       </div>
       {/* Credential Verification Modal */}
       <CertificateModal

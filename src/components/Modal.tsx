@@ -110,64 +110,49 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
           className="w-full max-w-5xl lg:max-w-6xl bg-surface border border-fg/20 shadow-[0_30px_90px_rgba(0,0,0,0.4)] relative overflow-hidden my-auto chamfer-tr"
         >
-          {/* Top HUD Schematic Header */}
+          {/* Top Header */}
           <div className="w-full bg-fg text-surface px-6 sm:px-8 py-3.5 flex items-center justify-between font-mono text-[10px] uppercase font-bold tracking-widest relative">
             <div className="flex items-center gap-3">
-              <span className="w-2 h-2 bg-accent inline-block animate-pulse" />
-              <span>DOSSIER // SPEC_{data.id}</span>
-              <span className="hidden sm:inline text-surface/30">|</span>
-              <span className="hidden sm:inline text-accent font-semibold flex items-center gap-1.5">
-                <ShieldCheck size={12} className="inline text-accent" />
-                STATUS: LIVE_PREVIEW
-              </span>
-              <span className="hidden md:inline text-surface/40 text-[9px]">00:54:09 &gt;&gt;&gt;</span>
+              <span className="w-2 h-2 bg-accent inline-block" />
+              <span>{data.title}</span>
             </div>
             
             <div className="flex items-center gap-4">
-              <span className="hidden sm:inline font-mono text-[8.5px] text-surface/60">
-                380/AC002 // 0010 0000
-              </span>
               <button
                 onClick={onClose}
                 className="px-2.5 py-1 hover:bg-accent hover:text-white text-surface transition-colors flex items-center gap-1.5 cursor-none bg-surface/10 border border-surface/20 font-mono text-[9px]"
                 aria-label="Close"
               >
                 <X size={13} />
-                <span>[ESC]</span>
+                <span>Close</span>
               </button>
             </div>
-
-            {/* Diagonal zebra hatch accent on top-right seam */}
-            <div className="absolute top-0 right-28 w-16 h-full hazard-hatch-white opacity-20 pointer-events-none hidden sm:block" />
           </div>
 
-          {/* Expansive Two-Column Dossier Content Arena */}
+          {/* Expansive Two-Column Content Arena */}
           <div className="p-6 sm:p-8 lg:p-10 max-h-[78vh] overflow-y-auto scrollbar-none">
             
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
               
-              {/* --- LEFT COLUMN: Heroic Overview & Architecture (7 Cols) --- */}
+              {/* --- LEFT COLUMN: Overview & Architecture (7 Cols) --- */}
               <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
                 <div>
-                  {/* Category Stamp & Telemetry Header */}
+                  {/* Category Stamp Header */}
                   <div className="flex flex-wrap items-center gap-3 mb-4 font-mono text-[10px]">
-                    <span className="px-3 py-1 bg-accent text-white font-bold uppercase tracking-wider chamfer-tr">
-                      SPEC_NODE // {data.id}
+                    <span className="px-3 py-1 bg-accent text-white font-bold uppercase tracking-wider">
+                      PROJECT {data.id}
                     </span>
                     <span className="px-3 py-1 bg-fg/5 border border-fg/15 text-fg/70 uppercase font-semibold">
                       {data.meta}
                     </span>
-                    <span className="text-fg/40 text-[9px] ml-auto hidden sm:inline">
-                      CLASS // PRODUCTION_SYSTEM
-                    </span>
                   </div>
 
-                  {/* Massive Display Title */}
+                  {/* Display Title */}
                   <h2 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-fg leading-[1.05] mb-6">
                     {data.title}
                   </h2>
 
-                  {/* Detailed Architecture Narrative */}
+                  {/* Detailed Description */}
                   <div className="text-sm sm:text-base text-muted font-medium leading-relaxed space-y-4 border-t border-fg/10 pt-6">
                     <p className="whitespace-pre-wrap leading-relaxed">
                       {data.detailedDesc || data.desc}
@@ -181,10 +166,10 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                     <div className="flex items-center justify-between mb-3 font-mono text-[10px]">
                       <span className="text-accent font-bold uppercase tracking-wider flex items-center gap-1.5">
                         <Cpu size={13} />
-                        // INTEGRATED_TECH_STACK
+                        TECHNOLOGIES
                       </span>
                       <span className="text-fg/40 text-[9px]">
-                        [{data.technologies.length} MODULES]
+                        [{data.technologies.length}]
                       </span>
                     </div>
                     
@@ -207,14 +192,14 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
               {/* --- RIGHT COLUMN: Project Visual Preview & Action Triggers (5 Cols) --- */}
               <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
                 
-                {/* High-End Project Live Website Preview Section (Calibrated Virtual Desktop Viewport & Dynamic Aspect Ratio) */}
+                {/* Project Live Website Preview Section */}
                 <div className="bg-plate/70 border border-fg/15 p-4 sm:p-5 relative chamfer-tr flex flex-col">
                   {/* Top Preview Bar with Live URL & Controls */}
                   <div className="flex items-center justify-between border-b border-fg/10 pb-3 mb-3 font-mono text-[9.5px]">
                     <div className="flex items-center gap-2 overflow-hidden mr-2">
                       <span className="w-2 h-2 rounded-full bg-accent inline-block animate-ping shrink-0" />
                       <span className="font-bold text-fg uppercase tracking-wider truncate">
-                        LIVE_PREVIEW // {data.id}
+                        LIVE PREVIEW
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
@@ -261,7 +246,7 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                     </span>
                   </div>
 
-                  {/* Preview Viewport Canvas (Calibrated Aspect Ratio with Scaled Desktop Rendering) */}
+                  {/* Preview Viewport Canvas */}
                   <div 
                     ref={containerRef}
                     className={`w-full ${currentConfig.className} bg-[#080A0E] border border-fg/20 relative overflow-hidden flex items-center justify-center group/preview transition-all duration-300`}
@@ -319,7 +304,7 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-0 group-hover/shot:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 text-white">
                           <div className="font-mono text-[9px] text-accent font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
                             <Sparkles size={11} />
-                            LIVE ARTIFACT SNAPSHOT ({activeRatio})
+                            PREVIEW SNAPSHOT
                           </div>
                           {hasLiveLink && (
                             <a
@@ -328,7 +313,7 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                               rel="noreferrer"
                               className="w-fit px-2.5 py-1 bg-accent hover:bg-accent-hover text-white font-mono text-[9.5px] font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-none shadow-md"
                             >
-                              <span>LAUNCH LIVE</span>
+                              <span>VISIT WEBSITE</span>
                               <ArrowUpRight size={12} />
                             </a>
                           )}
@@ -336,7 +321,7 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                       </div>
                     )}
 
-                    {/* Loading HUD Radar Sweep Overlay */}
+                    {/* Loading Overlay */}
                     {isLoading && (
                       <div className="absolute inset-0 bg-[#0A0C10]/95 flex flex-col items-center justify-center z-20 space-y-2.5 p-4 text-center">
                         <div className="relative w-10 h-10">
@@ -347,22 +332,11 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                           </div>
                         </div>
                         <div className="font-mono text-[9.5px] font-bold text-accent uppercase tracking-widest">
-                          CONNECTING_LIVE_PORT...
+                          LOADING PREVIEW...
                         </div>
                       </div>
                     )}
-
-                    {/* HUD Scanline & Crosshair Overlay */}
-                    <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] opacity-25 z-10" />
-                    <div className="absolute top-2 left-2 text-[9px] text-accent font-mono pointer-events-none font-bold z-10">+</div>
-                    <div className="absolute top-2 right-2 text-[9px] text-accent font-mono pointer-events-none font-bold z-10">+</div>
-                    <div className="absolute bottom-2 left-2 text-[9px] text-accent font-mono pointer-events-none font-bold z-10">+</div>
-                    <div className="absolute bottom-2 right-2 text-[9px] text-accent font-mono pointer-events-none font-bold z-10">+</div>
                   </div>
-
-                  {/* Corner Accent Ticks */}
-                  <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-accent" />
-                  <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-accent" />
                 </div>
 
                 {/* Tactical Action Triggers */}
@@ -376,7 +350,7 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                     >
                       <span className="flex items-center gap-2">
                         <Globe size={15} />
-                        <span>LAUNCH LIVE ARTIFACT</span>
+                        <span>VISIT LIVE WEBSITE</span>
                       </span>
                       <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </a>
@@ -390,7 +364,7 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
                     >
                       <span className="flex items-center gap-2">
                         <Github size={15} />
-                        <span>SOURCE REPOSITORY</span>
+                        <span>VIEW REPOSITORY</span>
                       </span>
                       <ExternalLink size={14} className="text-fg/40 group-hover:text-fg" />
                     </a>
@@ -407,19 +381,12 @@ export default function Modal({ projectId, onClose, projects }: ModalProps) {
           <div className="w-full border-t border-fg/10 px-6 sm:px-8 py-2.5 bg-fg/[0.02] flex items-center justify-between font-mono text-[8.5px] text-fg/40 select-none">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-accent rounded-full inline-block" />
-              <span>NODE_REF // {data.id} // SEC_09</span>
+              <span>Project {data.id}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="font-mono text-accent font-bold">SYSTEM_STABLE</span>
-              <span>[ESC] TO EXIT</span>
+              <span>ESC to exit</span>
             </div>
           </div>
-
-          {/* Corner Bracket Registration Accents */}
-          <div className="absolute top-1 left-1 font-mono text-[8px] text-accent pointer-events-none">┌</div>
-          <div className="absolute top-1 right-1 font-mono text-[8px] text-accent pointer-events-none">┐</div>
-          <div className="absolute bottom-1 left-1 font-mono text-[8px] text-accent pointer-events-none">└</div>
-          <div className="absolute bottom-1 right-1 font-mono text-[8px] text-accent pointer-events-none">┘</div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

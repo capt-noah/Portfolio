@@ -102,16 +102,10 @@ export default function Work({ data, onSelectProject }: WorkProps) {
           <path d="M 40 1010 L 40 1040 L 70 1040" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
           <path d="M 1850 1040 L 1880 1040 L 1880 1010" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
 
-          <text x="120" y="70" fontFamily="monospace" fontSize="9" fontWeight="bold" className="fill-accent">
-            ARTIFACT_MATRIX // PROTOCOL_03
-          </text>
-          <text x="1800" y="160" fontFamily="monospace" fontSize="12" fontWeight="bold" className="fill-accent">
-            ☒
-          </text>
         </svg>
 
         <div className="absolute left-6 top-8 font-mono text-[9vw] font-black text-fg/[0.03] leading-none pointer-events-none select-none">
-          03_PROJECTS
+          PROJECTS
         </div>
       </div>
 
@@ -123,8 +117,8 @@ export default function Work({ data, onSelectProject }: WorkProps) {
             <div className="overflow-hidden mb-3">
               <div ref={tagRef} className="flex items-center gap-2 will-change-transform">
                 <span className="w-2 h-2 bg-accent inline-block" />
-                <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent font-bold">
-                  [SYSTEM.03 // ARTIFACTS]
+                <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent font-bold">
+                  FEATURED WORK
                 </span>
               </div>
             </div>
@@ -164,16 +158,15 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   }}
                   className="xl:col-span-2 bg-accent text-white p-6 sm:p-10 flex flex-col justify-between min-h-[460px] relative shadow-[0_20px_50px_rgba(255,85,0,0.3)] group cursor-none transition-transform duration-200 hud-plate-b will-change-transform"
                 >
-                  {/* Top HUD Callout Strip */}
+                  {/* Top Header Strip */}
                   <div className="flex items-center justify-between border-b border-white/25 pb-4 mb-6">
                     <div className="font-mono text-[10.5px] font-bold uppercase tracking-widest text-white">
-                      <span>FLAGSHIP_SPECIMEN // {project.id}</span>
+                      <span>FEATURED PROJECT</span>
                     </div>
                     <div className="flex items-center gap-2 font-mono text-[9px] font-bold uppercase">
                       <span className="px-2.5 py-0.5 bg-white text-accent">
                         {project.technologies?.[0] || 'FULL_STACK'}
                       </span>
-                      <span className="hidden sm:inline opacity-75">380/AC002 &gt;&gt;</span>
                     </div>
                   </div>
 
@@ -213,7 +206,7 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   <div className="border-t border-white/25 pt-4 flex items-center justify-between flex-wrap gap-3">
                     <div className="flex items-center gap-2 font-mono text-[10px] text-white/90">
                       <ShieldCheck size={14} />
-                      <span>INTEGRITY_VERIFIED // 60_FPS</span>
+                      <span>LIVE SYSTEM</span>
                     </div>
 
                     <div className="flex items-center gap-2.5">
@@ -230,18 +223,16 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                         </a>
                       )}
                       <div className="px-5 py-2.5 bg-white text-accent font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 group-hover:bg-fg group-hover:text-white transition-colors">
-                        <span>INSPECT</span>
+                        <span>VIEW DETAILS</span>
                         <ArrowUpRight size={14} />
                       </div>
                     </div>
                   </div>
-
-                  <div className="absolute top-0 right-0 w-12 h-12 hazard-hatch-white opacity-25" />
                 </div>
               );
             }
 
-            // Secondary Specimen HUD Plates
+            // Secondary Cards
             return (
               <div
                 key={`${project.id}-${i}`}
@@ -265,7 +256,7 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 bg-accent inline-block" />
                     <span className="font-mono text-[9px] text-fg/50 uppercase font-semibold">
-                      SPEC_{project.id} // {String(data.length).padStart(2, '0')}
+                      PROJECT {project.id}
                     </span>
                   </div>
                   <span className="font-mono text-[9px] font-bold uppercase px-2.5 py-0.5 bg-fg/5 border border-fg/15 text-accent group-hover:bg-accent group-hover:text-white transition-colors">
@@ -278,9 +269,6 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   <div className="flex justify-between items-baseline mb-4">
                     <span className="font-mono text-4xl sm:text-5xl font-black text-fg/15 group-hover:text-accent/30 tracking-tighter leading-none select-none transition-colors">
                       {project.id}
-                    </span>
-                    <span className="font-mono text-[9px] text-fg/40 group-hover:text-accent font-semibold transition-colors">
-                      [0010 0000]
                     </span>
                   </div>
 
@@ -316,8 +304,8 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                   )}
 
                   <div className="pt-4 border-t border-fg/10 flex items-center justify-between">
-                    <span className="font-mono text-[9px] text-fg/40 uppercase font-semibold">
-                      // CLICK TO INSPECT
+                    <span className="font-mono text-[9px] text-fg/50 uppercase font-semibold">
+                      VIEW DETAILS
                     </span>
 
                     <div className="w-9 h-9 border border-fg/20 group-hover:bg-accent group-hover:border-accent flex items-center justify-center transition-all duration-300">
@@ -325,8 +313,6 @@ export default function Work({ data, onSelectProject }: WorkProps) {
                     </div>
                   </div>
                 </div>
-
-                <div className="absolute top-0 right-0 w-8 h-8 hazard-hatch-dark opacity-10 group-hover:opacity-25 transition-opacity" />
               </div>
             );
           })}
@@ -336,8 +322,8 @@ export default function Work({ data, onSelectProject }: WorkProps) {
 
       {/* Section Footer */}
       <div className="w-full mt-10 border-t border-fg/10 px-6 sm:px-12 py-3 flex items-center justify-between font-mono text-[9px] text-fg/40">
-        <div>[TOTAL_ARTIFACTS: 0{data.length}]</div>
-        <div className="hidden sm:block">SA/CT_II // RUNTIME_STABLE // 03</div>
+        <div>Total Projects: {data.length}</div>
+        <div className="hidden sm:block">Noah Portfolio</div>
       </div>
     </section>
   );

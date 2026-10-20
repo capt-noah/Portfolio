@@ -44,6 +44,21 @@
   "projects": [
     {
       "id": "01",
+      "title": "Lideta Subcity",
+      "meta": "Government / Public Service Portal",
+      "desc": "Official digital platform for Lideta Subcity Administration providing departmental services, public announcements, and grievance submissions.",
+      "detailedDesc": "A government digital platform engineered to streamline citizen access to public administrative services in Lideta Subcity. Includes public announcements, departmental office directories, vacancy applications, downloadable civic forms, and an online citizen complaint submission system.",
+      "technologies": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "repo": "https://github.com/capt-noah",
+      "link": "https://lidetasubcity.gov.et"
+    },
+    {
+      "id": "02",
       "title": "Tone",
       "meta": "Mobile Audio Streaming / Offline Music Platform",
       "desc": "A cross-platform mobile audio application featuring offline playback caching, synchronized music libraries, and an automated Telegram bot service.",
@@ -60,7 +75,7 @@
       "link": "https://musicly-web.vercel.app/"
     },
     {
-      "id": "02",
+      "id": "03",
       "title": "ParkAddis",
       "meta": "Smart Parking / Urban Mobility Platform",
       "desc": "A real-time smart parking reservation platform with geospatial queries to locate vacant parking stalls and integrated digital payments.",
@@ -78,7 +93,7 @@
       "link": "https://park-addis.vercel.app"
     },
     {
-      "id": "03",
+      "id": "04",
       "title": "Typer",
       "meta": "Productivity / Typing Practice Application",
       "desc": "An interactive typing practice application with real-time WPM calculation, accuracy metrics, and a book-reading speed typing mode.",
@@ -93,7 +108,7 @@
       "link": "https://typer-woad.vercel.app/"
     },
     {
-      "id": "04",
+      "id": "05",
       "title": "Selihom Charity",
       "meta": "Bilingual Public Service & Community Portal",
       "desc": "A full-stack, bilingual (English & Amharic) charity and elderly care platform featuring donor pledges, visit scheduling, transformation stories, and a centralized administrative dashboard.",
@@ -108,21 +123,6 @@
       ],
       "repo": "https://github.com/capt-noah/selihom-charity",
       "link": "https://noah.enginner.et/selihom"
-    },
-    {
-      "id": "05",
-      "title": "Lideta Subcity Portal",
-      "meta": "Municipal Public Administration Portal",
-      "desc": "Official digital portal for Lideta Subcity Administration providing departmental services, public announcements, and grievance submissions.",
-      "detailedDesc": "A government digital portal engineered to streamline citizen access to public administrative services in Lideta Subcity. Includes public announcements, departmental office directories, vacancy applications, downloadable civic forms, and an online citizen complaint submission system.",
-      "technologies": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "Tailwind CSS"
-      ],
-      "repo": "https://github.com/capt-noah",
-      "link": "https://lidetasubcity.gov.et"
     }
   ],
   "stack": [

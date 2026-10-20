@@ -138,16 +138,10 @@ export default function Stack({ data }: { data: StackItem[] }) {
           <path d="M 40 1010 L 40 1040 L 70 1040" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
           <path d="M 1850 1040 L 1880 1040 L 1880 1010" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
 
-          <text x="120" y="70" fontFamily="monospace" fontSize="9" fontWeight="bold" className="fill-accent">
-            HARDWARE_BUS // PROTOCOL_04
-          </text>
-          <text x="1800" y="160" fontFamily="monospace" fontSize="12" fontWeight="bold" className="fill-accent">
-            ☒
-          </text>
         </svg>
 
         <div className="absolute right-6 top-8 font-mono text-[9vw] font-black text-fg/[0.03] leading-none pointer-events-none select-none">
-          04_STACK
+          STACK
         </div>
       </div>
 
@@ -159,8 +153,8 @@ export default function Stack({ data }: { data: StackItem[] }) {
             <div className="overflow-hidden mb-3">
               <div ref={tagRef} className="flex items-center gap-2 will-change-transform">
                 <span className="w-2 h-2 bg-accent inline-block" />
-                <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent font-bold">
-                  [SYSTEM.04 // RUNTIMES]
+                <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent font-bold">
+                  SKILLS & TECHNOLOGIES
                 </span>
               </div>
             </div>
@@ -220,24 +214,18 @@ export default function Stack({ data }: { data: StackItem[] }) {
             {/* Diagnostic Metrics Box */}
             <div className="border-t border-fg/10 pt-4 font-mono text-[9.5px] text-fg/60 space-y-2 uppercase bg-fg/[0.015] p-3.5 border border-fg/10">
               <div className="flex justify-between items-center">
-                <span>QUERY_TARGET:</span>
+                <span>Selected:</span>
                 <span className="text-accent font-bold px-2 py-0.5 bg-accent/10 border border-accent/20">
                   {selectedTech || "NONE"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span>HEALTH_CHECK:</span>
+                <span>Status:</span>
                 <span className="text-fg font-bold flex items-center gap-1">
-                  <CheckCircle2 size={12} className="text-accent" /> 100% OPERATIONAL
+                  <CheckCircle2 size={12} className="text-accent" /> Active Stack
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span>FREQUENCY_LOCK:</span>
-                <span className="text-fg font-semibold">38.74_LIDETA // 04</span>
-              </div>
             </div>
-
-            <div className="absolute top-0 right-0 w-8 h-8 hazard-hatch-dark opacity-10" />
           </div>
 
           {/* Right Side: Open Interactive Module Matrix */}

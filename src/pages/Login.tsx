@@ -135,13 +135,10 @@ export default function Login() {
               className="font-mono text-[9px] uppercase tracking-widest text-fg/50 hover:text-accent transition-colors flex items-center justify-center gap-1.5 mx-auto cursor-none font-bold"
             >
               <X size={10} />
-              <span>RETURN TO PUBLIC INTERFACE</span>
+              <span>Back to Home</span>
             </button>
           </div>
         </div>
-
-        {/* Diagonal zebra hatch corner */}
-        <div className="absolute top-0 right-0 w-8 h-8 hazard-hatch-dark opacity-10" />
       </motion.div>
     </div>
   );

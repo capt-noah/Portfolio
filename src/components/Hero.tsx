@@ -236,14 +236,6 @@ export default function Hero() {
           <path d="M 1850 40 L 1880 40 L 1880 70" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
           <path d="M 40 1010 L 40 1040 L 70 1040" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
           <path d="M 1850 1040 L 1880 1040 L 1880 1010" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg/45" />
-
-          {/* HUD Telemetry Labels */}
-          <text x="120" y="70" fontFamily="monospace" fontSize="9" fontWeight="bold" className="fill-accent">
-            HUD_SYS // PROTOCOL_01
-          </text>
-          <text x="1800" y="160" fontFamily="monospace" fontSize="12" fontWeight="bold" className="fill-accent">
-            ☒
-          </text>
         </svg>
       </div>
 
@@ -300,26 +292,20 @@ export default function Hero() {
             </h1>
           </div>
 
-          {/* Value Prop & Engineering Philosophy with Masked Line Wrappers */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 max-w-[960px] w-full py-4 my-2">
+          {/* Title & Description under name */}
+          <div className="max-w-2xl py-2 my-2 space-y-2">
             <div className="overflow-hidden">
-              <div ref={valueProp1Ref} className="border-l-3 border-accent pl-5 will-change-transform">
-                <span className="font-mono text-xs sm:text-sm uppercase tracking-widest text-accent font-bold block mb-2">
-                  // ARCHITECTURE &amp; DISTRIBUTED CORE
-                </span>
-                <p className="font-body text-base sm:text-lg lg:text-xl text-fg/85 font-medium leading-relaxed">
-                  Engineering resilient distributed architectures, low-latency microservices, and high-performance interactive web systems.
-                </p>
+              <div ref={valueProp1Ref} className="will-change-transform">
+                <h2 className="font-display font-bold text-lg sm:text-2xl text-accent uppercase tracking-wide">
+                  Full-Stack Software Engineer
+                </h2>
               </div>
             </div>
 
             <div className="overflow-hidden">
-              <div ref={valueProp2Ref} className="border-l-3 border-fg/20 pl-5 will-change-transform">
-                <span className="font-mono text-xs sm:text-sm uppercase tracking-widest text-fg/50 font-bold block mb-2">
-                  // HIGH-IMPACT SPECIALIZATION
-                </span>
-                <p className="font-body text-base sm:text-lg lg:text-xl text-muted font-medium leading-relaxed">
-                  Modern Full-Stack Applications, Real-time APIs, Database Infrastructure &amp; Mission-Critical Client Interfaces.
+              <div ref={valueProp2Ref} className="will-change-transform">
+                <p className="font-body text-base sm:text-lg text-fg/80 font-normal leading-relaxed">
+                  Building responsive web and mobile applications, scalable backend APIs, and clean digital experiences.
                 </p>
               </div>
             </div>
@@ -363,16 +349,15 @@ export default function Hero() {
           className="w-full border-t border-fg/10 px-4 sm:px-12 lg:px-20 py-4 flex flex-wrap items-center justify-between font-mono text-[10px] sm:text-xs text-fg/50 relative z-10 bg-surface/30 backdrop-blur-xs gap-3 will-change-transform"
         >
           <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
-            <span className="flex items-center gap-2 text-fg/80 font-bold">
+            <span className="flex items-center gap-2 text-fg/80 font-medium">
               <span className="w-2 h-2 bg-accent rounded-full inline-block animate-pulse" />
-              STATUS: READY
+              Available for projects
             </span>
-            <span className="hidden sm:inline font-semibold">LOC // ADDIS_ABABA // UTC+3</span>
-            <span className="hidden md:inline font-semibold">SYSTEM: ONLINE</span>
+            <span className="text-muted font-normal">•</span>
+            <span className="text-muted font-normal">Addis Ababa, Ethiopia</span>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-accent font-bold">[ARCHITECT_SPEC_2026]</span>
-            <span className="hidden sm:inline font-bold">SEC_01</span>
+          <div className="flex items-center gap-2 text-muted font-mono text-[11px]">
+            <span>Noah Tesfaye</span>
           </div>
         </div>
       </div>
