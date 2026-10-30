@@ -44,7 +44,7 @@ const NEWS_CATEGORIES    = ["Health","Community","Events","Announcements","Stori
 const DEFAULT_SETTINGS = {
   bankAccounts: [
     {
-      id: "bank_1",
+      id: "bank_cbe",
       bank: { am: "የኢትዮጵያ ንግድ ባንክ", en: "Commercial Bank of Ethiopia (CBE)" },
       bankName: { am: "የኢትዮጵያ ንግድ ባንክ", en: "Commercial Bank of Ethiopia (CBE)" },
       accountNumber: "1000275107518",
@@ -53,30 +53,48 @@ const DEFAULT_SETTINGS = {
       isActive: true,
     },
     {
-      id: "bank_2",
+      id: "bank_abyssinia",
       bank: { am: "አቢሲንያ ባንክ", en: "Bank of Abyssinia" },
       bankName: { am: "አቢሲንያ ባንክ", en: "Bank of Abyssinia" },
       accountNumber: "77984852",
-      accountName: "Selihom Support Association",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
       sortOrder: 1,
       isActive: true,
     },
     {
-      id: "bank_3",
+      id: "bank_awash",
       bank: { am: "አዋሽ ባንክ", en: "Awash Bank" },
       bankName: { am: "አዋሽ ባንክ", en: "Awash Bank" },
       accountNumber: "01303572131300",
-      accountName: "Selihom Support Association",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
       sortOrder: 2,
       isActive: true,
     },
     {
-      id: "bank_4",
+      id: "bank_bunna",
+      bank: { am: "ቡና ባንክ", en: "Bunna Bank" },
+      bankName: { am: "ቡና ባንክ", en: "Bunna Bank" },
+      accountNumber: "2919601000145",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
+      sortOrder: 3,
+      isActive: true,
+    },
+    {
+      id: "bank_sinqee",
+      bank: { am: "ስንቄ ባንክ", en: "Sinquee Bank" },
+      bankName: { am: "ስንቄ ባንክ", en: "Sinquee Bank" },
+      accountNumber: "1106177681225",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
+      sortOrder: 4,
+      isActive: true,
+    },
+    {
+      id: "bank_telebirr",
       bank: { am: "ቴሌብር (ሞባይል ገንዘብ)", en: "Telebirr (Mobile Money)" },
       bankName: { am: "ቴሌብር (ሞባይል ገንዘብ)", en: "Telebirr (Mobile Money)" },
       accountNumber: "0911004903",
       accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር (ሚኪያስ ለገሰ)",
-      sortOrder: 3,
+      sortOrder: 5,
       isActive: true,
     },
   ],
@@ -89,16 +107,16 @@ const DEFAULT_SETTINGS = {
     linkedin: "",
   },
   contact: {
-    phones: ["+251911004903", "+251953905050", "0118195444"],
-    email: "selihome@gmail.com",
+    phones: ["+251911004903", "+251953905050", "0118195444", "0904440157"],
+    email: "selihomc@gmail.com",
     address: {
-      am: "ከእንጦጦ ቅዱስ ራጉኤል ወኤልያስ ቤተክርስትያን ወደ ፍተሻ በሚወስደው መንገድ፣ አዲስ አበባ",
-      en: "Near Entoto St. Raguel and Elias Church, on the road leading toward Fetesha, Addis Ababa, Ethiopia",
+      am: "ከእንጦጦ ቅዱስ ራጉኤል ወኤልያስ ቤተክርስቲያን ወደ ፍተሻ በሚወስደው መንገድ 300 ሜትር ዝቅ ብሎ፣ አዲስ አበባ",
+      en: "Near Entoto St. Raguel & Elias Church, 300 meters down on the road towards Fetesha, Addis Ababa, Ethiopia",
     },
   },
   registration: {
     number: "1113/2019",
-    date: "Feb 03, 2020",
+    date: "30/02/2011 ዓ.ም (Oct 30, 2018)",
     agency: {
       am: "የኢትዮጵያ ፌደራላዊ ዲሞክራሲያዊ ሪፐብሊክ የሲቪል ማህበረሰብ ድርጅቶች ኤጀንሲ",
       en: "Federal Democratic Republic of Ethiopia Agency for Civil Society Organizations",
@@ -148,7 +166,7 @@ async function ensureTables() {
         motto_en               VARCHAR(255) NOT NULL DEFAULT 'Kind hearts excel beautiful faces!',
         motto_am               VARCHAR(255) NOT NULL DEFAULT 'ደግ ልቦች ከውብ ፊቶች ይበልጣሉ!',
         phones                 TEXT         NOT NULL,
-        email                  VARCHAR(120) NOT NULL DEFAULT 'selihome@gmail.com',
+        email                  VARCHAR(120) NOT NULL DEFAULT 'selihomc@gmail.com',
         address_en             TEXT         NOT NULL,
         address_am             TEXT         NOT NULL,
         registration_number    VARCHAR(80)  NOT NULL DEFAULT '1113/2019',
@@ -339,7 +357,7 @@ function rowToSiteSettings(settingRow, bankRows = []) {
       am: r.motto_am || "ደግ ልቦች ከውብ ፊቶች ይበልጣሉ!",
     },
     phones: Array.isArray(phones) ? phones : ["+251 91 123 4567"],
-    email: r.email || "selihome@gmail.com",
+    email: r.email || "selihomc@gmail.com",
     address: {
       en: r.address_en || address.en,
       am: r.address_am || address.am,
@@ -1224,7 +1242,7 @@ selihomRouter.post("/site_settings", async (req, res) => {
     const orgNameAm = sanitize(b.orgName?.am, 200) || "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር";
     const mottoEn   = sanitize(b.motto?.en, 255) || "Kind hearts excel beautiful faces!";
     const mottoAm   = sanitize(b.motto?.am, 255) || "ደግ ልቦች ከውብ ፊቶች ይበልጣሉ!";
-    const email     = sanitize(b.email, 120) || "selihome@gmail.com";
+    const email     = sanitize(b.email, 120) || "selihomc@gmail.com";
     const addressEn = sanitize(b.address?.en, 500) || "Addis Ababa, Ethiopia";
     const addressAm = sanitize(b.address?.am, 500) || "አዲስ አበባ፣ ኢትዮጵያ";
     const regNumber = sanitize(b.registration?.number, 80) || "1113/2019";

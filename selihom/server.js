@@ -14,7 +14,7 @@ import path      from "path";
 import fs        from "fs";
 import { fileURLToPath } from "url";
 import dotenv    from "dotenv";
-import pool      from "./server/db.js";
+import pool      from "./database/db.js";
 
 // Load .env
 const __filename = fileURLToPath(import.meta.url);
@@ -1230,24 +1230,58 @@ const settingsPath = path.join(dataDir, "site_settings.json");
 const DEFAULT_SETTINGS = {
   bankAccounts: [
     {
+      id: "bank_cbe",
       bank: { am: "የኢትዮጵያ ንግድ ባንክ", en: "Commercial Bank of Ethiopia (CBE)" },
       accountNumber: "1000275107518",
       accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
+      logo: "",
+      sortOrder: 0,
+      isActive: true,
     },
     {
+      id: "bank_abyssinia",
       bank: { am: "አቢሲንያ ባንክ", en: "Bank of Abyssinia" },
       accountNumber: "77984852",
-      accountName: "Selihom Support Association",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
+      logo: "",
+      sortOrder: 1,
+      isActive: true,
     },
     {
+      id: "bank_awash",
       bank: { am: "አዋሽ ባንክ", en: "Awash Bank" },
       accountNumber: "01303572131300",
-      accountName: "Selihom Support Association",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
+      logo: "",
+      sortOrder: 2,
+      isActive: true,
     },
     {
+      id: "bank_bunna",
+      bank: { am: "ቡና ባንክ", en: "Bunna Bank" },
+      accountNumber: "2919601000145",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
+      logo: "",
+      sortOrder: 3,
+      isActive: true,
+    },
+    {
+      id: "bank_sinqee",
+      bank: { am: "ስንቄ ባንክ", en: "Sinquee Bank" },
+      accountNumber: "1106177681225",
+      accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር",
+      logo: "",
+      sortOrder: 4,
+      isActive: true,
+    },
+    {
+      id: "bank_telebirr",
       bank: { am: "ቴሌብር (ሞባይል ገንዘብ)", en: "Telebirr (Mobile Money)" },
       accountNumber: "0911004903",
       accountName: "ሰሊሆም የአዕምሮ ህሙማን መርጃ ማህበር (ሚኪያስ ለገሰ)",
+      logo: "",
+      sortOrder: 5,
+      isActive: true,
     },
   ],
   social: {
@@ -1259,16 +1293,16 @@ const DEFAULT_SETTINGS = {
     linkedin: "",
   },
   contact: {
-    phones: ["+251911004903", "+251953905050", "0118195444"],
-    email: "selihome@gmail.com",
+    phones: ["+251911004903", "+251953905050", "0118195444", "0904440157"],
+    email: "selihomc@gmail.com",
     address: {
-      am: "ከእንጦጦ ቅዱስ ራጉኤል ወኤልያስ ቤተክርስትያን ወደ ፍተሻ በሚወስደው መንገድ፣ አዲስ አበባ",
-      en: "Near Entoto St. Raguel and Elias Church, on the road leading toward Fetesha, Addis Ababa, Ethiopia",
+      am: "ከእንጦጦ ቅዱስ ራጉኤል ወኤልያስ ቤተክርስቲያን ወደ ፍተሻ በሚወስደው መንገድ 300 ሜትር ዝቅ ብሎ፣ አዲስ አበባ",
+      en: "Near Entoto St. Raguel & Elias Church, 300 meters down on the road towards Fetesha, Addis Ababa, Ethiopia",
     },
   },
   registration: {
     number: "1113/2019",
-    date: "Feb 03, 2020",
+    date: "30/02/2011 ዓ.ም (Oct 30, 2018)",
     agency: {
       am: "የኢትዮጵያ ፌደራላዊ ዲሞክራሲያዊ ሪፐብሊክ የሲቪል ማህበረሰብ ድርጅቶች ኤጀንሲ",
       en: "Federal Democratic Republic of Ethiopia Agency for Civil Society Organizations",
