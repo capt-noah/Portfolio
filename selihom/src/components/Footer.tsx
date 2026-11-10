@@ -42,7 +42,7 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
                   {t(SELIHOM_INFO.name)}
                 </span>
                 <span className="text-[10px] text-brand-sky-500 font-extrabold uppercase tracking-widest mt-1 block">
-                  {language === "am" ? "የሀገር በቀል በጎ አድራጎት ድርጅት" : "Rehabilitation NGO · Reg No. 6131"}
+                  {language === "am" ? "የሀገር በቀል በጎ አድራጎት ማህበር" : "Civil Society NGO · Reg No. 1113/2019"}
                 </span>
               </div>
             </button>
@@ -126,7 +126,7 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
               <div className="flex gap-2.5 items-start bg-white p-3.5 rounded-2xl border border-brand-sky-200 shadow-xs">
                 <ShieldCheck className="w-5 h-5 text-brand-sky-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-xs font-bold block text-brand-sky-950">{language === "am" ? "የምዝገባ ቁጥር 6131" : "Registration No. 6131"}</span>
+                  <span className="text-xs font-bold block text-brand-sky-950">{language === "am" ? "የምዝገባ ቁጥር 1113/2019" : "Registration No. 1113/2019"}</span>
                   <span className="text-[10px] text-brand-sky-600 block leading-tight mt-0.5">
                     {language === "am" ? "ህጋዊ ፍቃድ ያለው ድርጅት" : "Officially registered non-profit."}
                   </span>
@@ -135,9 +135,11 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
               <div className="flex gap-2.5 items-start bg-white p-3.5 rounded-2xl border border-brand-sky-200 shadow-xs">
                 <Award className="w-5 h-5 text-brand-green-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-xs font-bold block text-brand-sky-950">{language === "am" ? "ቀጥተኛና ግልጽ አሰራር" : "Transparent & Accountable"}</span>
+                  <span className="text-xs font-bold block text-brand-sky-950">
+                    {language === "am" ? "የበር ከፈታ ፖሊሲና ግልጽ አሰራር" : "Open Door Policy & Transparent Reporting"}
+                  </span>
                   <span className="text-[10px] text-brand-sky-600 block leading-tight mt-0.5">
-                    {language === "am" ? "ቀጥተኛ ድጋፍ ለተጠቃሚዎች" : "Direct care for all beneficiaries."}
+                    {language === "am" ? "የበር ከፈታ ፖሊሲና ግልጽ ሪፖርት አቀራረብ" : "Open door policy and transparent reporting."}
                   </span>
                 </div>
               </div>
